@@ -1,0 +1,16 @@
+<div class="label">
+    {% if instance.label %}
+        <label for="{{ instance.name|slugify }}" class="form-label mb-0">
+            {{ instance.label }}
+        </label>
+    {% endif %}
+    <input type="text" 
+        name="{{ instance.name }}" 
+        placeholder="{{ instance.placeholder_text|default:"" }}" 
+        id="{{ instance.name|slugify }}"
+        class="form-control {% if instance.label %} with-label {% endif %}"
+        {% if instance.is_required %} required {% endif %} 
+    />
+    <!-- The following div provides feedback for an invalid input -->
+    <div class="invalid-feedback">Please fill out this field.</div>
+</div>

@@ -1,0 +1,16 @@
+{% extends "custom_design/forms/widgets/base-widget.html" %}
+
+{% block widget_section %}
+    <div class="admin-form {% if widget.attrs.horizontal_layout %} horizontal-checkbox {% endif %}">
+        {% for radio_elem in radio_elements %}
+            <div class="form-check radio-outer d-flex align-items-center gap-2 p-0">
+                <input class="form-check-input custom-radio m-0" type="radio" name="{{ widget.name }}"
+                       id="{{ radio_elem.attrs.id }}" value="{{ radio_elem.value }}"
+                       {% if radio_elem.selected %} checked {% endif %}>
+                <label class="form-check-label custom-radio-label m-0" for="{{ radio_elem.attrs.id }}">
+                    {{ radio_elem.label }}
+                </label>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

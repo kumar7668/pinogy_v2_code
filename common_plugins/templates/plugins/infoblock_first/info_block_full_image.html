@@ -1,0 +1,171 @@
+{% load static sekizai_tags %}
+
+{% addtoblock "css"  %}
+    <style>
+        {% if instance.bg_image and instance.glossary.bg_type == 'image' %}
+            .infofirst-l5-{{instance.id}}{
+                background-image : url({{instance.bg_image.url}});
+                background-size: cover;
+               
+            }
+        {% elif instance.glossary.bg_color and instance.glossary.bg_type == "color" %}
+            .infofirst-l5-{{instance.id}}{
+                background-color: {{ instance.glossary.bg_color }};
+            }
+        {% endif %}
+        .infofirst-l5-{{instance.id}} .infofirst-title{
+            color: {{instance.glossary.title_text_color}};
+        }
+        .infofirst-l5-{{instance.id}} .infofirst-sub-title{
+            color: {{instance.glossary.message_text_color}};
+        }
+
+        .info-block-first-img-l5{
+            width: 100%;
+            height: 100%;
+            {% comment %} object-fit: cover;
+            object-position: top; {% endcomment %}
+        }
+
+        {% comment %} .info-block-first-content-l5{
+            max-width: 500px;
+        } {% endcomment %}
+        .infofirst-l5-{{ instance.id }} .infofirst-sub-title{
+            color: {{instance.glossary.message_text_color}};
+            font-size: 20px;
+            line-height: 140%;
+        }
+        .text-aln1{
+            padding-left :30px;
+            padding-right :30px;
+        }
+        .text-aln2{
+            padding-right :30px;
+            padding-left :30px;
+        }
+    </style>
+{% endaddtoblock  %}
+{% comment %} <div class="container-fluid p-0 infofirst-l5-{{ instance.id }}">
+    <div class="row">
+        <div class="col-12 col-md-6 col-lg-4 {% if instance.glossary.layout == "LAYOUT5" %}order-2{% elif instance.glossary.layout == "LAYOUT7" %}order-1{% endif %}">
+            {% if instance.video %}
+                <div class="info-layout-content-vid">
+                    <video controls style="width:100%;" class="video-shape">
+                        <source src='{{ instance.video.url }}' type="video/{{ instance.get_video_extension }}">
+                    </video>
+                </div>
+            {% else %}
+                <img src="{% if instance.image %}{{instance.image.url}}{% else %}{% static 'images/default-placeholder-image.webp' %}{% endif %}" alt="info-img" class="img-fluid info-block-first-img-l5" loading="lazy">
+            {% endif %}
+        </div>
+        <div class="col-12 col-md-6 col-lg-4 d-flex align-items-center {% if instance.glossary.layout == "LAYOUT5" %}order-1{% elif instance.glossary.layout == "LAYOUT7" %}order-2{% endif %}">
+            <div class="info-block-first-content-l5 mx-5 py-5">
+                <div class="h2-theme-bold mb-3 infofirst-title">
+                    {{instance.glossary.title_text | safe}}
+                </div>
+                <p class="infofirst-sub-title">
+                    {{instance.glossary.message_text | safe}}
+                </p>
+                {% if instance.glossary.isbutton == 'True' and instance.glossary.button_text%}
+                <div class="info-layout-action d-flex">
+                    <a class="sw-100 {% if instance.glossary.button_style == 'outline' %} theme-secondary-btn {% else %} theme-primary-btn {% endif %}" href="{{btn_link}}" target="{{instance.glossary.button_target}}">
+                        {{instance.glossary.button_text}}
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div> {% endcomment %}
+
+
+
+<div class="info-preview-section infofirst-l5-{{instance.id}}">
+    <div class="info-layout-wrap no-hover">
+        <div class="info-layout-wrap-inner">
+            <div class="info-layout-box">
+                <div class="row">
+
+                    {% if instance.glossary.layout == "LAYOUT7" %}
+                    <!-- Focus on order -->
+                    <div class="col-12 col-md-6 col-lg-6 {% if instance.glossary.layout == "LAYOUT5" %}order-2{% elif instance.glossary.layout == "LAYOUT7" %}order-1{% endif %} d-flex align-items-center">
+                        {% if instance.video %}
+                            <div class="info-layout-content-vid">
+                                <video controls autoplay muted style="width:100%; max-height: 400px; object-fit: cover;" preload="metadata" class="video-shape">
+                                    <source src='{{ instance.video.url }}' type="video/{{ instance.get_video_extension }}">
+                                </video>
+                            </div>
+                        {% else %}
+                            <div class="info-layout">
+                                <img src="{% if instance.image %}{{instance.image.url}}{% else %}{% static 'images/default-placeholder-image.webp' %}{% endif %}" alt="{{instance.glossary.alt_name_image}}" class="info_placeholder img-fluid infofirst-img">
+                            </div>
+                        {% endif %}
+                    </div>
+                    <!-- Focus on order -->
+                    <div class="col-12 col-md-6 col-lg-6 align-items-center d-flex {% if instance.glossary.layout == "LAYOUT5" %}order-1{% elif instance.glossary.layout == "LAYOUT7" %}order-2{% endif %}">
+                        <div class="info-layout-content {% if instance.glossary.layout == "LAYOUT5" %}text-aln1{% elif instance.glossary.layout == "LAYOUT7" %}text-aln2{% endif %}">
+                            <div class="info-layout-content-inner">
+                                
+                                <div class="h2-theme-bold mb-3 infofirst-title">
+                                    {{instance.glossary.title_text|safe}}
+                                </div>
+                                
+                                <p class="infofirst-sub-title">
+                                    {{instance.glossary.message_text | safe}}
+                                </p>
+                                
+                                {% ifequal 'True'  instance.glossary.isbutton %}
+                                <div class="info-layout-action d-flex">
+                                    <a class="{% if instance.glossary.button_style == 'outline' %} theme-secondary-btn {% else %} theme-primary-btn {% endif %}" href="{{btn_link}}" target="{{instance.glossary.button_target}}" area-label = "{{instance.glossary.button_text}}">
+                                        {{instance.glossary.button_text}}
+                                    </a>
+                                </div>
+                                {% endifequal %}                            
+                            </div>
+                        </div>
+                    </div>
+                    {%else%}
+                    
+                    <!-- Focus on order -->
+                    <div class="col-12 col-md-6 col-lg-6 align-items-center d-flex {% if instance.glossary.layout == "LAYOUT5" %}order-1{% elif instance.glossary.layout == "LAYOUT7" %}order-2{% endif %}">
+                        <div class="info-layout-content {% if instance.glossary.layout == "LAYOUT5" %}text-aln1{% elif instance.glossary.layout == "LAYOUT7" %}text-aln2{% endif %}">
+                            <div class="info-layout-content-inner">
+                                
+                                <div class="h2-theme-bold mb-3 infofirst-title">
+                                    {{instance.glossary.title_text|safe}}
+                                </div>
+                                
+                                <p class="infofirst-sub-title">
+                                    {{instance.glossary.message_text | safe}}
+                                </p>
+                                
+                                {% ifequal 'True'  instance.glossary.isbutton %}
+                                <div class="info-layout-action d-flex">
+                                    <a class="{% if instance.glossary.button_style == 'outline' %} theme-secondary-btn {% else %} theme-primary-btn {% endif %}" href="{{btn_link}}" target="{{instance.glossary.button_target}}" area-label = "{{instance.glossary.button_text}}">
+                                        {{instance.glossary.button_text}}
+                                    </a>
+                                </div>
+                                {% endifequal %}                            
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-6 {% if instance.glossary.layout == "LAYOUT5" %}order-2{% elif instance.glossary.layout == "LAYOUT7" %}order-1{% endif %} d-flex align-items-center">
+                        {% if instance.video %}
+                            <div class="info-layout-content-vid">
+                                <video controls autoplay muted style="width:100%; max-height: 400px; object-fit: cover;" preload="metadata" class="video-shape">
+                                    <source src='{{ instance.video.url }}' type="video/{{ instance.get_video_extension }}">
+                                </video>
+                            </div>
+                        {% else %}
+                            <div class="info-layout">
+                                <img src="{% if instance.image %}{{instance.image.url}}{% else %}{% static 'images/default-placeholder-image.webp' %}{% endif %}" alt="{{instance.glossary.alt_name_image}}" class="info_placeholder img-fluid infofirst-img">
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% endif%}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

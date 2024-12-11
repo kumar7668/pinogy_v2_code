@@ -1,0 +1,632 @@
+{% extends CMS_TEMPLATE %}
+{% load cms_tags i18n sekizai_tags humanize %}
+
+{% block main %}
+    
+    {% comment %} Page CSS {% endcomment %}
+    {% addtoblock 'css'%}
+        <style>
+            /* Pet Info block */
+            #adopt-photo{
+                max-width: 160px;
+                max-height: 200px;
+            }
+
+            #pet-info-outer{
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                height: 100%;
+            }
+
+            span.info-label {
+                font-weight: 700;
+            }
+
+            .product-addon-label, .addon-main-outer label span{
+                font-weight: bold;
+            }
+
+            .total-label, .total-price{
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+
+            .addon-section{
+                display: flex;
+                justify-content: center;
+                max-width: 750px;
+            }
+
+            .addon-product-desc, .bundle-description{
+                font-size: 13px;
+                font-weight: normal;
+                line-height: 1.4;
+            }
+
+            .bundle-item{
+                position: relative;
+            }
+
+            .bundle-price-section{
+                position: absolute;
+                bottom: 0;
+                right: 8px;
+                float: right;
+                word-wrap: break-word;
+                width: 150px;
+            }
+
+            .addon-product-price-section{
+                float: right;
+                word-wrap:break-word;
+                width: 150px;
+                padding-left: 0;
+            }
+
+            .price-outer-section{
+                overflow: hidden;
+                display: flex;
+                justify-content: end;
+                padding-left: 0;
+            }
+
+            .divheader{
+                border: 1px solid #dee2e6!important;
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+        </style>
+    {% endaddtoblock %}
+
+    {% static_placeholder "adopt me" %}
+    <div class="container py-5 addon-section">
+        <div class="row">
+    
+            {% comment %} Pet Info Block {% endcomment %}
+            <div class="col-12">
+                <div class="pb-3 pet-info-block divheader">
+                    <div class="row">
+                        <div class="col-6 col-sm-6 ">
+                            <div id="pet-info-outer">                            
+                                <h3 id="pet-name" class="h3-theme-bold pet-info-detail">{% if pet_setting.petname.visible_detail_only %} {{pet_name}} {% endif %}</h3>
+                                {% if selected_pet_data.pbrd_display_name %}
+                                <div class="pet-info">
+                                    <span class="info-label">Breed : </span>{{selected_pet_data.pbrd_display_name}}
+                                </div>
+                                {% endif %}
+                                {% if pet_setting.sex.visible_detail_only and selected_pet_data.pet_gender %}
+                                <div class="pet-info">
+                                    <span class="info-label">Gender : </span>{{selected_pet_data.pet_gender}}
+                                </div>
+                                {% endif %}
+                                {% if pet_setting.birthdate.visible_detail_only and selected_pet_data.pet_age %}
+                                <div class="pet-info">
+                                    <span class="info-label">Age : </span>{{selected_pet_data.pet_age}}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-6 d-flex justify-content-center justify-content-sm-end">
+                            <img id="adopt-photo" class="pet-info-img" src="{{selected_pet_data.pet_image}}" srcset="{{selected_pet_data.pet_image}}" alt="" role="img" aria-label="{{pet_name}}">
+                        </div>
+                        {% if pet_setting.petmarketingtext.visible_detail_only and selected_pet_data.pet_marketing_notes %}
+                            <div class="col-12 pt-3">
+                                <div class="pet-info">
+                                    {{selected_pet_data.pet_marketing_notes|safe}}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+    
+            {% comment %} Addon Section {% endcomment %}
+            <div class="col-12">
+                <!-- start pet addons code -->
+                <div class="container border addon-main-outer">
+                    <!-- variation products -->
+                    {% for addon in addons %}
+                        {% if addon.variation_id %}
+                            <div class="variation-addon-block-outer">
+                                <div class="variation-block border-bottom py-3">
+                                    <div class="row ">
+                                        <div class="col-12 col-md-6">
+                                            <p class="product-addon-label m-0">{{ addon.name }} {% if addon.is_required %}<span style="color:red">*</span>{% endif %}</p>
+                                        </div>
+                                        <div class="col-12 col-md-6 pt-2 pt-md-0">
+                                            <select name="{{product.name|slugify}}" class="form-select variation-drpdwn variation_products" variation-id="{{addon.variation_id}}" class="large gfield_select" tabindex="1" aria-describedby="gfield_description_2_24" aria-required="true" aria-invalid="false">
+                                                <option value="0" selected="selected" class="gf_placeholder" price="">Choose an option </option>
+                                                    {% for product in addon.variation.products %}
+                                                    <option product-id="{{product.id}}" data-variation="{{addon.variation_id}}" value={{product.slug|slugify}}>{{product.name}}</option>
+                                                    {% endfor %}
+                                            </select>
+                                            <p class="text-end m-0">
+                                                +$<span data-price="0.00" data-slug="" class="variation_price variation_price_{{addon.variation_id}}">0.00</span>
+                                            </p>
+                                        </div>
+    
+                                        {# variant product description #}
+                                        {% if addonproduct.long_description %}
+                                            <div class="col col-12">
+                                                <p class="product-description ">{{ addon.product.long_description }}</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+    
+                    <!-- regular products -->
+                    {% for addon in addons %}
+                        {% if addon.product.kind == "Regular" %}
+                            <div class="regular-addon-block-outer">
+                                <div class="border-bottom pt-3 regular-block-outer">
+                                    <div class="row regular-block">
+                                        <div class="col-7 col-md-6">
+                                            <p class="product-addon-label m-0">{{addon.name}} {% if addon.is_required %}<span style="color:red">*</span>{% endif %}</p>
+                                        </div>
+                                        <div class="col-5 col-md-6 price-outer-section">
+                                            <div class="form-check addon-product-price-section">
+                                                <div class="form-check">
+                                                    <input type="checkbox"
+                                                        class="form-check-input regular-addon" id="checkid-{{addon.name}}"
+                                                        value="{{addon.product_id}}"
+                                                        {% if addon.is_required %} checked disabled {% endif %}
+                                                        {% if  addon.default_is_selected %} checked {% endif %}
+                                                    >
+                                                    <label class="form-check-label" for="checkid-{{addon.name}}">
+                                                        <span>Yes</span> &nbsp; +${{ addon.addon_product_price }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% if addon.product.long_description %}
+                                            <div class="col-12">
+                                                <p class="pt-2 addon-product-desc">{{ addon.product.long_description }}</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+    
+                    <!-- bundle products -->
+                    {% if is_addons_with_image %}
+                        <div class="bundle-addon-block-outer">
+                            <h4 class="addon-title pt-3" class="pt-2">Add-On Packages</h4>
+                            <div class="bundle-sections">
+                                <div class="row pb-3" style="margin: auto;">
+                                    {% for addon in addons %}
+                                        {% if not addon.variation and addon.product.child_trees %}
+                                            <div class="col-6 p-1">
+                                                <div class="bundle-item h-100 border p-2">
+                                                    <img src="{{addon.addon_image}}" alt="addon-img" class="img-fluid"/>
+                                                    <p class="product-addon-label m-0">{{addon.name}} {% if addon.is_required %}<span style="color:red">*</span>{% endif %}</p>
+                                                    <p class="text-center py-2 bundle-description">Includes:
+                                                        {% for addon_child in addon.product.child_trees %}
+                                                            <span>{{addon_child.product.name}}</span>{% if not forloop.last %},{% endif %}
+                                                        {% endfor %}
+                                                    </p>
+                                                    <div class="form-check bundle-price-section">
+                                                        <input class="form-check-input bundle-addon" type="checkbox"
+                                                            id="checkid-{{addon.name}}"
+                                                            value="{{addon.product_id}}"
+                                                            {% if addon.is_required %} checked disabled {% endif %}
+                                                            {% if  addon.default_is_selected %} checked {% endif %}
+                                                        >
+                                                        <label class="form-check-label" for="checkid-{{addon.name}}">
+                                                            <span>Yes</span> &nbsp; +${{addon.addon_product_price|default:0.0}}
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+    
+            {% comment %} Total Section {% endcomment %}
+            <div class="col-12">
+                <!-- start total section -->
+                <div class="container border mt-4 p-4 total-section-wrapper">
+                    <div class="row total-section-outer">
+    
+                        <!-- SubTotal -->
+                        <div class="col-12 sub-total-outer">
+                            <div class="row">
+                                <div class="col-6 col-md-9">
+                                    <p class="total-label text-end">Subtotal</p>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <p class="total-price text-end">
+                                        $ <span id="subtotal_price">{{ pet_price|intcomma }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <!-- Options -->
+                        <div class="col-12 options-outer">
+                            <div class="row">
+                                <div class="col-6 col-md-9">
+                                    <p class="total-label text-end">Options</p>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <p class="total-price text-end">
+                                        $ <span id="option_price">0.00</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <!-- Total -->
+                        <div class="col-12 total-outer">
+                            <hr class="m-0 mb-2"/>
+                            <div class="row">
+                                <div class="col-6 col-md-9">
+                                    <p class="total-label text-end">Total</p>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <p class="total-price text-end">
+                                        $ <span id="total_price">0.00</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            {% comment %} Messgae {% endcomment %}
+            <div class="col-12 required-addon-msg text-danger m-0 mt-2 d-none">
+                <span>Please select all required addon.</span>
+            </div>    
+    
+            {% comment %} Button Section {% endcomment %}
+            <div class="col-12">
+                <!-- add to cart button section -->
+                <div class="container mt-4 p-0 btn-section-wrapper">
+                    <div class="row btn-section-outer">
+                        <!-- Back -->
+                        <div class="col-6 back-btn-outer">
+                            {% comment %} <a class="btn btn-primary chkoutback" href="{% url 'pinogy_pet:pet_detail' pet_type_slug breed_slug pet_id %}">Back</a> {% endcomment %}
+                            <a class="theme-secondary-btn d-inline-block chkoutback" href="#" onclick="history.back()">Back</a>
+                        </div>
+    
+                        <!-- Add to cart -->
+                        <div class="col-6 add-to-cart-outer text-end">
+                            <button class="theme-primary-btn chkoutsave" id="adoptMeBtn" onclick="addToCart()">Add To Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% comment %} ------------- Add to Cart Modals ------------- {% endcomment %}
+    <div class="modal" id="addToCartModal" tabindex="-1" role="dialog" aria-label="addToCartModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    {% comment %} <h5 class="modal-title">Delete</h5> {% endcomment %}
+                    <span class="bold" id="item-qty"><b>Pet Added!</b></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0" id="add_cart_msg"></p>
+                </div>
+                <div class="modal-footer">
+                    {% comment %} <button type="button" class="btn btn-primary" data-dismiss="modal" 
+                        onclick="redirectTo(`{% url 'pinogy_shop:card_detail_page' %}`)">View Cart</button> {% endcomment %}
+                    <button type="button" class="btn theme-primary-btn local-btn" data-bs-dismiss="modal" 
+                        onclick="redirectTo(`{% url 'pinogy_shop:login' %}`)">Login </button>
+                    <button type="button" class="btn theme-primary-btn local-btn" data-bs-dismiss="modal" 
+                        onclick="redirectTo(`{% url 'pinogy_shop:signup' %}`)">Register </button>
+                    <button type="button" class="btn theme-secondary-btn auth-btn" data-bs-dismiss="modal" >Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% addtoblock 'js'%}
+        <script>
+
+            const productPriceUrl = "{% url 'pinogy_shop_proxy:get_product_price' 0 %}?location_id={{selected_pet_data.pet_loc_entity_id}}",
+                cartUrl = `{% url 'pinogy_shop:card_detail_page' %}`,
+                petListUrl = `{% url 'pinogy_pet:pet_type_home' %}`,
+                loginUrl = `{% url 'pinogy_shop:login' %}`,
+                csrfToken = '{{ csrf_token }}',
+                requiredAddon = JSON.parse("{{required_addon}}"),
+                localSuccessMsg = "Login or create a new account to continue.",
+                apiSuccessMsg = "Pet is added in Cart Sucessfully. You will be redirected to Cart page.";
+
+
+            let priceList = {},
+                petPrice = {{pet_price}},
+                optionPrice = 0.0,
+                totalPrice = 0.0,
+                selected_addon_list = [],
+                user = getCookie('user');
+
+            $( document ).ready(function() {
+                // Create a PriceList of addon
+                {% for addon in addons %}
+                    {% if addon.product.kind == "Regular" %}
+                        priceList['{{addon.product_id}}'] = {{ addon.addon_product_price|default:0.0 }};
+                    {% elif not addon.variation and addon.product.child_trees %}
+                        priceList['{{addon.product_id}}'] = {{ addon.addon_product_price|default:0.0 }};
+                    {% endif %}
+                {% endfor %}
+
+                setCalculatedPrices();
+            });
+
+            // Add loader to the button
+            function startBtnLoading(btn_id){
+                var addToCartBtn = document.getElementById(btn_id)
+                addToCartBtn.style.pointerEvents = "none";
+                addToCartBtn.innerHTML = `<div class="text-center font-20 pl-4 pr-4"><i class="fas fa-circle-notch fa-spin"></i></div>`
+            }
+
+            // Remove btn loader and set text again on item
+            function stopBtnLoading(btn_id, btn_txt){
+                var addToCartBtn = document.getElementById(btn_id)
+                addToCartBtn.innerHTML = btn_txt
+                addToCartBtn.style.pointerEvents = "auto";
+            }
+
+            function redirectTo(url){
+                {% comment %} document.getElementById('main').style.opacity = "0.4"; {% endcomment %}
+                {% comment %} document.getElementById('main').style.cursor = "wait"; {% endcomment %}
+                {% comment %} location.href = url; {% endcomment %}
+                window.location.href = url;
+            }
+
+            function showSucessMsg(msg, showLocal=false){
+                $("#add_cart_msg").html(msg);
+                $('#addToCartModal').modal('show');
+                
+                if(showLocal){
+                    $(".local-btn").removeClass("d-none")
+                    $(".auth-btn").addClass("d-none")
+                }else{
+                    $(".local-btn").addClass("d-none")
+                    $(".auth-btn").removeClass("d-none")
+                }
+                
+            }
+
+            // Calculate options price
+            function calcOptionPrice() {
+                optionPrice = 0.0;
+                if (Object.keys(priceList).length) {
+                    {# Add regular addon value in opiton price #}
+                    $('.regular-addon:checkbox:checked').each(function () {
+                        optionPrice += priceList[this.value];
+                    });
+
+                    {# Add variant addon value in option price #}
+                    $(".variation_price").each(function () {
+                        let price = priceList[$(this).data("slug")];
+                        if(price)
+                            optionPrice += Number(price);
+                    });
+
+                    {# Add bundle addon value in option price #}
+                    $('.bundle-addon:checkbox:checked').each(function () {
+                        optionPrice += priceList[this.value];
+                    });
+                }
+
+                totalPrice = petPrice + optionPrice;
+            }
+
+            // set calculated prices
+            function setCalculatedPrices(){
+                calcOptionPrice();
+
+                $('#option_price').html(optionPrice.toFixed(2).toLocaleString("en-GB"));
+                $('#total_price').html(totalPrice.toFixed(2).toLocaleString("en-GB"));
+            }
+
+            // update price on addon selection/remove
+            $('input.regular-addon:checkbox').on('change', function () {
+                    setCalculatedPrices()
+            });
+            $('input.bundle-addon:checkbox').on('change', function () {
+                    setCalculatedPrices()
+            });
+
+            // Fetch variant product price from
+            $('.variation_products').on('change', function() {
+                let product_slug = $(this).val() ;
+                let variation_id = $(this).attr("variation-id") ;
+                if (product_slug === '0'){
+                    $(`.variation_price_${variation_id}`).html('0.00');
+                    $(`.variation_price_${variation_id}`).data("price", '0.00');
+                    $(`.variation_price_${variation_id}`).data("slug", '');
+                    return;
+                }
+
+                let url = productPriceUrl.replace('0', product_slug)
+                fetch(url)
+                .then((response) => response.json())
+                .then((data) => {
+                    priceList[product_slug] = data["price"];
+                    $(`.variation_price_${variation_id}`).html(data["price"]);
+                    $(`.variation_price_${variation_id}`).data("price", data["price"]);
+                    $(`.variation_price_${variation_id}`).data("slug", product_slug);
+
+                    setCalculatedPrices();
+                });
+            });
+
+            // Create array of selected addon and compare with required addon list
+            // For variant addon adding variation id insted of product id
+            // return True id if all required addon added otherwise False
+            function checkRequiredAddon(){
+                required_addon_list = [];
+                $('.regular-addon:checkbox:checked').each(function() { 
+                    required_addon_list.push(
+                        typeof this.value === "string" ? parseInt(this.value) : parseInt(this.value)
+                    ); 
+                });
+                $('.variation-block select :selected').each(function() {
+                    required_addon_list.push(
+                        typeof $(this).data('variation') === "string" ? parseInt($(this).data('variation')) : parseInt($(this).data('variation'))
+                    );
+                });
+                $('.bundle-addon:checkbox:checked').each(function() { 
+                    required_addon_list.push(
+                        typeof this.value === "string" ? parseInt(this.value) : parseInt(this.value)
+                    ); 
+                });
+
+                const containsAllRequiredAddon = requiredAddon.every(element => {
+                    return required_addon_list.indexOf(element) !== -1;
+                });
+                
+                if(!containsAllRequiredAddon){
+                    $(".required-addon-msg").removeClass("d-none")
+                }else{
+                    $(".required-addon-msg").addClass("d-none")
+                }
+
+                return containsAllRequiredAddon
+            }
+
+            // Get selected addons
+            function getSelectedAddons(){
+                selected_addon_list = [];
+                $('.regular-addon:checkbox:checked').each(function() { 
+                    selected_addon_list.push(
+                        typeof this.value === "string" ? parseInt(this.value) : parseInt(this.value)
+                    ); 
+                });
+                $('.variation-block select :selected').each(function() {
+                    selected_addon_list.push(
+                        typeof $(this).attr('product-id') === "string" ? parseInt($(this).attr('product-id')) : parseInt($(this).attr('product-id'))
+                    );
+                });
+                $('.bundle-addon:checkbox:checked').each(function() { 
+                    selected_addon_list.push(
+                        typeof this.value === "string" ? parseInt(this.value) : parseInt(this.value)
+                    ); 
+                });
+
+                return selected_addon_list
+            }
+
+            function checkResponseCart(data){
+                if (data.status === 201){
+                    {% comment %} if (cart_span != null) {
+                        document.getElementById('shop-card-span').innerHTML = data.total_quantity
+                    } {% endcomment %}
+                    showSucessMsg(apiSuccessMsg);
+                    redirectTo(cartUrl);
+                } else if (data.status === 200){
+                    {% comment %} if (cart_span != null) {
+                        document.getElementById('shop-card-span').innerHTML = data.total_quantity
+                    } {% endcomment %}
+                    showSucessMsg(apiSuccessMsg);
+                    redirectTo(cartUrl);
+                } else {
+                    alert('Invalid request');
+                    stopBtnLoading("adoptMeBtn", 'Add To Cart');
+                }
+
+            }
+
+            // Adust Total Quantity and return the cart
+            // Update the total qty in header
+            function adjustQuantitty(cart, cartItem) {
+                var total_quantity = 0
+                for (let i = 0; i < cart.length; i++) {
+                    total_quantity += parseInt(cart[i].quantity);
+                }
+                // TODO: Remove comment after add icon into header
+                // document.getElementById('shop-card-span').innerHTML = total_quantity
+                return cart
+            }
+
+            // handle local cart if cart is already exist
+            function handleCart(cart, cartItem) {
+                let flag = true
+                for (let i = 0; i < cart.length; i++) {
+                    if (cartItem.product_id == cart[i].product_id) {
+                        // In Pet case we are not increasing pet quantity
+                        // cart[i].quantity += cartItem.quantity
+                        flag = false
+                    }
+                }
+                if (flag) {
+                    cart.push(cartItem)
+                }
+                localStorage.removeItem("cart");
+                cart = adjustQuantitty(cart, cartItem)
+                localStorage.setItem('cart', JSON.stringify(cart))
+            }
+
+            // If user is not logged in add item into cart
+            function addLocal(cartItem) {
+                cartold = localStorage.getItem("cart");
+                if (cartold && cartold != 'null') {
+                    cartold = JSON.parse(cartold);
+                    handleCart(cartold, cartItem);
+                } else {
+                    cartItem = JSON.stringify([cartItem])
+                    cart = adjustQuantitty(JSON.parse(cartItem), cartItem)
+                    localStorage.setItem('cart', cartItem)
+                }
+                showSucessMsg(localSuccessMsg, true);
+                stopBtnLoading("adoptMeBtn", "Add To Cart");
+            }
+
+            // Add addon and pets into cart
+            function addToCart(){
+                startBtnLoading("adoptMeBtn");
+
+                // if all required addon is not selected then return
+                if(!checkRequiredAddon()){
+                    stopBtnLoading("adoptMeBtn", 'Add To Cart')
+                    return;
+                }
+
+                deliveryData = JSON.stringify({
+                    "product_id": {{ pet_id }},
+                    "quantity": 1.0,
+                    "product_price": {{ pet_price }},
+                    "addon_txn_line": true,
+                    "txnline_children": getSelectedAddons(),
+                })
+
+                if(user)
+                    fetch("{% url 'pinogy_shop:card' %}", {
+                        method: 'post',
+                        mode: 'same-origin',
+                        credentials: 'same-origin',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        }, 
+                        body: deliveryData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        checkResponseCart(data);
+                    });
+                else{
+                    addLocal(JSON.parse(deliveryData));
+                }
+            }
+        </script>
+    {% endaddtoblock %}
+{% endblock %}

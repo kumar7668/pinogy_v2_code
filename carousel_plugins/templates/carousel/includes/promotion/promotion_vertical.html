@@ -1,0 +1,159 @@
+{% extends 'carousel/carousel_plugin.html' %}
+{% load  static menu_tags sekizai_tags global_theme_config_tags %}
+{% global_theme_object as global_theme_config %}
+
+{% load static %}
+
+{% block carousel_items %}
+{% addtoblock "css"  %}
+<style>
+    .promotion-box{
+        display: block !important;
+        border: 4px solid {{instance.glossary.card_bg_color}};
+    }
+
+    .promo-desc-box a{
+        color: {{instance.glossary.card_text_color}};
+    }
+    
+    .offer{
+        font-style: normal;
+        font-weight: 700;
+        font-size: 18px;
+        line-height: 140%;
+    }
+    .desc{
+        font-style: normal;
+        font-weight: 500;
+        font-size: 18px!important;
+        line-height: 120%;
+        text-decoration: none;
+        font-family:var(--general-font);
+        height:65px !important
+    }
+
+    .message a{        
+        font-style: normal;
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 140%;
+        flex: none;
+        order: 1;
+        flex-grow: 0;
+    }
+
+    .offer, .desc, .message{
+        margin: 0;
+    }
+    .promo-desc-box{
+        word-wrap: break-word !important;
+    }
+    .promo-desc-box .message a.more_view {
+        font-weight: 400;
+        line-height: 140%;
+        text-transform: lowercase;
+        color: var(--global-secondary-color);
+        text-decoration: none;
+        font-size: 15px !important;
+    }
+    .message a.more_view:hover {
+        text-decoration: underline;
+    }
+    .vertical-image-box{
+        width:100% !important;
+        flex-shrink: 0;
+    }
+
+    .promo-desc-box-{{instance.id}}{
+        display: flex;
+        flex-direction: column;
+        padding: 12px;
+        gap: 10px;
+        color: {{instance.glossary.card_text_color}};
+        background:{{instance.glossary.card_bg_color}};
+    }
+
+    .vertical-image-box{
+        height: 300px;
+    }
+    a{
+        text-decoration: none;
+    }
+
+    .img_vartical{
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .hr-carousel-item-box a{
+        text-decoration:none
+    }
+</style>
+{% endaddtoblock %}
+    
+    {% if items %}
+    {% for item in items %}
+        <div>
+            <div class="carousel-item-box carousel-item-box-style-5 promotion-box">
+                    <a href='{{ item.product_page_url }}'>
+                <div class="carousel-item-box-img vertical-image-box">
+                    <img src="{{ item.images }}" class="img_vartical" alt="img_vartical">
+                </div>
+                <div class="promo-desc-box-{{instance.id}}">
+                    <div class="desc">{{item.name |truncatechars:125}}</div>
+                </div>
+            </a>
+            </div>
+        </div>
+    {% endfor %}
+    {% endif %}
+{% endblock carousel_items %}
+
+{% block initilize_carousel %}
+    $( document ).ready(function() {
+        $('.more_view').on('click', function () {
+            var more_text = $(this).data("text");
+            $('.more-body-text').html(more_text);
+            $('#moreModal').modal('show');
+            return false;
+        });
+
+        $(".modal-close").on('click', function () {
+            $('#moreModal').modal('toggle');
+            return false;
+        });
+
+        $('.carousel-layout-slider-{{instance.id}}').slick({
+            dots: false,
+            arrows: true,
+            infinite: true,
+            speed: 300,
+            slidesToShow: 3,
+            slidesToScroll: 3,
+            //appendDots: ".carousel-layout-slider-{{instance.id}}-dots",
+            //appendArrows: ".carousel-layout-slider-{{instance.id}}-arrows",
+            //prevArrow: "<button type='button' class='slick-prev'><img src='{% static 'images/ic-left.svg' %}' alt='arrow-left'></button>",
+            //nextArrow: "<button type='button' class='slick-next'><img src='{% static 'images/ic-right.svg' %}' alt='arrow-right'></button>",
+            responsive: [                
+                {
+                    breakpoint: 991,
+                    settings: {
+                        slidesToShow: 2,
+                        slidesToScroll: 2
+                    }
+                },
+                {
+                    breakpoint: 768,
+                    settings: {
+                        slidesToShow: 1,
+                        slidesToScroll: 1
+                    }
+                }
+                // You can unslick at a given breakpoint now by adding:
+                // settings: "unslick"
+                // instead of a settings object
+            ]
+        });
+        $('.carousel-layout-slider-{{instance.id}}').removeClass("d-none");
+    });
+{% endblock %}

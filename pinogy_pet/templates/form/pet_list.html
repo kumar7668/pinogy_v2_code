@@ -1,0 +1,1005 @@
+{% extends 'admin/base_change_form.html' %}
+{% load cms_tags menu_tags sekizai_tags static admin_modify %}
+{% load global_theme_config_tags %}
+{% block content %}
+{% global_theme_object as global_theme_config %}
+<form {% if has_file_field %}enctype="multipart/form-data" {% endif %}{% if form_url %}action="{{ form_url }}" {% endif %}method="post" id="{{ opts.model_name }}_form" onsubmit="save_changes()">
+{% csrf_token %}
+{% addtoblock 'css' %}
+<link rel="stylesheet" href='{{global_theme_config.get_themecss_file}}'>
+<link rel="stylesheet" type="text/css" href="{% static 'css/custom-info.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/custom-plugin.css' %}">
+<style>
+   .box-theme {
+   padding: 20px 35px;
+   }
+   .title{
+   font-size: 40px;
+   font-style: normal;
+   font-weight: 700;
+   line-height: 125%; /* 50px */
+   text-transform: capitalize;
+   color : #003F5A;
+   }
+   .btntitle{
+   color: var(--primary, #003F5A);
+   /* Primary1-Bold */
+   font-family: Open Sans;
+   font-size: 20px;
+   font-style: normal;
+   font-weight: 700;
+   line-height: 140%; 
+   }
+   .btnradio .admin-form {
+      display: flex;
+      /* grid: inherit; */
+      gap: 10px;
+   }
+   
+   .nav-tabs .nav-item.show .nav-links, .nav-tabs .nav-link.active{
+      border:none !important;
+   }
+   .nav-tabs .nav-item.clsinfo a{
+      padding : 12px 16px 12px 0;
+      text-decoration : none;
+      font-weight : 400;
+   }
+   .nav-tabs .nav-item.clsinfo1 a{
+      padding : 0 12px 12px 16px;
+      text-decoration : none;
+      font-weight : 400;
+   }
+   .nav-tabs{
+      border-bottom:none !important;
+      margin-bottom : 40px;
+   }
+   .clsinfo{
+      border-right:1px solid rgba(0, 63, 90, 0.40);
+   }
+   .sb50{
+      margin-top: 20px
+   }
+   .section-divider{
+      margin: 40px 0 40px 0;
+   }
+   #petlistpluginmodel_form .w-50{
+      width : 510px !important;
+   }
+   .nav-tabs .nav-links{
+      color :#668C9C;
+   }
+   .nav-tabs .nav-links.active{
+      color :#003F5A;
+   }
+   .nav-tabs .nav-item a:hover{
+      color:#003F5A;
+   }
+   .nav-tabs{
+      border-bottom:none !important;
+   }
+   .clsinfo{
+      border-right:1px solid rgba(0, 63, 90, 0.40);
+   }
+   {% comment %} CSS FOR BUTTON SECTION  {% endcomment %}
+   #main-section-btn .box-theme-sub-title{
+      justify-content: space-between;
+   }
+   #main-section-btn #section-1 .box-theme-sub-title{
+      margin-top : 0px;
+   }
+   #main-section-btn .theme-button-tab {
+      margin-bottom : 8px;
+   }
+   #main-section-btn .box-theme-form-item  {
+      padding-bottom : 0;
+   }
+   #btnaction .del-anchor{
+      text-decoration : none;
+      color: #12BBD2!important;
+      font-size : 18px;
+      font-weight : 400;
+   }
+   #id_add_btn a{
+      color : #003f5a;
+      text-decoration : none;
+      line-height : 1;
+   }
+   {% comment %} #id_add_btn.box-theme-sub-title{
+      margin : 40px 0 0 0 ;
+  } {% endcomment %}
+  #button-section .box-theme-form-item{
+   padding-bottom: 0;
+  }
+
+  .background{
+   margin-top : 20px;
+   margin-bottom : 20px;
+  }
+
+   .info-type-label {
+      color: var(--Primary, #003F5A);
+      /* Primary2-Regular */
+      font-family: "Open Sans";
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 135%; /* 24.3px */
+   }
+
+   .pet-info-checkbox {
+      display: block;
+      position: relative;
+      padding-left: 31px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      font-size: 22px;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+   }
+
+   /* Hide the browser's default checkbox */
+   .pet-info-checkbox input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+   }
+
+   /* Create a custom checkbox */
+   .pet-info-checkbox .pet-btn-checkmark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 24px;
+      width: 24px;
+      background-color: white;
+      border: 1px solid #003F5A;
+      border-radius: 4px;
+   }
+
+   /* Create the checkmark/indicator (hidden when not checked) */
+   .pet-info-checkbox .pet-btn-checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+   }
+
+   /* Show the checkmark when checked */
+   .pet-info-checkbox input:checked ~ .pet-btn-checkmark:after {
+      display: block;
+   }
+
+   /* Style the checkmark/indicator */
+   .pet-info-checkbox .pet-btn-checkmark:after {
+      left: 8px;
+      top: 4px;
+      width: 6px;
+      height: 11px;
+      border: 1px solid #003F5A;
+      border-width: 0 1.5px 1.5px 0;
+      -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      transform: rotate(45deg);
+   }
+
+</style>
+{%endaddtoblock%}
+{{adminform.form.errors}}
+<input type="hidden" value="" id = "{{adminform.form.button_data.name}}" name = "{{adminform.form.button_data.name}}">
+<div class="mg-all-40">
+<div class="title">Pets List</div>
+<div class = "mt-40"></div>
+<div class="row">
+   <div class="col-12">
+      {{adminform.form.template_type}}
+   </div>
+</div>
+
+<h3 class = "section-header">Text</h3>
+<div class="row">
+   <div class="col-12">
+      {{adminform.form.title}}
+   </div>
+</div>
+<div class="row">
+   <div class="col-12 sb50" style = "display : none;">
+      {{adminform.form.title_color}}
+   </div>
+</div>
+<div class = "mt-40"></div>
+<div class="row">
+   <div class="col-12">
+      {{adminform.form.sub_title}}
+   </div>
+</div>
+{% comment %} <div class="row">
+   <div class="col-12 sb50" style = "display : none;">
+      {{adminform.form.sub_title_color}}
+   </div>
+</div> {% endcomment %}
+<div class="section-divider"></div >
+<div class="col-12">
+   {{adminform.form.pet_filter}}
+</div>
+<div class="col-12">
+
+   <div class="section-header" style="padding-bottom:10px"> Card Detail</div>
+   
+<div class="section-sub-header" style="padding-bottom:5px">To update the information, please log in to Pet Tracker and make the changes there.</div>
+
+<ul class="nav nav-tabs mb-4" id="ex1" role="tablist">
+   <li class="nav-item clsinfo" role="presentation">
+      <a
+         class="nav-links active btntitle"
+         id="ex1-tab-1"
+         data-bs-toggle="tab"
+         href="#ex1-tabs-1"
+         role="tab"
+         aria-controls="ex1-tabs-1"
+         aria-selected="true"
+         {% comment %} style = "color : #0D6EFD" {% endcomment %}
+         >Info</a>
+   </li>
+   <li class="nav-item clsinfo1" role="presentation">
+      <a
+         class="nav-links btntitle"
+         id="ex1-tab-2"
+         data-bs-toggle="tab"
+         href="#ex1-tabs-2"
+         role="tab"
+         aria-controls="ex1-tabs-2"
+         aria-selected="false"
+         {% comment %} style = "color : #0D6EFD" {% endcomment %}
+         >Buttons</a
+         >
+   </li>
+</ul>
+
+<div class="tab-content" id="ex1-content">
+   <div
+      class="tab-pane fade show active"
+      id="ex1-tabs-1"
+      role="tabpanel"
+      aria-labelledby="ex1-tab-1"
+      >
+
+       <!-- Pet Info -->
+      {% for key,name,visible in filtered_pet_info %}
+        <label class="pet-info-checkbox">
+            <input type="checkbox" checked disabled>
+            <span class="pet-btn-checkmark" 
+            style="{% if not visible %}opacity:0.6{% endif %}">
+            </span>
+            <div class="info-type-label" 
+             style="{% if not visible %}opacity:0.6{% endif %}">
+               {{ name }}
+            </div>
+         </label>
+      {% endfor %}
+   </div>
+   <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
+      {% comment %} <div class="row">
+         <div class="col-12">
+            <div class="btntitle">
+               “Ask About Me”
+            </div>
+            <div class="btndes">
+            </div>
+            <div class="btnradio">
+               {{adminform.form.ask_about_me}}
+            </div>
+            <div class="pb-2">
+               <ul class="theme-tab">
+                   <li class="active" data-target="btn_style_1">Style</li>
+               </ul>
+           </div>
+            <div class="btn">
+               <div class="box-theme-form-item theme-tab-content style-tab" id="btn_style_1">
+                  <ul class="theme-button-tab ">
+                     <input type="hidden" value="{{adminform.form.ask_about_me_button.value}}" name="{{adminform.form.ask_about_me_button.name}}" id="{{adminform.form.ask_about_me_button.name}}">
+                     <li class="setFirstBtnStyle {% if adminform.form.ask_about_me_button.value == 'fill' %}active{% endif %}" data-name = "fill">
+                        <button class="theme-primary-btn rectangle">Button</button>
+                     </li>
+                     <li class="setFirstBtnStyle {% if adminform.form.ask_about_me_button.value == 'outline' %}active{% endif %}" data-name = "outline">
+                        <button class="theme-secondary-btn rectangle">Button</button>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-12">
+               <div class="btntitle">“More Info”
+               </div>
+               <div class="btndes">
+               </div>
+               <div class="btnradio">
+                  {{adminform.form.more_info}}
+               </div>
+               <div class="pb-2">
+                  <ul class="theme-tab">
+                      <li class="active" data-target="btn_style_1">Style</li>
+                  </ul>
+              </div>
+               <div class="btn">
+                  <div class="box-theme-form-item theme-tab-content style-tab" id="btn_style_1">
+                     <ul class="theme-button-tab ">
+                        <input type="hidden" value="{{adminform.form.more_info_button.value}}" name="{{adminform.form.more_info_button.name}}" id="{{adminform.form.more_info_button.name}}">
+                        <li  class="setFirstBtnStyle {% if adminform.form.more_info_button.value == 'fill' %}active{% endif %}" data-name = "fill">
+                           <button class="theme-primary-btn rectangle">Button</button>
+                        </li>
+                        <li class="setFirstBtnStyle {% if adminform.form.more_info_button.value == 'outline' %}active{% endif %}" data-name = "outline">
+                           <button class="theme-secondary-btn rectangle">Button</button>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+            <div class="row">
+               <div class="col-12">
+                  <div class="btntitle">
+                     “Schedule a Play Date”
+                  </div>
+                  <div class="btndes">
+                  </div>
+                  <div class="btnradio">
+                     {{adminform.form.schedule_a_play_date}}
+                  </div>
+                  <div class="pb-2">
+                     <ul class="theme-tab">
+                         <li class="active" data-target="btn_style_1">Style</li>
+                     </ul>
+                 </div>
+                  <div class="btn">
+                     <div class="box-theme-form-item theme-tab-content style-tab" id="btn_style_1">
+                        <ul class="theme-button-tab ">
+                           <input type="hidden" value="{{adminform.form.schedule_a_play_button.value}}" name="{{adminform.form.schedule_a_play_button.name}}" id="{{adminform.form.schedule_a_play_button.name}}">
+                           <li class="setFirstBtnStyle {% if adminform.form.schedule_a_play_button.value == 'fill' %}active{% endif %}" data-name = "fill">
+                              <button class="theme-primary-btn rectangle">Button</button>
+                           </li>
+                           <li class="setFirstBtnStyle {% if adminform.form.schedule_a_play_button.value == 'outline' %}active{% endif %}" data-name = "outline">
+                              <button class="theme-secondary-btn rectangle">Button</button>
+                           </li>
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-12">
+                     <div class="btntitle">
+                        “Call Now”
+                     </div>
+                     <div class="btndes">
+                     </div>
+                     <div class="btnradio">
+                        {{adminform.form.call_now}}
+                     </div>
+                     <div class="pb-2">
+                        <ul class="theme-tab">
+                            <li class="active" data-target="btn_style_1">Style</li>
+                        </ul>
+                    </div>
+                     <div class="btn">
+                        <div class="box-theme-form-item theme-tab-content style-tab" id="btn_style_1">
+                           <ul class="theme-button-tab ">
+                              <input type="hidden" value="{{adminform.form.call_now_button.value}}" name="{{adminform.form.call_now_button.name}}" id="{{adminform.form.call_now_button.name}}">
+                              <li class="setFirstBtnStyle {% if adminform.form.call_now_button.value == 'fill' %}active{% endif %}" data-name = "fill">
+                                 <button class="theme-primary-btn rectangle">Button</button>
+                              </li>
+                              <li class="setFirstBtnStyle {% if adminform.form.call_now_button.value == 'outline' %}active{% endif %}" data-name = "outline">
+                                 <button class="theme-secondary-btn rectangle">Button</button>
+                              </li>
+                           </ul>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div> {% endcomment %}
+
+      {% comment %} BUTTON SECTION {% endcomment %}
+      <div id = 'btnaction'>
+         <div class="banner-edit-section button-layout" >
+            <div id="main-section-btn" class = "d-flex flex-column flex-gap-30 inp-placehoder ">
+               
+            </div>
+            <div class = "d-none">
+               <div class="banner-layout-wrap no-hover">
+                  <div class="banner-layout-wrap-inner">
+                        <img src="{% static 'images/widget_image/bannerplugin/banner-view2.png' %}" alt="">
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+
+     <div id = "id_add_btn" class = "box-theme-sub-title">
+     <a  href="javascript:void(0);" onclick="AddButtons(mydata = false)" > + Add Button</a>
+     </div>
+   </div>
+     
+   </div>
+</div>
+<div class="section-divider"></div >
+<div class="col-12">
+   {{adminform.form.pet_location_filter}}
+</div>
+{% comment %} <div id = "sorting">
+   <h3 class="section-header">
+      Sorting
+  </h3>
+  <h4 class="section-sub-header">
+      Select in what order pets will be displayed.
+   </h4>
+   <div class="admin-form ">
+        
+      <div class="form-check radio-outer d-flex align-items-center gap-2 p-0">
+          <input class="form-check-input custom-radio m-0" type="radio" name="sorting_type" id="id_template_type_0" value="plugins/flow.html" checked="">
+          <label class="form-check-label custom-radio-label m-0" for="id_template_type_0">
+            Alphabetical Order
+          </label>
+      </div>
+  
+      <div class="form-check radio-outer d-flex align-items-center gap-2 p-0">
+          <input class="form-check-input custom-radio m-0" type="radio" name="sorting_type" id="id_template_type_1" value="plugins/pet_list.html">
+          <label class="form-check-label custom-radio-label m-0" for="id_template_type_1">
+            Age
+          </label>
+      </div>
+
+      <div class="form-check radio-outer d-flex align-items-center gap-2 p-0">
+          <input class="form-check-input custom-radio m-0" type="radio" name="sorting_type" id="id_template_type_1" value="plugins/pet_list.html">
+          <label class="form-check-label custom-radio-label m-0" for="id_template_type_1">
+            Dynamic
+          </label>
+      </div>
+  
+</div> {% endcomment %}
+</div>
+{% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+</form>
+{% addtoblock 'js' %}
+<script>
+
+$(".setFirstBtnStyle").on("click",function(){
+   $(this).siblings("input").val($(this).data('name'))
+   $(this).siblings("li").removeClass('active')
+   $(this).addClass('active')
+
+});
+$('.title-color-display').css({"background":'{{adminform.form.title_color.value}}' });
+//$('.title-color-display:last').css({"background":'{{adminform.form.sub_title_color.value}}' });
+// CHANGE THE COLOR AND SHOW THE SELECTED COLOR ON CUSTOM AND TO PREVIEW
+$(".theme-color-tab li").on("click", function () {
+   let x = $(this).attr("data-value");
+   if ($(this).parent().attr('data-id') == 'id_title_color'){
+      $('.title-color-display:first').css({"background":x});
+   }
+   else if (($(this).parent().attr('data-id') == 'id_sub_title_color')){
+      $('.title-color-display:last').css({"background":x});
+   }
+   
+});
+   $('#id_title_color').nextAll().find('.color-selector').on('blur',function(){
+      $('.title-color-display:first').css({"background":$(this).val()});
+   });
+   $('#id_sub_title_color').nextAll().find('.color-selector').on('blur',function(){
+      $('.title-color-display:last').css({"background":$(this).val()});
+   });
+
+  // functionality to hide and show the font color tab
+   $('.title-color-display:first').on('click',function(){
+      $('.sb50').eq(0).toggle();
+   })
+   $('.title-color-display:last').on('click',function(){
+      $('.sb50').eq(1).toggle();
+   })
+// ADD THE FIRST BUTTON IN BUTTON SECTION
+
+function addFirstBtn(){
+   $("#main-section-btn").append(
+      `<div id = "section-1">
+         <div class="box-theme-sub-title d-flex" id="headline_color">
+             <div>First Button</div>
+             <a id = "delAnchor-1" class = "del-anchor" href = "javascript:void(0);" onclick = "DeleteButton(this)"> <svg width="24" height="24" viewBox="2 2 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 6H14C14 5.46957 13.7893 4.96086 13.4142 4.58579C13.0391 4.21071 12.5304 4 12 4C11.4696 4 10.9609 4.21071 10.5858 4.58579C10.2107 4.96086 10 5.46957 10 6ZM8 6C8 4.93913 8.42143 3.92172 9.17157 3.17157C9.92172 2.42143 10.9391 2 12 2C13.0609 2 14.0783 2.42143 14.8284 3.17157C15.5786 3.92172 16 4.93913 16 6H21C21.2652 6 21.5196 6.10536 21.7071 6.29289C21.8946 6.48043 22 6.73478 22 7C22 7.26522 21.8946 7.51957 21.7071 7.70711C21.5196 7.89464 21.2652 8 21 8H20.118L19.232 18.34C19.1468 19.3385 18.69 20.2686 17.9519 20.9463C17.2137 21.6241 16.2481 22.0001 15.246 22H8.754C7.75191 22.0001 6.78628 21.6241 6.04815 20.9463C5.31002 20.2686 4.85318 19.3385 4.768 18.34L3.882 8H3C2.73478 8 2.48043 7.89464 2.29289 7.70711C2.10536 7.51957 2 7.26522 2 7C2 6.73478 2.10536 6.48043 2.29289 6.29289C2.48043 6.10536 2.73478 6 3 6H8ZM15 12C15 11.7348 14.8946 11.4804 14.7071 11.2929C14.5196 11.1054 14.2652 11 14 11C13.7348 11 13.4804 11.1054 13.2929 11.2929C13.1054 11.4804 13 11.7348 13 12V16C13 16.2652 13.1054 16.5196 13.2929 16.7071C13.4804 16.8946 13.7348 17 14 17C14.2652 17 14.5196 16.8946 14.7071 16.7071C14.8946 16.5196 15 16.2652 15 16V12ZM10 11C10.2652 11 10.5196 11.1054 10.7071 11.2929C10.8946 11.4804 11 11.7348 11 12V16C11 16.2652 10.8946 16.5196 10.7071 16.7071C10.5196 16.8946 10.2652 17 10 17C9.73478 17 9.48043 16.8946 9.29289 16.7071C9.10536 16.5196 9 16.2652 9 16V12C9 11.7348 9.10536 11.4804 9.29289 11.2929C9.48043 11.1054 9.73478 11 10 11ZM6.76 18.17C6.8026 18.6694 7.03117 19.1346 7.40044 19.4735C7.76972 19.8124 8.25278 20.0003 8.754 20H15.246C15.7469 19.9998 16.2294 19.8117 16.5983 19.4728C16.9671 19.134 17.1954 18.6691 17.238 18.17L18.11 8H5.89L6.762 18.17H6.76Z" fill="#12BBD2"/>
+                </svg>Delete</a>
+
+         </div>
+         <div class="box-theme-form-item background">
+             <div class="box-theme-form-item-inline Btn_textbox plugin-section-flex">
+                  <div class="btn-selector">
+                     <select name="button_selector_1" id="id_button_selector-1" onchange = 'changePetType(this)'>
+                     
+                        <option value="ask_about_me" >Ask About Me</option>
+                        <option value="more_info" >More Info</option>
+                        <option value="schedule_a_playdate">Schedule a Play Date</option>
+                        <option value="call_now">Call Now</option>
+                        <option value="link">Link</option>
+
+                     </select>
+                  </div>
+                <div class="btn_text_main">
+                         <input name="button_text-1" id="button_text-1" type="text" value="" placeholder="Button name" class="form-input btn-text" >
+                         <div class="l_button_text-1 word_count">0/25</div>  
+               </div>
+             </div>
+             {% if adminform.form.first_button_text.errors %}
+                 {% for error in adminform.form.first_button_text.errors  %}
+                     <div class="alert alert-danger error-block" role="alert">
+                         {{error}}
+                     </div>
+                 {% endfor %}
+             {% endif %}
+             {% if adminform.form.first_button_link.errors %}
+                 {% for error in adminform.form.first_button_link.errors  %}
+                     <div class="alert alert-danger error-block" role="alert">
+                         {{error}}
+                     </div>
+                 {% endfor %}
+             {% endif %}
+             {% if adminform.form.button_internallink_1.errors %}
+                 {% for error in adminform.form.button_internallink_1.errors  %}
+                     <div class="alert alert-danger error-block" role="alert">
+                         {{error}}
+                     </div>
+                 {% endfor %}
+             {% endif %}
+             {% if adminform.form.first_button_target.errors %}
+             {% for error in adminform.form.first_button_target.errors  %}
+                 <div class="alert alert-danger error-block" role="alert">
+                     {{error}}
+                 </div>
+             {% endfor %}
+             {% endif %}
+         </div>
+         <div class="box-theme-tab-wrap" id="first-btn-section">
+             <div class="box-theme-tab">
+                 <ul class="theme-tab">
+                     <li class="active btn_style_1" data-target="btn_style_1">Style</li>
+                 </ul>
+             </div>
+             <div>
+             <div class="box-theme-form-item theme-tab-content style-tab" id="btn_style_1">
+                 <div class="box-theme-tab-wrap admin-form admin-form ">
+                     <ul class="theme-button-tab ">
+                         <input type="hidden" name="button_style-1" id="button_style-1" value="{{adminform.form.first_button_style.value|default:'fill'}}"> 
+                         <li class="button_style-1 {% if adminform.form.button_data.value|length > 0 %} {%else%}active {%endif%}" onclick="setPrimaryBtnStyle('fill',this)"><button class="btn-theme theme-primary-btn">Button </button></li>
+                         <li class="button_style-1" onclick="setPrimaryBtnStyle('outline',this)"><button class="btn-theme theme-secondary-btn">Button </button></li>
+                     </ul>
+                 </div>
+             </div>
+
+             </div>
+         </div>
+         {% if adminform.form.first_button_style.errors %}
+             {% for error in adminform.form.first_button_style.errors  %}
+                 <div class="alert alert-danger error-block" role="alert">
+                     {{error}}
+                 </div>
+             {% endfor %}
+         {% endif %}
+         {% if adminform.form.first_button_outline_color.errors %}
+             {% for error in adminform.form.first_button_outline_color.errors  %}
+                 <div class="alert alert-danger error-block" role="alert">
+                     {{error}}
+                 </div>
+             {% endfor %}
+         {% endif %}
+         {% if adminform.form.first_button_fill_color.errors %}
+             {% for error in adminform.form.first_button_fill_color.errors  %}
+                 <div class="alert alert-danger error-block" role="alert">
+                     {{error}}
+                 </div>
+             {% endfor %}
+         {% endif %}
+         {% if adminform.form.first_button_font_color.errors %}
+             {% for error in adminform.form.first_button_font_color.errors  %}
+                 <div class="alert alert-danger error-block" role="alert">
+                     {{error}}
+                 </div>
+             {% endfor %}
+         {% endif %}
+     </div>
+      `
+   )
+   // this code to make the drop down icon of the internal link as per the figma
+   $('#id_button_internallink_1').addClass('form-select')
+}
+
+//    BUTTON SECTION 
+const btn_list = {1:'First Button',2:'Second Button',3:"Third Button",4:"Fourth Button",5:"Fifth Button",6:"Sixth Button"};
+function AddButtons(mydata){
+
+   let no_of_btns = $("#main-section-btn").children().length;
+   // check if no of buttons not less than 1
+   if(no_of_btns == 0){
+      $('#id_add_btn.box-theme-sub-title').css('margin-top', '40px') // if length of button greater than 0 then add button magin-top should be 40px
+      addFirstBtn();
+      return false
+   }
+   let x = $("#main-section-btn").children().last().clone()
+
+   // ADD THE DELETE BUTTON 
+   x.find(`#delAnchor-`+no_of_btns).attr('id','delAnchor-'+(no_of_btns + 1))
+
+   // change the id of the section
+   x.attr('id','section-'+(no_of_btns+1))
+
+   // change the title and delete btn class
+   x.find('.box-theme-sub-title.d-flex').children().eq(0).text(btn_list[no_of_btns+1])
+   //x.find('.box-theme-sub-title.d-flex').children().eq(1).removeClass().addClass('section-'+(no_of_btns+1))
+   
+   // change the text of the button (also change the name and id)
+   x.find('#button_text-'+no_of_btns).attr('name','button_text-'+(no_of_btns+1))
+   x.find('#button_text-'+no_of_btns).attr('id','button_text-'+(no_of_btns+1))
+   x.find('.l_button_text-'+no_of_btns).removeClass('l_button_text-'+no_of_btns).addClass('l_button_text-'+(no_of_btns+1))
+
+   //change the id of button type
+   x.find('#id_button_selector-'+no_of_btns).attr({'id':'id_button_selector-'+(no_of_btns+1), 'name' : 'button_selector_'+(no_of_btns+1)})
+   // change the class of the tab for style and color
+   x.find(".btn_style_"+no_of_btns).attr({'class':'btn_style_'+(no_of_btns+1),'data-target':'btn_style_'+(no_of_btns+1)})
+   x.find(".btn_color_"+no_of_btns).attr({'class':'btn_color_'+(no_of_btns+1),'data-target':'btn_color_'+(no_of_btns+1)})
+   x.find("#btn_style_"+no_of_btns).attr('id','btn_style_'+(no_of_btns+1))
+   x.find("#btn_color_"+no_of_btns).attr('id','btn_color_'+(no_of_btns+1))
+   //x.find(".btn_style_"+no_of_btns).attr('class','btn_style_'+(no_of_btns+1))
+   //x.find(".btn_color_"+no_of_btns).attr('class','btn_color_'+(no_of_btns+1))
+
+   // below code to change the id of the hidden field of the style of the button
+   x.find("#button_style-"+no_of_btns).attr({'id':'button_style-'+(no_of_btns+1),'name':'button_style-'+(no_of_btns+1)})
+   x.find(".button_style-"+no_of_btns).attr('class','button_style-'+(no_of_btns+1))
+
+   // hide and show the custom color set options
+   x.find('#primary-btn-set1-'+no_of_btns).attr("id","primary-btn-set1-"+(no_of_btns+1))
+   x.find('#primary-btn-set2-'+no_of_btns).attr("id","primary-btn-set2-"+(no_of_btns+1))
+
+   //change the id and name of the input field for color patterns
+   x.find("#button_color_pattern-"+no_of_btns).attr({'id':'button_color_pattern-'+(no_of_btns+1),'name':'button_color_pattern-'+(no_of_btns+1)})
+   x.find(".button_color_pattern-"+no_of_btns).attr('class','button_color_pattern-'+(no_of_btns+1))
+
+   x.find('.double20').remove()
+   x.find('.btn_text_main.linkUrl').remove()
+   // add each button at the end of the last button 
+   $("#main-section-btn").append(x);
+   
+   // empty the value of each field of the button
+   $('#button_text-'+(no_of_btns+1)).val('')
+   $('.l_button_text-'+(no_of_btns+1)).text("0/25")
+
+   // make style tab active and color tab inactive
+
+   x.find('.btn_style_'+(no_of_btns+1)).addClass('active')
+   x.find('.btn_color_'+(no_of_btns+1)).removeClass('active')
+   x.find('#btn_style_'+(no_of_btns+1)).show()
+   x.find('#btn_color_'+(no_of_btns+1)).hide()
+   if (mydata == false){
+      x.find('.button_style-'+(no_of_btns+1)).first().addClass("active")
+      x.find('.button_style-'+(no_of_btns+1)).first().children().removeClass()
+      x.find('.button_style-'+(no_of_btns+1)).first().children().addClass("btn-theme theme-primary-btn")
+      x.find('.button_style-'+(no_of_btns+1)).last().removeClass("active")
+      x.find('.button_style-'+(no_of_btns+1)).last().children().removeClass()
+      x.find('.button_style-'+(no_of_btns+1)).last().children().addClass("btn-theme theme-secondary-btn")
+      x.find('#primary-btn-set1-'+(no_of_btns+1)).removeClass("d-none")
+      x.find('#primary-btn-set2-'+(no_of_btns+1)).addClass("d-none")
+      x.find('#button_style-'+(no_of_btns+1)).val('fill')
+
+      let colors = x.find('#button_color_pattern-'+(no_of_btns+1)).siblings('ul').children()
+      colors.removeClass('active')
+      colors.first().addClass('active')
+      x.find('#button_color_pattern-'+(no_of_btns+1)).val('F2')
+   }
+
+   
+
+   if (no_of_btns == 4) {
+       $('#id_add_btn').hide()
+       return false
+   }
+   
+}
+// this click function is on style two buttons to active and inactive the buttons
+$(document).on("click",".theme-button-tab li", function () {
+   $(this).siblings().removeClass("active");
+   $(this).addClass("active");
+});
+
+
+function setPrimaryBtnStyle(shape,name){
+   let ids = name.getAttribute('class')
+
+   $("#"+ids).val(shape);
+   let no = ids.split('-')[1]
+   if(shape == 'fill'){
+       // below code to toggle the color patterns 
+       $("#primary-btn-set1-"+no).removeClass("d-none")
+       $("#primary-btn-set2-"+no).addClass("d-none")
+
+       // below code to hide and show custom button according to the style
+       //$(".row.first-btn-custom-color").children().eq(0).hide()
+       //$(".row.first-btn-custom-color").children().eq(1).show()
+       //$(".row.first-btn-custom-color").children().eq(2).show()
+
+       //$(".row.first-btn-custom-color").find('#first_button_outline_color').val('')
+
+   } else if(shape == 'outline'){
+       // below code to toggle the color patterns 
+       $("#primary-btn-set1-"+no).addClass("d-none")
+       $("#primary-btn-set2-"+no).removeClass("d-none")
+
+       //$(".row.first-btn-custom-color").find('#first_button_fill_color').val('')
+       //$(".row.first-btn-custom-color").find('#first_button_font_color').val('')
+       //$(".row.first-btn-custom-color").children().eq(0).show()
+       //$(".row.first-btn-custom-color").children().eq(1).hide()
+       //$(".row.first-btn-custom-color").children().eq(2).hide()
+
+   }
+   
+}
+
+ // delete Buttons for now
+ function DeleteButton(data){
+   let ids = data.id.split('-')[1]
+
+   // THIS WILL DELETE THE SECTION
+      
+   let remain_btn = $("#main-section-btn").children()
+
+   // check the lenght of the buttons to remove the add button margin
+   if (remain_btn.length == 1 ){
+      $('#id_add_btn.box-theme-sub-title').css('margin-top', '0px') // if length of button greater than 0 then add button magin-top should be 40px
+   }
+   for (let no_of_btns = (parseInt(ids)); no_of_btns <= remain_btn.length; no_of_btns++){
+      
+         // ADD THE DELETE BUTTON 
+         let btn_val = no_of_btns+1
+         $(remain_btn[no_of_btns]).find(`#delAnchor-`+btn_val).attr('id','delAnchor-'+(no_of_btns))
+
+         // change the id of the section
+         $(remain_btn[no_of_btns]).attr('id','section-'+(no_of_btns))
+
+         // change the title and delete btn class
+         $(remain_btn[no_of_btns]).find('.box-theme-sub-title.d-flex').children().eq(0).text(btn_list[no_of_btns])
+         //x.find('.box-theme-sub-title.d-flex').children().eq(1).removeClass().addClass('section-'+(no_of_btns+1))
+         
+         // change the text of the button (also change the name and id)
+         $(remain_btn[no_of_btns]).find('#button_text-'+btn_val).attr('name','button_text-'+(no_of_btns))
+         $(remain_btn[no_of_btns]).find('#button_text-'+btn_val).attr('id','button_text-'+(no_of_btns))
+
+         // change the pet type selector (change the name and id)
+         $(remain_btn[no_of_btns]).find('#id_button_selector-'+btn_val).attr('name','button_selector_'+(no_of_btns))
+         $(remain_btn[no_of_btns]).find('#id_button_selector-'+btn_val).attr('id','id_button_selector-'+(no_of_btns))
+
+
+         $(remain_btn[no_of_btns]).find('.l_button_text-'+btn_val).removeClass('l_button_text-'+no_of_btns).addClass('l_button_text-'+(no_of_btns))
+
+         // change the class of the tab for style and color
+         
+         let btn_style = $(remain_btn[no_of_btns]).find(".btn_style_"+btn_val)
+         btn_style.attr({'data-target':'btn_style_'+(no_of_btns)})
+         btn_style.addClass('btn_style_'+(no_of_btns)).removeClass("btn_style_"+btn_val)
+         let btn_color = $(remain_btn[no_of_btns]).find(".btn_color_"+btn_val)
+         btn_color.attr({'data-target':'btn_color_'+(no_of_btns)})
+         btn_color.addClass('btn_color_'+(no_of_btns)).removeClass("btn_color_"+btn_val)
+
+         $(remain_btn[no_of_btns]).find("#btn_style_"+btn_val).attr('id','btn_style_'+(no_of_btns))
+         $(remain_btn[no_of_btns]).find("#btn_color_"+btn_val).attr('id','btn_color_'+(no_of_btns))
+
+         // below code to change the id of the hidden field of the style of the button
+         $(remain_btn[no_of_btns]).find("#button_style-"+btn_val).attr({'id':'button_style-'+(no_of_btns),'name':'button_style-'+(no_of_btns)})
+         let button_style = $(remain_btn[no_of_btns]).find(".button_style-"+btn_val)
+         button_style.addClass('button_style-'+(no_of_btns)).removeClass('button_style-'+(btn_val))
+
+         // hide and show the custom color set options
+         $(remain_btn[no_of_btns]).find('#primary-btn-set1-'+btn_val).attr("id","primary-btn-set1-"+(no_of_btns))
+         $(remain_btn[no_of_btns]).find('#primary-btn-set2-'+btn_val).attr("id","primary-btn-set2-"+(no_of_btns))
+         $(remain_btn[no_of_btns]).find('#link_url-'+btn_val).attr({"id":"link_url-"+(no_of_btns), 'name' : "link_url_"+(no_of_btns)})
+         $(remain_btn[no_of_btns]).find(`input[name="call_now_text_type_${btn_val}"]`).attr({"id":"call_now_text_type-"+(no_of_btns), 'name' : "call_now_text_type_"+(no_of_btns)})
+
+         //change the id and name of the input field for color patterns
+         $(remain_btn[no_of_btns]).find("#button_color_pattern-"+btn_val).attr({'id':'button_color_pattern-'+(no_of_btns),'name':'button_color_pattern-'+(no_of_btns)})
+         let button_color_pattern = $(remain_btn[no_of_btns]).find(".button_color_pattern-"+btn_val)
+         button_color_pattern.addClass('button_color_pattern-'+(no_of_btns)).removeClass('button_color_pattern-'+(btn_val))
+         
+
+   }
+   $('#section-'+ids).remove()
+   $('#id_add_btn').show()
+
+   display_buttons()
+}
+
+   var display_buttons;
+   $(document).ready(function(){
+      display_buttons = function() {
+         
+         $('#btnpreviewdesk').empty();
+         $('#btnpreview').empty();
+         
+      // dynamic button preview
+         $("#main-section-btn").children().each(function(index, element) {
+            let btn_text = $('#button_text-'+(index+1)).val()
+            let btn_color_parrern = $('[name = "button_color_pattern-'+(index+1)+'"]').val()
+            let button_internallink = $('[name = "button_internallink_'+(index+1)+'"]').val()
+            let button_link = $('[name = "button_link-'+(index+1)+'"]').val()
+            let button_phone_link = $('[name = "button_phone_link-'+(index+1)+'"]').val()
+            let link_choice_field = $('[name = "link_choice_field-'+(index+1)+'"]:checked').val()
+            if(btn_text != ''){
+               if ((link_choice_field == 'Internal link' && button_internallink == '') || (link_choice_field == 'External link' && button_link == '') || (link_choice_field == 'Phone link' && button_phone_link == '')){
+                  //do nothing
+               }
+               else{
+                  $('#btnpreviewdesk').append(`<a class = '${btn_color_parrern}' >${btn_text}</a>`)
+                  $('#btnpreview').append(`<a class = '${btn_color_parrern}' >${btn_text}</a>`)
+               }
+               
+            }
+            $('[name = "button_internallink_'+(index+1)+'"').on('change',function(){
+               display_buttons();
+            })
+            $('[name = "button_link-'+(index+1)+'"').on('blur',function(){
+               display_buttons();
+            })
+            $('[name = "button_phone_link-'+(index+1)+'"').on('blur',function(){
+               display_buttons();
+            })
+            $('[name = "link_choice_field-'+(index+1)+'"').on('change',function(){
+               display_buttons();
+            })
+         });
+      }
+      //display_buttons();
+   });
+
+   
+   // TODO: THIS CODE WILL POPULATE THE BUTTON NAME SAME AS BUTTON TYPE AND FREE FIELD TO CHANGE THE VALUE
+   function changePetType(data){
+
+      let id = $(data).attr('id').split('-')[1]
+      let selected_pet_type = $(data).val()
+      if(selected_pet_type == 'call_now'){
+         $(data).parents('.btn-selector').siblings(".btn_text_main.linkUrl").remove()
+         $(data).parents('.btn-selector').after(`
+         <div class="double20">   
+                      <div class="admin-form  horizontal-checkbox ">
+ 
+                          <div class="form-check radio-outer d-flex align-items-center p-0 gap-1">
+                              <input class="form-check-input custom-radio m-0" type="radio" name="call_now_text_type_${id}"  id="call_now_text_type-${id}" value="call_text" checked="">
+                              <label class="form-check-label custom-radio-label ml-2" for="call_now_text_type-${id}">
+                                  Text
+                              </label>
+                              <div class="box-theme-form-label">
+                               <span style="position:relative; margin-right: 20px;">
+                                  <img src="/static/images/ic-info.svg" class="abs_meg_icon" loading = "lazy">
+                                  <div class="form-tooltip">
+                                   Selecting this option will display 'Call Now' text.
+                                  </div>
+                               </span>
+                            </div>
+                          </div>
+                      
+                          <div class="form-check radio-outer d-flex align-items-center p-0 gap-1">
+                              <input class="form-check-input custom-radio m-0" type="radio" name="call_now_text_type_${id}" id="call_now_text_type-${id}" value="call_phone_no">
+                              <label class="form-check-label custom-radio-label ml-2" for="call_now_text_type-${id}">
+                                  Phone number 
+                              </label>
+                              <div class="box-theme-form-label">
+                               <span style="position:relative; margin-right: 20px;">
+                                  <img src="/static/images/ic-info.svg" class="abs_meg_icon" loading = "lazy">
+                                  <div class="form-tooltip">
+                                    Selecting this option will display stores 'Phone number' (XXX-XXX-XXXX).
+                                  </div>
+                               </span>
+                            </div>
+                          </div>             
+                      </div>
+                      </div>
+         `)
+      }
+      else if (selected_pet_type == 'link'){
+         $(data).parents('.btn-selector').siblings(".double20").remove()
+         $(data).parents('.btn-selector').next('.btn_text_main').after(
+            `<div class="btn_text_main linkUrl">
+                         <input name="link_url_${id}" id="link_url-${id}" type="text" value="" placeholder="Link url" class="form-input">
+               </div>`
+         );
+      }
+      $(`#button_text-${id}`).val($(data).find(`option:selected`).text())
+      updateTextLimit($(`#button_text-${id}`))
+   }
+
+    // functionality to linit the charecter in button text
+    function updateTextLimit(element){
+      if ($(element).val().length > 25) {
+         $(element).val($(element).val().substring(0, 25));
+      } else {
+            $(element).siblings().text($(element).val().length + '/25');
+      }
+    }
+  $('#main-section-btn').on('keyup','.btn-text',function(){
+   updateTextLimit(this)
+  })
+  $(document).ready(function(){
+   $('#main-section-btn .btn-text').each(function(index,element){
+    $(element).siblings().text($(element).val().length+"/25")
+   })
+  })
+
+{% comment %} TODO FUNCTION TO FETCH THE BUTTONS DATA AND SAVE IT IN HIDDEN FIELD {% endcomment %}
+
+function save_changes(){
+   let no_of_btns = $("#main-section-btn").children().length;
+   let custom_btn_data = {};
+   $("#main-section-btn").children().each(function(index, element) {
+      if($('#button_text-'+(index+1)).val() != ''){
+       custom_btn_data['btn'+(index+1)] = {}
+       custom_btn_data['btn'+(index+1)]['button_text'] = $('#button_text-'+(index+1)).val()
+         if ($('[name = "button_selector_'+(index+1)+'"]').val() == 'call_now'){
+            let remove = $('[name = "call_now_text_type_'+(index+1)+'"]:checked').val()
+            custom_btn_data['btn'+(index+1)]['call_text_type'] = $('[name = "call_now_text_type_'+(index+1)+'"]:checked').val()
+         } 
+         else if ($('[name = "button_selector_'+(index+1)+'"]').val() == 'link'){
+            custom_btn_data['btn'+(index+1)]['link_url'] = $('[name = "link_url_'+(index+1)+'"]').val()
+         }
+       custom_btn_data['btn'+(index+1)]['button_selector'] = $('[name = "button_selector_'+(index+1)+'"]').val()
+       custom_btn_data['btn'+(index+1)]['button_style'] = $('[name = "button_style-'+(index+1)+'"').val()
+      }
+   });
+   let string_data = JSON.stringify(custom_btn_data)
+   $('#{{adminform.form.button_data.name}}').val(string_data)
+}
+
+
+//  // onready load all the buttons that is saved
+ $(document).ready(function(){
+   let btn_data = {{adminform.form.button_data.value|safe}}
+   let n = Object.keys(btn_data)
+
+   let callNowIds = {}
+   for(let i = 1;i<=n.length;i++){
+         
+           AddButtons(mydata = true)
+           $('#button_text-'+i).val(btn_data['btn'+i]['button_text'])
+           $('#id_button_selector-'+i).val(btn_data['btn'+i]['button_selector'])
+           $('[name = "button_style-'+i+'"]').val(btn_data['btn'+i]['button_style'])
+           if(btn_data['btn'+i]['button_selector'] == 'call_now'){
+
+            callNowIds['#id_button_selector-'+i] = btn_data['btn'+i]['call_text_type']
+           }
+           else if(btn_data['btn'+i]['button_selector'] == 'link'){
+
+            callNowIds['#id_button_selector-'+i] = btn_data['btn'+i]['link_url']
+           }
+           
+           if (btn_data['btn'+i]['button_style'] == 'fill'){
+               $('[name = "button_style-'+i+'"]').siblings('li.button_style-'+i+':first').addClass('active')
+           }
+           else if (btn_data['btn'+i]['button_style'] == 'outline'){
+               $('[name = "button_style-'+i+'"]').siblings('li.button_style-'+i+':last').addClass('active')
+           }
+           updateTextLimit($('#button_text-'+i))
+   }
+   
+   Object.keys(callNowIds).forEach(function(key){
+
+         $(key).trigger('change', [$(key)])
+         let ids = key.split('-')[1]
+         $(`input[name = 'call_now_text_type_${ids}'][value = '${callNowIds[key]}']`).prop('checked', true)
+         $(`input[name = 'link_url_${ids}']`).val(btn_data['btn'+ids]['link_url'])
+
+         $(`input[name = 'button_text-${ids}']`).val(btn_data['btn'+ids]['button_text'])
+         updateTextLimit($('#button_text-'+ids))
+   })
+   // default button style and pattern
+
+   if(n.length == 0){
+      $('#id_add_btn.box-theme-sub-title').css('margin-top', '0') // code to remove the margin of add button 
+      $('.button_style-1').eq(0).addClass('active')
+   }
+});
+</script>
+{% endaddtoblock %}
+{% endblock content %}

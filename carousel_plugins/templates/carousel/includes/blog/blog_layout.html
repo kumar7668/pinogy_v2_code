@@ -1,0 +1,53 @@
+{% extends 'carousel/carousel_plugin.html' %}
+{% load static %}
+{% block carousel_items %}
+{% for item in items %}
+    <div>
+        <div class="carousel-item-box carousel-item-box-style-4">
+               <div class="carousel-item-box-img">
+                {% if item.main_image %}
+                    <img 
+                        src={{item.main_image.url}}
+                        class="car_place_img image-shape" 
+                        alt="car_place_img"
+                    >
+                {% else %}
+                    <img 
+                        src="{% static '/images/default-placeholder-image.webp' %}" 
+                        class="car_place_img image-shape" 
+                        alt="car_place_img"
+                    />
+                {%endif%}
+                </div>
+            <div class="carousel-item-box-desc">
+             <div>
+              <span class="blogtitle">{{item.title |truncatechars:50}}</span>
+             </div>
+             <div>
+                <span class="blogdesc"> {{item.abstract |truncatechars:50}}  </span>
+             </div>
+             
+            </div>
+        </div>
+  
+    </div>
+{% endfor %}
+{% endblock carousel_items %}
+<style>
+    .carousel-item-box-desc{
+        margin:0px !important;
+        padding:10px !important;
+        margin-top:8px !important;
+    }
+    .blogtitle{
+        font-size:18px;
+        {% comment %} font-famaly:var {% endcomment %}
+    }
+    .car_place_img{
+        min-height:150px;
+    }
+    .blogdesc{
+        word-wrap: break-word;
+        font-size: 15px;
+    }
+</style>

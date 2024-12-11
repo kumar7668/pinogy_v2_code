@@ -1,0 +1,247 @@
+{% extends "custom_design/forms/widgets/base-widget.html" %}
+{% load static %}
+{% load global_theme_config_tags %}
+
+
+{% block widget_section %}
+{% global_theme_object as global_theme_config %}
+<div class="admin-form">
+    {% if widget.attrs.label %}
+        <div class="primary-label">
+            {{ widget.attrs.label|capfirst }}
+        </div>
+    {% endif %}
+
+
+    <textarea name="{{widget.name}}" id="{{widget.attrs.id}}"
+            {% if widget.attrs.class %} class="{{ widget.attrs.class }} CKEditors" {% else %} class = "CKEditors" {% endif %}
+            value="{% if widget.value %}{{widget.value}}{% endif %}"
+            {% if widget.attrs.placeholder %} placeholder="{{ widget.attrs.placeholder }}" {% endif %}
+            class="form-input" {% if widget.required %} required {% endif %} cols="40" rows="4">
+            {% if widget.value %}{{widget.value}}{% endif %}
+    </textarea>
+
+</div>
+<script>
+
+      if({{widget.attrs.toolbars|length}} > 0 ){
+            var items_data = {{widget.attrs.toolbars|default:"None"|safe}}
+        }
+        else{
+            var items_data = [
+            'undo', 'redo', '|',
+            'fontFamily', 'fontSize', '|',
+            'fontColor', 'fontBackgroundColor', '|',
+            'bold', 'italic', 'underline','strikethrough', '|',
+            'bulletedList', 'numberedList', '|',
+            'link', 'uploadImage', 'blockQuote', '|',
+            'alignment',
+            'sourceEditing'
+        ] 
+        }
+
+        // FOR HEADING DATA
+        if ({{widget.attrs.heading|length}} > 0){
+            let headings = {{widget.attrs.heading|default:"None"|safe}}
+            var head = []
+            let para = "{{widget.attrs.paragraph|default:''}}"
+            if(para){ 
+                head.push({ model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' })
+            }
+            for(let i = 0; i < headings.length; i++){
+                head.push({ model: 'heading'+headings[i], view: 'h'+headings[i], title: 'Heading '+headings[i], class: 'ck-heading_heading'+headings[i] })
+            }
+        }
+        else{
+            var head = [
+                { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+                { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+                { model: 'heading4', view: 'h4', title: 'Heading 4', class: 'ck-heading_heading4' },
+                { model: 'heading5', view: 'h5', title: 'Heading 5', class: 'ck-heading_heading5' },
+                { model: 'heading6', view: 'h6', title: 'Heading 6', class: 'ck-heading_heading6' }
+            ]
+
+        }
+        // FOR FONT FAMILY
+        if({{widget.attrs.fontFamily|length}} > 0){
+            var fontFamily = {{widget.attrs.fontFamily|default:"None"|safe}}
+        }
+        else{
+            var fontFamily = [
+                'default',
+                "Open Sans, Arial, sans-serif",
+                "Poppins, sans-serif",
+                "Spectral, serif",
+                "ClashDisplay-Variable, sans-serif",
+                "Inter, sans-serif",
+                "Philosopher, sans-serif",
+                "Nunito, sans-serif",
+                "Geometric Slabserif 703 Bold, sans-serif",
+                "Baloo 2, sans-serif",
+                "Fredoka, cursive",
+                "Mermaid, sans-serif",
+                "Comfortaa, cursive",
+            ]
+        }
+        // FONT SIZE 
+        if ({{widget.attrs.fontSize|length}} > 0 ){
+            var fontSize = {{widget.attrs.fontSize|default:"None"|safe}}
+        }
+        else{
+            var fontSize = [ 14, 16, 18, 20, 24, 32, 40]
+        }
+
+
+       CKEDITOR.ClassicEditor.create(document.getElementById("{{widget.attrs.id}}"), {
+        // https://ckeditor.com/docs/ckeditor5/latest/features/toolbar/toolbar.html#extended-toolbar-configuration-format
+
+        toolbar: {
+            items: items_data,
+            shouldNotGroupWhenFull: true
+        },
+        // Changing the language of the interface requires loading the language file using the <script> tag.
+        // language: 'es',
+        list: {
+            properties: {
+                styles: true,
+                startIndex: true,
+                reversed: true
+            }
+        },
+        // https://ckeditor.com/docs/ckeditor5/latest/features/headings.html#configuration
+        heading: {
+            options: head
+        },
+        // https://ckeditor.com/docs/ckeditor5/latest/features/editor-placeholder.html#using-the-editor-configuration
+        placeholder: '{{widget.attrs.placeholder}}',
+        // https://ckeditor.com/docs/ckeditor5/latest/features/font.html#configuring-the-font-family-feature
+        fontFamily: {
+            options: fontFamily,
+            supportAllValues: true
+        },
+        // https://ckeditor.com/docs/ckeditor5/latest/features/font.html#configuring-the-font-size-feature
+        fontSize: {
+            options: fontSize,
+            defaultValue: '18px',
+            //supportAllValues: true
+        },
+        fontColor : {
+            colorPicker: {
+                // Use 'hex' format for output instead of 'hsl'.
+                format: 'hex',
+            },
+            columns : 4,
+            colors : [{
+                color: '{{global_theme_config.primary_color}}',
+            },
+            {
+                color: '{{global_theme_config.secondary_color}}',
+            },
+            {
+                color: "#000000",
+            },
+            {
+                color: "#FFFFFF",
+            },]
+        },
+        // Be careful with the setting below. It instructs CKEditor to accept ALL HTML markup.
+        // https://ckeditor.com/docs/ckeditor5/latest/features/general-html-support.html#enabling-all-html-features
+        htmlSupport: {
+            allow: [
+                {
+                    name: /.*/,
+                    attributes: true,
+                    classes: true,
+                    styles: true
+                }
+            ]
+        },
+        // Be careful with enabling previews
+        // https://ckeditor.com/docs/ckeditor5/latest/features/html-embed.html#content-previews
+        htmlEmbed: {
+            showPreviews: true
+        },
+        // https://ckeditor.com/docs/ckeditor5/latest/features/link.html#custom-link-attributes-decorators
+        link: {
+            decorators: {
+                addTargetToExternalLinks: true,
+                defaultProtocol: 'https://',
+                toggleDownloadable: {
+                    mode: 'manual',
+                    label: 'Downloadable',
+                    attributes: {
+                        download: 'file'
+                    }
+                }
+            }
+        },
+        // https://ckeditor.com/docs/ckeditor5/latest/features/mentions.html#configuration
+        mention: {
+            feeds: [
+                {
+                    marker: '@',
+                    feed: [
+                        '@apple', '@bears', '@brownie', '@cake', '@cake', '@candy', '@canes', '@chocolate', '@cookie', '@cotton', '@cream',
+                        '@cupcake', '@danish', '@donut', '@dragée', '@fruitcake', '@gingerbread', '@gummi', '@ice', '@jelly-o',
+                        '@liquorice', '@macaroon', '@marzipan', '@oat', '@pie', '@plum', '@pudding', '@sesame', '@snaps', '@soufflé',
+                        '@sugar', '@sweet', '@topping', '@wafer'
+                    ],
+                    minimumCharacters: 1
+                }
+            ]
+        },
+        removePlugins: [
+            'AIAssistant',
+            'CKBox',
+            'CKFinder',
+            'EasyImage',
+            'RealTimeCollaborativeComments',
+            'RealTimeCollaborativeTrackChanges',
+            'RealTimeCollaborativeRevisionHistory',
+            'PresenceList',
+            'Comments',
+            'TrackChanges',
+            'TrackChangesData',
+            'RevisionHistory',
+            'Pagination',
+            'WProofreader',
+            'MathType',
+            'SlashCommand',
+            'Template',
+            'DocumentOutline',
+            'FormatPainter',
+            'TableOfContents',
+            'PasteFromOfficeEnhanced',
+            'CaseChange'
+        ]
+    })
+    .then(editor => {
+        // Define your custom onchange function
+        function customOnChange() {
+            try{
+                if (editor.sourceElement.getAttribute('name') === `{{widget.name|safe}}`) {
+                    // Get the updated content from the editor
+                    const updatedContent = editor.getData();
+                    // Update the content of the target element
+                    let elements = document.querySelectorAll(`.{{widget.name|safe}}`)
+                    elements.forEach(element => {
+                        element.innerHTML = updatedContent;
+                    })
+                }
+            }
+            catch(error){
+                console.log("error:- ",error)
+            }
+        }
+
+        // Attach your custom onchange function to the 'change:data' event of the editor
+        editor.model.document.on('change:data', customOnChange);
+    })
+    .catch( error => {
+        console.log("error",error);
+    })
+
+</script>
+{% endblock %}

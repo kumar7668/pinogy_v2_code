@@ -1,0 +1,43 @@
+<div class="row">
+    <div class="col col-lg-12">
+        <nav aria-label="breadcrumb" class="breadcrumb-outer">
+            <ol class="breadcrumb mb-0">
+                {% for ance in ancestors %}
+                
+                    <li class="breadcrumb-item">
+                        <a href="{{ ance.get_absolute_url }}">{{ ance.get_menu_title }}</a>
+                    </li>
+                
+                    {% if forloop.last %}
+                        {% if selected_pet_type_slug and not breed_page and show_pet_type_link %}
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'pinogy_pet:pet_type' selected_pet_type_slug %}">{{ selected_pet_type_slug }}</a>
+                            </li>
+                        {% endif %}
+                        {% if selected_breed_data and not breed_page %}
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'pinogy_pet:breeds_pet_type' selected_pet_type_slug selected_breed_data.slug %}">{{ selected_breed_data.display_name }}</a>
+                            </li>
+                        {% endif %}
+                        {% if pet_id %}
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'pinogy_pet:breeds_pet_type' selected_pet_type_slug selected_breed_slug %}">{{ selected_pet_data.pbrd_display_name }}</a>
+                            </li>
+                        {% endif %}
+                        {% if breed_page and selected_pet_type_slug and show_pet_type_link %}
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'pinogy_breeds:breed_pet_type' selected_pet_type_slug %}">{{ selected_pet_type_slug }}</a>
+                            </li>
+                        {% endif %}
+                        {% if breed_page and selected_breed_slug %}
+                            <li class="breadcrumb-item active" aria-current="page">
+                                <a href="javascript:;" class="no-underline">{{ selected_breed_data.name }}</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                    
+                {% endfor %}
+            </ol>
+        </nav>
+    </div>
+</div>

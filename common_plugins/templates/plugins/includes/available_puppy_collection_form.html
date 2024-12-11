@@ -1,0 +1,87 @@
+{% load sekizai_tags %}
+<style>
+    .subscribe-btn{
+        display:block;
+        width: 100%;
+    }
+</style>
+<div id="available_puppy_collection_form_outer" class = "semi-bold text-center mb-0 mt-3">
+    {% if success_message %}
+        <p class="fw-bolder fs-6 label mt-3 mb-0 text-success " id="colletion_form_success_msg">
+            {{ success_message }}
+        </p>
+    {% endif %}
+    <form class="theme-form" id="available_puppy_collection_form" method="post" action="{% url 'pinogy_common_ajax:marketing_notification' %}">
+        {% csrf_token %}
+
+        {{ form.captcha }}
+        {% if form.captcha.errors %}
+            <div class="text-danger pt-1">
+            {% for error in form.captcha.errors %}
+                {{error}}<br/>
+            {% endfor %}
+            </div>
+        {% endif %}
+
+        <input type = "hidden" name = "marketing_list" value = "{{marketing_list_id}}" id = "marketing_list_id">
+
+        <div class="row">
+            <div class="col-12 col-md-8">
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <div class="text-danger pt-1">
+                    {% for error in form.name.errors %}
+                        {{error}}<br/>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-12 col-md-8">
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="text-danger pt-1">
+                    {% for error in form.email.errors %}
+                        {{error}}<br/>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-12 col-md-4">
+                <button type="submit" class="theme-primary-btn text-nowrap subscribe-btn" onclick="available_puppy_collection_form()">
+                    Submit
+                </button>
+            </div>
+        </div>
+
+    </form>
+</div>
+{% addtoblock 'js' %}
+<script>
+    function available_puppy_collection_form(){
+        $("#available_puppy_collection_form").submit(event => {
+            event.preventDefault();
+
+            const form = document.getElementById("available_puppy_collection_form");
+            var formData = new FormData(form);
+
+            var url = event.currentTarget.action
+            fetch(url, {
+                method: "POST",
+                body:formData,
+            })
+                .then(response => {
+                    if(response.status === 201)
+                        window.location.href = '/thank-you/'
+                    else
+                        return response.text()
+                })
+                .then(data => {
+                    let output = JSON.parse(data)
+                    $("#available_puppy_collection_form_outer").html("A confirmation link has been send in your email address ("+output.email+"). Please click on the link to confirm.")
+                })
+            
+            return false;
+        })
+    }
+</script>
+{% endaddtoblock %}

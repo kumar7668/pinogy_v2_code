@@ -1,0 +1,351 @@
+{% load sekizai_tags %} {% addtoblock 'js' %}
+<script src="https://api.mapbox.com/mapbox-gl-js/v0.54.0/mapbox-gl.js"></script>
+<link
+   href="https://api.mapbox.com/mapbox-gl-js/v0.54.0/mapbox-gl.css"
+   rel="stylesheet"
+   />
+   <script src="{% url 'pinogy_common_ajax:google_maps_proxy' %}?callback=initMap" async defer></script>
+   <script>
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 4,
+          center: { lat: 39.8283, lng: -98.5795 }, // Center of the USA
+        });
+    
+        var locations = {{ gmap_store_data|safe }};
+        var bounds = new google.maps.LatLngBounds();
+    
+        // Initialize a single InfoWindow to reuse
+        var infowindow = new google.maps.InfoWindow();
+    
+        locations.forEach(function(location) {
+          var marker = new google.maps.Marker({
+            position: { lat: location.lat, lng: location.lng },
+            map: map,
+          });
+    
+          bounds.extend(marker.getPosition());
+    
+          var contentString = `
+            <div style="font-size: 14px;">
+              <p class="semi-bold mb-1">${location.receipt_name}</p>
+              <p>${location.address}</p>
+              <a href="https://www.google.com/maps/dir/?api=1&destination=${location.lat},${location.lng}" target="_blank">Get Directions</a>
+            </div>
+          `;
+    
+          marker.addListener('click', function() {
+            infowindow.setContent(contentString);
+            infowindow.open(map, marker);
+          });
+        });
+
+        if (locations.length === 1) {
+            // If there's only one location, set a default zoom level and center the map around it
+            map.setCenter({ lat: locations[0].lat, lng: locations[0].lng });
+            map.setZoom(12);
+        } else {
+            map.fitBounds(bounds);
+        }
+      }
+    </script>    
+<script>
+   function navigation(url){
+     window.open("http://"+url, '_blank');
+   }
+   
+   function onHandleSelectLocation(id){
+     document.getElementById('contactus').value=id;
+     document.getElementById('contactUsForm').style.display="block";
+     document.getElementById('id_first_name').focus();
+     window.scrollBy(0,250)
+
+   }
+   function onHandleSelecttoShowMap(lat,long){
+
+      let _map= document.getElementById('googlemap')
+      var ifrm = document.createElement("iframe");
+      ifrm.setAttribute("src", `https://maps.google.com/maps?q=${lat},${long}&z=13&output=embed&maptype=satellite`);
+      ifrm.setAttribute("allowfullscreen", "");
+      ifrm.setAttribute("maptype", "satellite");
+      ifrm.setAttribute("loading", "lazy");
+      ifrm.style.width = "100%";
+      ifrm.style.height = "450px";
+      _map.innerHTML='';
+      _map.appendChild(ifrm);
+   }
+   $( document ).ready(function() {
+      let nodeVal=document.getElementsByClassName("clswebsite");
+      for(var i=0;i<nodeVal.length;i++){
+         let url=nodeVal[i].getElementsByClassName("hdnurl")[0].value
+         if(url.split('/')[0]!=window.location.hostname){
+            nodeVal[i].classList.remove("d-none");
+         }
+      }
+  });
+
+</script>
+{% endaddtoblock %}
+<style>
+   .clsaddress{
+   line-height:35px;
+   cursor:pointer
+   }
+   .clsaddress{
+   color:var(--global-primary-color); 
+   }
+   #contactUsForm{
+   display:none
+   }
+   hr{
+   opacity:.15
+   }
+   @media (max-width: 998px){
+      .clsdesktop{
+         display:none
+      }
+      .clsmobile{
+         display:block !important;
+      }
+      .float{
+         display:none
+      }
+      .float-mobile{
+         display:block !important;
+      }
+   }    
+   @media (min-width: 998px){
+      .clsdesktop{
+         display:flex;
+      }
+      .clsmobile{
+         display:none !important;
+      }
+      .float{
+         display:block
+      }
+      .float-mobile{
+         display:none !important;
+      }
+   }
+   .clsIcon{
+      margin-top:10px
+   }
+   
+ .cls_acc_header{
+   color:var(--global-primary-color); 
+ }
+ .clswebsite{    
+   margin-left: 5px;
+ }
+
+ {% comment %} css for floating menu {% endcomment %}
+ .float{
+   position: fixed;
+    width: 128px;
+    height: 37px;
+    padding : 6px 8px;
+    bottom: 60px;
+    right: 60px;
+    background-color: var(--global-secondary-color); 
+    color: #FFF;
+    border-radius: 50px;
+    text-align: center;
+    box-shadow: 2px 2px 3px #999;
+    z-index: 1000;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    pointer:cursor
+}
+
+.my-float{
+   font-size:20px
+}
+
+.float:hover{
+   border:2px solid var(--global-primary-color);
+   background-color: var(--global-secondary-color);
+}
+.float-mobile {
+   position: fixed !important;
+   z-index: 1 !important;
+   bottom: 20px;
+   right: 20px;
+   background-color: var(--global-primary-color);
+   color: #FFF;
+   border-radius: 50px;
+   text-align: center;
+   box-shadow: 2px 2px 3px #999;
+   z-index: 1000;
+   font-weight: 600;
+   text-decoration: none;
+   padding: 11px;
+   border-radius: 99px 99px 0px 99px;
+   box-shadow: 1px 2px 20px 0px rgba(0, 63, 90, 0.24), 0px 1px 8px 0px rgba(0, 63, 90, 0.12);
+   border: none;
+   font-size:14px
+}
+.inner-map-address{
+   color:var(--global-secondary-color);
+}
+.h1-theme-bold{
+   text-transform:Uppercase;
+}
+{% comment %} floating menu css end {% endcomment %}
+</style>
+<div class="container py-5 contact-us-form-outer">
+   {% ifequal 'True'  instance.glossary.is_contactus_menu %}
+   <button type="button" class="btn btn-primary float" data-bs-toggle="modal" data-bs-target="#general_collection" data-bs-whatever="@getbootstrap">
+      NEED HELP?
+   </button>
+
+   <button type="button" class="btn btn-primary float-mobile" data-bs-toggle="modal" data-bs-target="#general_collection" data-bs-whatever="@getbootstrap">
+       NEED <br/>HELP?
+   </button>
+   <div class="modal fade" id="general_collection" tabindex="-1" aria-label="general_collection" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+            {% include 'plugins/includes/general_collection_form.html' with unique_id=selected_store.0.id form=collection_form location_id=selected_store.0.id is_breeder=instance.glossary.breeder_is form_type='contact' display_close_button=True %}
+         
+          </div>
+        
+        </div>
+      </div>
+    </div>
+
+{%else%}
+   <div class="row" >
+      <div class="col-12">
+         <h1 class="h1-theme-bold">Contact Us</h1>
+         
+           <h2><p class="semi-bold"> We would love to hear from you. Give us a call or email using the form
+            below.</p></h2>
+         </p>
+      </div>
+   </div>
+   
+ 
+
+
+   <div class="request-form-div pt-3">
+      <div class="row clsdesktop" >
+         <div class="col-12 col-md-6 order-2 order-md-1">
+            <div class="row">
+               {%if selected_store|length == 1%}
+               {% include 'plugins/includes/general_collection_form.html' with unique_id=selected_store.0.id form=collection_form location_id=selected_store.0.id is_breeder=instance.glossary.breeder_is form_type='contact' %}
+         
+               {%else%}
+               {% for store in selected_store|dictsort:"receipt_name"%}
+                  {% if store.is_public and store.is_enabled %}
+                     <div class="clsaddress" onclick="onHandleSelecttoShowMap('{{store.latitude}}','{{store.longitude}}')">
+                        <p class="semi-bold mb-1"> {{store.receipt_name}}</p>
+                        <p class="inner-map-address mb-0">
+                        <i class="fa fa-map-marker" aria-hidden="true"></i> {{store.entity.address_1}}, {{store.entity.city}}, {{store.entity.iso_code}}, {{store.entity.postal_code}}
+                        </p>
+                     </div>
+                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-2 pt-0">
+                     {% if store.store_contact %}
+                        <a href="tel:+1{{store.store_contact}}" id="phonecallclick" 
+                         aria-label = "this is store contact number {{store.store_contact}}" class="btn  theme-primary-btn clsIcon">
+                        <i class="fa fa-phone d-none d-sm-inline pr-2"></i>
+                         {{store.store_contact}} </a>
+                     {%endif%}
+                        <button type="button" class="btn theme-primary-btn clsIcon clswebsite" onclick="onHandleSelectLocation('{{store.id}}')" data-bs-toggle="modal" data-bs-target="#contact_us_modal_{{store.id}}" data-bs-whatever="@mdo">
+                        <i class="fa fa-envelope" aria-hidden="true"></i> Email </button>
+                        {% if store.website_url and host not in store.website_url %}
+                           <button 
+                              type="button" 
+                              class="btn theme-primary-btn clsIcon clswebsite" 
+                              onclick="navigation('{{store.website_url}}')"
+                              >
+                              <input type="hidden" class="hdnurl" value={{store.website_url}}/>
+                              <i class="fa fa-globe" aria-hidden="true"></i> Website
+                           </button> 
+                        {% endif %}
+                     </div>
+                     <hr />
+                  {% endif %}
+               {%endfor%}
+               {%endif%}
+            </div>
+         </div>
+         <div class="col-12 col-md-6 order-1 order-md-2">
+          <div id="map" style="width: 100%; height: 548px;"></div>
+         </div>
+      </div>
+      
+      {% for store in selected_store|dictsort:"receipt_name"%}
+         {% if store.is_public and store.is_enabled %}
+            <div class="modal fade" id="contact_us_modal_{{store.id}}" tabindex="1" aria-label="contact_us_modalLabel" aria-hidden="true">
+               <div class="modal-dialog modal-md">
+                  <div class="modal-content">
+                     <div class="modal-body">
+                        <br/>
+                        {% include 'plugins/includes/general_collection_form.html' with unique_id=store.id form=collection_form location_id=store.id is_breeder=instance.glossary.breeder_is form_type='contact' display_close_button=True shopwindow_enable=store.shopwindow_enable title="Email"%}
+                     </div>
+                  </div>
+               </div>
+            </div>
+         {% endif %}
+      {%endfor%}
+
+      <div class="row clsmobile" >
+         {%if selected_store|length == 1%}
+            {% for store in selected_store|dictsort:"receipt_name"%}
+               {% if store.is_public and store.is_enabled %}
+                  <iframe src="https://maps.google.com/maps?q={{store.latitude}},{{store.longitude}}&z=13&output=embed&maptype=satellite" width="100%" height="350" style="border: 0" allowfullscreen="" maptype="satellite" loading="lazy"></iframe>
+               {% endif %}
+            {% endfor %}
+            {% include 'plugins/includes/general_collection_form.html' with unique_id=selected_store.0.id form=collection_form location_id=selected_store.0.id is_breeder=instance.glossary.breeder_is form_type='contact' %}
+         {%else%}
+         <div class="accordion" id="accordionExample">
+            {% for store in selected_store|dictsort:"receipt_name"%}
+               {% if store.is_public and store.is_enabled %}
+                  <div class="accordion-item">
+                     <div class="accordion-header" id="heading{{store.id}} {{ loop.index }}1">
+                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{store.id}}" aria-expanded="false" aria-controls="collapse{{store.id}}">
+                        <b><span class="cls_acc_header"> {{store.receipt_name}}</span></b>
+                     </button>
+                     </div>
+                     <div id="collapse{{store.id}}" class="accordion-collapse collapse" aria-label="heading{{store.id}}" data-bs-parent="#accordionExample">
+                     <div class="accordion-body">
+                        <p class="inner-map-address">
+                           <i class="fa fa-map-marker" aria-hidden="true"></i> {{store.entity.address_1}}, {{store.entity.city}}, {{store.entity.iso_code}}, {{store.entity.postal_code}}
+                        </p>
+                        {% if store.store_contact %}
+                           <a href="tel:+1{{store.store_contact}}" id="phonecallclick" 
+                            aria-label = "this is store contact number {{store.store_contact}}" class="btn  theme-primary-btn">
+                           <a href="tel:+1{{store.store_contact}}" id="phonecallclick" 
+                            aria-label = "this is store contact number {{store.store_contact}}" class="btn  theme-primary-btn">
+                           <i class="fa fa-phone d-sm-inline pr-2"></i>
+                           </a>
+                        {%endif%}
+                        
+                        <button type="button" class="btn theme-primary-btn" onclick="onHandleSelectLocation('{{store.id}}')" data-bs-toggle="modal" data-bs-target="#contact_us_modal_{{store.id}}" data-bs-whatever="@mdo" style="font-size: 15px !important;">
+                           <i class="fa fa-envelope" aria-hidden="true"></i>
+                        
+                           {% if store.website_url and host not in store.website_url %} 
+                          
+                          <button type="button" class="btn theme-primary-btn clswebsite" onclick="navigation('{{store.website_url}}')">	
+                                 
+                          <input type="hidden" class="hdnurl" value={{store.website_url}} />	
+                                 <i class="fa fa-globe" aria-hidden="true"></i>	
+                              </button> 
+                           {% endif %}
+                        </button>
+                        <br />
+                        <br />
+                        <iframe src="https://maps.google.com/maps?q={{store.latitude}},{{store.longitude}}&z=13&output=embed&maptype=satellite" width="100%" height="350" style="border: 0" allowfullscreen="" maptype="satellite" loading="lazy"></iframe>
+                     </div>
+                     </div>
+                  </div>
+                  <br />
+               {% endif %}
+            {%endfor%}
+         {% endif %}
+
+   </div>
+   {%endifequal%}
+</div>

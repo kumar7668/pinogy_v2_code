@@ -1,0 +1,103 @@
+{% with counter=0 %}
+{% for page in pages %}
+
+            <div class="form-check checkbox-outer d-flex align-items-center gap-2 p-0">
+                <input class="form-check-input custom-checkbox m-0" name="custom_menus" type="checkbox" value="{{ page.id }}" id="id_custom_menus_{{ page.id }}" {% if page.id|slugify in avl_link %}checked {% endif %}>
+                <label class="form-check-label custom-checkbox-label m-0" for="id_custom_menus_{{ page.id }}">
+                    {{ page.get_menu_title }} 
+                </label> 
+                    <div class="dropdown-icon" onclick = "toggleChild('child-{{page.id}}',this)">            
+                        <svg class="only-fill" width="24" height="24" viewBox="0 0 24 24" fill="#003F5A" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15.9449 10.2295L11.9991 14.9426L8.05512 10.2295C7.99545 10.1581 7.9194 10.1003 7.83268 10.0606C7.74596 10.0208 7.65081 10.0001 7.55438 10L6.15992 10C6.02626 10 5.95244 10.1449 6.03424 10.2427L11.4982 16.7714C11.7555 17.0762 12.2463 17.0762 12.5016 16.7714L17.9658 10.2427C18.0476 10.1449 17.9737 10 17.8401 10L16.4456 10C16.3492 10.0001 16.254 10.0208 16.1673 10.0606C16.0806 10.1003 16.0045 10.1581 15.9449 10.2295Z"></path>
+                        </svg>
+                    </div>
+            </div>
+
+            <div class = "ck-pad {%if not page.external_link %} child-dropdown {% endif %} child-{{page.id}}">
+                    {% include "plugins/header/page_dropdown.html" with pages=page.children avl_link=avl_link count=count button_internallink=button_internallink external_links=external_links%}
+                    {% for data in external_links %}
+                        {% if page.id|slugify == data.parentId and data.draftId == '0' %}
+
+                        <div class="form-check checkbox-outer align-items-center p-0 external {{data.childId}}">
+                            <input class="form-check-input custom-checkbox m-0" name="external_links" type="checkbox" value="{{data.childId}}" id="id_quick_links_{{data.childId}}"  {% if data.childId in avl_link %}checked {% endif %} >
+                            <div class="box-theme-form-item-inline pos-wc">
+                                <input class="form-input ext_link_name" type="text" id="ext_link_name_{{data.childId}}" name="ext_link_name_{{data.childId}}" value="{{data.exernal_link_name}}" placeholder="Link name"  required=""> 
+                                <div class="l_ext_link_name_{{data.childId}} word_count">0/20</div> 
+                            </div>
+                            <div class="box-theme-form-item-inline select-class">
+                                <select class="form-select" name="button_target_{{data.childId}}" value="_self" id="id_button_target_{{data.childId}}" >
+                                    <option value="_self"  {% if data.exernal_target == '_self'%}selected{% endif %}>Current Tab</option>
+                                    <option value="_blank" {% if data.exernal_target == '_blank'%}selected {% endif %}>New Tab</option>
+                                </select>
+                            </div> 
+                            
+                            <div class="quick_links_{{data.childId}}" data-value="id_quick_links_{{data.childId}}" onclick="deleteQlink(this)">
+                                <a id="delAnchor-1" class="del-anchor" href="javascript:void(0);"> <svg width="24" height="24" viewBox="2 2 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M10 6H14C14 5.46957 13.7893 4.96086 13.4142 4.58579C13.0391 4.21071 12.5304 4 12 4C11.4696 4 10.9609 4.21071 10.5858 4.58579C10.2107 4.96086 10 5.46957 10 6ZM8 6C8 4.93913 8.42143 3.92172 9.17157 3.17157C9.92172 2.42143 10.9391 2 12 2C13.0609 2 14.0783 2.42143 14.8284 3.17157C15.5786 3.92172 16 4.93913 16 6H21C21.2652 6 21.5196 6.10536 21.7071 6.29289C21.8946 6.48043 22 6.73478 22 7C22 7.26522 21.8946 7.51957 21.7071 7.70711C21.5196 7.89464 21.2652 8 21 8H20.118L19.232 18.34C19.1468 19.3385 18.69 20.2686 17.9519 20.9463C17.2137 21.6241 16.2481 22.0001 15.246 22H8.754C7.75191 22.0001 6.78628 21.6241 6.04815 20.9463C5.31002 20.2686 4.85318 19.3385 4.768 18.34L3.882 8H3C2.73478 8 2.48043 7.89464 2.29289 7.70711C2.10536 7.51957 2 7.26522 2 7C2 6.73478 2.10536 6.48043 2.29289 6.29289C2.48043 6.10536 2.73478 6 3 6H8ZM15 12C15 11.7348 14.8946 11.4804 14.7071 11.2929C14.5196 11.1054 14.2652 11 14 11C13.7348 11 13.4804 11.1054 13.2929 11.2929C13.1054 11.4804 13 11.7348 13 12V16C13 16.2652 13.1054 16.5196 13.2929 16.7071C13.4804 16.8946 13.7348 17 14 17C14.2652 17 14.5196 16.8946 14.7071 16.7071C14.8946 16.5196 15 16.2652 15 16V12ZM10 11C10.2652 11 10.5196 11.1054 10.7071 11.2929C10.8946 11.4804 11 11.7348 11 12V16C11 16.2652 10.8946 16.5196 10.7071 16.7071C10.5196 16.8946 10.2652 17 10 17C9.73478 17 9.48043 16.8946 9.29289 16.7071C9.10536 16.5196 9 16.2652 9 16V12C9 11.7348 9.10536 11.4804 9.29289 11.2929C9.48043 11.1054 9.73478 11 10 11ZM6.76 18.17C6.8026 18.6694 7.03117 19.1346 7.40044 19.4735C7.76972 19.8124 8.25278 20.0003 8.754 20H15.246C15.7469 19.9998 16.2294 19.8117 16.5983 19.4728C16.9671 19.134 17.1954 18.6691 17.238 18.17L18.11 8H5.89L6.762 18.17H6.76Z" fill="#12BBD2"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                            <div class=""></div>
+                            <div class = "opt_link_outer">
+                                <div class="admin-form  horizontal-checkbox ">
+
+                                    <div class="form-check radio-outer d-flex align-items-center p-0 gap-2">
+                                        <input class="form-check-input custom-radio m-0" type="radio" name="link_choice_field_{{data.childId}}" onclick = "selectRadioOption(this)" id="internal_link_choice_field_{{data.childId}}" value="internal" "{% if data.exernal_type == 'internal' %} checked {% endif%}">
+                                        <label class="form-check-label custom-radio-label ml-2" for="internal_link_choice_field_{{data.childId}}">
+                                            Internal link
+                                        </label>
+                                        <div class="box-theme-form-label">
+                                        <span style="position:relative;">
+                                            <img src="/static/images/ic-info.svg" class="abs_meg_icon">
+                                            <div class="form-tooltip">
+                                                An internal link is a link to an existing page on your website. When an internal link button is clicked, the page will open in the same tab.
+                                            </div>
+                                        </span>
+                                    </div>
+                                    </div>
+                                
+                                    <div class="form-check radio-outer d-flex align-items-center p-0 gap-2">
+                                        <input class="form-check-input custom-radio m-0" type="radio" name="link_choice_field_{{data.childId}}" onclick = "selectRadioOption(this)" id="external_link_choice_field_{{data.childId}}" value="external" "{% if data.exernal_type == 'external' %} checked {% endif%}">
+                                        <label class="form-check-label custom-radio-label ml-2" for="external_link_choice_field_{{data.childId}}">
+                                            External link
+                                        </label>
+                                        <div class="box-theme-form-label">
+                                        <span style="position:relative;">
+                                            <img src="/static/images/ic-info.svg" class = "abs_meg_icon">
+                                            <div class="form-tooltip">
+                                                An external link is a link that directs users away from your website. When an external link button is clicked, the page will open in a new window or tab.
+                                            </div>
+                                        </span>
+                                    </div>
+                                    </div>
+                                
+                                </div>
+                            </div>
+                            <div class="box-theme-form-item-inline select-class " id = "internal" style = "display : {% if data.exernal_type == "internal" %}block{%else%}none{%endif%}">
+                                
+                                <select class="form-select" name="button_internallink_{{data.childId}}" id="button_internallink_{{data.childId}}">
+                                    <option value = "">------</option>
+                                    {% for draft_data in draft_pages%}
+                                        <option value="{{draft_data.2}}" {% if draft_data.2|slugify == data.internal_link_id%} selected {%endif%}>{{draft_data.0}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+                            <div class="box-theme-form-item-inline " id = "external" style = "display : {% if data.exernal_type == "external" %}block{%else%}none{%endif%}">
+                                <input class="form-input ext_link_url" type="text" id="ext_link_url_{{data.childId}}" name="ext_link_url_{{data.childId}}" value="{{data.exernal_link_url|default:''}}" placeholder="http://"  required=""> 
+                            </div>
+                            
+                        </div>
+
+                        {% endif %}
+                    {% endfor %}
+
+                    <div class="col-2 box-theme-sub-title ">
+                        <div class = 'd-flex add_btn'>
+                            <span>+</span>
+                            <a id="id_add_btn" href="javascript:void(0);" onclick="AddExternalLink(this, endata = '', eldata = '', checked = '',link_target = '_self', save_flag = true, last = false)">Add Link</a>
+                        </div>
+                    </div>
+            </div>
+             
+{% endfor %}
+{% endwith %}

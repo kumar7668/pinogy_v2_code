@@ -1,0 +1,228 @@
+<style>
+    .subscribe-us-outer{{instance.id}}{
+
+        {% if instance.glossary.background_type == "Image" and instance.glossary.background == "yes" %}
+            {% if instance.newsletter_bg_image %}
+                background-image: url("{{instance.newsletter_bg_image.url}}");
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: cover;
+            {% endif %}
+        {%elif instance.glossary.background_type == "Color" and instance.glossary.background == "yes"%}
+            background-color : {{instance.glossary.bg_color}};
+        {% else %}
+
+        {% endif %}
+    }
+
+    {% comment %} .subscribe-us-image{ 
+        max-height: 450px;
+    } {% endcomment %}
+    
+    .subscribe-btn{
+        display:block;
+        width: 100%;
+        font-size: 20px;
+        font-weight: 500 !important;
+    }
+    #subscribe-btn{
+        float:right;
+    }
+    .newsletter_main_content{
+        gap : 24px;
+        {% comment %} justify-content: space-around; {% endcomment %}
+        padding : 40px 0 40px 0;
+        align-items:center;
+        justify-content : space-between;
+    }
+    .newsletter_main_content > * {
+        flex : 1;
+    }
+    .tsf_container{
+        gap : 24px;
+    }
+    .tsf_container.text_columns{
+        flex-direction : column;
+    }
+    .tsf_container.text_rows{
+        flex-direction : row;
+    }
+    .tsf_container.text_rows > * {
+        flex : 1;
+    }
+    .tsf_container .newsletter_message {
+        color: {{instance.glossary.marketing_font_color}};
+        font-family: "Open Sans";
+        font-style: normal;
+        font-weight: 700;
+        line-height: 125%; /* 50px */
+        margin-top : 15px;
+    }
+    .tsf_container input{
+        {% comment %} margin-top : 0!important; {% endcomment %}
+    }
+    #subscribe_form input[name='email'],input[name='phone']{
+        margin-top : 16px!important;
+    }
+    .newsletter_message p{
+        margin-bottom : 0;
+    }
+    @media (max-width : 767px){
+        #subscribe_form input[name='last_name']{
+            margin-top : 16px!important;
+        }
+    }
+    @media (max-width : 1024px){
+        .newsletter_main_content{
+            padding: 40px 12px 40px 12px;
+            flex-direction: column;
+        }
+        .tsf_container.text_rows{
+            flex-direction : column;
+        }
+        #subscribe_form input[name='last_name']{
+            margin-top : 16px!important;
+        }
+    }
+    @media (max-width : 2440px){
+        .newsletter_left_img svg{
+            width : 470px;
+        }
+    }
+    @media (min-width : 370px) and (max-width : 475px){
+        .newsletter_left_img svg{
+            width : 370px;
+        }
+    }
+{% if instance.glossary.marketing_layouts_email == 'LAYOUT2' or instance.glossary.marketing_layouts_email == 'LAYOUT5'%}
+    .newsletter_content-{{instance.id}}{
+        flex : 2!important;
+}
+{% endif %}
+</style>
+<div class="subscribe-us-outer{{instance.id}}">
+    <div class="container d-flex newsletter_main_content">
+        {% if instance.glossary.marketing_list == "Email" %}
+
+        <div class = "newsletter_left_img {% if instance.glossary.marketing_layouts_email == 'LAYOUT4' or instance.glossary.marketing_layouts_email == 'LAYOUT5' or instance.glossary.marketing_layouts_email == 'LAYOUT2'%} {% else %}d-none{% endif %}">
+            {% if instance.glossary.marketing_layouts_email == 'LAYOUT5'%}
+                <img src="{% if instance.newsletter_left_image %} {{ instance.newsletter_left_image.url }} {% endif %}" class="img-fluid subscribe-us-image" alt="{% if instance.newsletter_left_image %}{{ instance.glossary.alt_newsletter_left_image }}{% endif %}"/>
+            {%elif instance.glossary.marketing_layouts_email == 'LAYOUT4' %}
+                {% if not instance.newsletter_image %}
+                    <svg class="" viewBox="0 0 636 252" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path opacity="0.4" d="M1.99999 136.5C1.99999 136.5 73.4728 196 129.703 196C185.932 196 257.405 136.5 257.405 136.5C257.405 136.5 328.878 77 385.108 77C492.932 77 561 160.064 561 160.064" stroke="var(--global-secondary-color)" stroke-width="5" stroke-linejoin="round" stroke-dasharray="16 16"/>
+                        <g filter="url(#filter0_b_2295_15586)">
+                        <path d="M263.875 47.2445L143.125 95.6497C132.056 99.6835 123 113.802 123 125.903V213.637C123 225.739 132.056 231.789 143.125 227.755L263.875 179.35C274.944 175.317 284 161.198 284 149.097V61.3627C284 49.2614 274.944 43.2107 263.875 47.2445ZM269.913 73.464L209.537 167.249L142.119 121.869C141.113 120.861 138.094 117.835 140.106 114.81C142.119 110.776 147.15 112.793 147.15 112.793L210.544 135.987C210.544 135.987 258.844 72.4555 261.863 68.4218C262.869 66.4049 265.887 65.3964 268.906 67.4133C271.925 69.4302 270.919 72.4555 269.913 73.464Z" fill="var(--global-secondary-color)"/>
+                        </g>
+                        <path d="M587.058 169.713C587.058 169.713 587.058 169.713 587.058 169.712L617.008 107.074C617.385 106.286 616.64 105.427 615.806 105.689L512.644 138.087C511.662 138.395 511.731 139.807 512.738 140.02L549.979 147.871C550.438 147.968 550.768 148.372 550.772 148.841L550.94 167.721C550.948 168.592 551.988 169.037 552.624 168.442L562.719 158.983C563.138 158.591 563.142 157.927 562.726 157.53L560.771 155.663C559.901 154.832 560.97 153.455 561.991 154.091L587.054 169.715C587.056 169.716 587.058 169.715 587.058 169.713Z" fill="var(--global-secondary-color)"/>
+                        <defs>
+                        <filter id="filter0_b_2295_15586" x="115" y="38" width="177" height="199" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                        <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                        <feGaussianBlur in="BackgroundImageFix" stdDeviation="4"/>
+                        <feComposite in2="SourceAlpha" operator="in" result="effect1_backgroundBlur_2295_15586"/>
+                        <feBlend mode="normal" in="SourceGraphic" in2="effect1_backgroundBlur_2295_15586" result="shape"/>
+                        </filter>
+                        </defs>
+                    </svg>
+                {% else %}
+                    <img src="{% if instance.newsletter_image %} {{ instance.newsletter_image.url }} {% endif %}" class="img-fluid subscribe-us-image" alt="{% if instance.newsletter_image %}{{ instance.glossary.alt_newsletter_image }}{% endif %}"/>
+                {%endif%}
+            {%endif%}
+
+        </div>
+        {% else %}
+            <div class = "newsletter_left_img {% if instance.glossary.marketing_layouts_sms == 'LAYOUT9' or instance.glossary.marketing_layouts_sms == 'LAYOUT10' or instance.glossary.marketing_layouts_sms == 'LAYOUT7'%} {% else %}d-none{% endif %}">
+                
+                {% if instance.glossary.marketing_layouts_sms == 'LAYOUT10'%}
+                    <img src="{% if instance.newsletter_left_image %} {{ instance.newsletter_left_image.url }} {% endif %}" class="img-fluid subscribe-us-image" alt="{% if instance.newsletter_left_image %}{{ instance.glossary.alt_newsletter_left_image }}{% endif %}"/>
+                {%else%}
+                {% if not instance.newsletter_image %}
+                    <svg class="" viewBox="0 0 636 252" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path opacity="0.4" d="M1.99999 136.5C1.99999 136.5 73.4728 196 129.703 196C185.932 196 257.405 136.5 257.405 136.5C257.405 136.5 328.878 77 385.108 77C492.932 77 561 160.064 561 160.064" stroke="var(--global-secondary-color)" stroke-width="5" stroke-linejoin="round" stroke-dasharray="16 16"/>
+                        <g filter="url(#filter0_b_2295_15586)">
+                        <path d="M263.875 47.2445L143.125 95.6497C132.056 99.6835 123 113.802 123 125.903V213.637C123 225.739 132.056 231.789 143.125 227.755L263.875 179.35C274.944 175.317 284 161.198 284 149.097V61.3627C284 49.2614 274.944 43.2107 263.875 47.2445ZM269.913 73.464L209.537 167.249L142.119 121.869C141.113 120.861 138.094 117.835 140.106 114.81C142.119 110.776 147.15 112.793 147.15 112.793L210.544 135.987C210.544 135.987 258.844 72.4555 261.863 68.4218C262.869 66.4049 265.887 65.3964 268.906 67.4133C271.925 69.4302 270.919 72.4555 269.913 73.464Z" fill="var(--global-secondary-color)"/>
+                        </g>
+                        <path d="M587.058 169.713C587.058 169.713 587.058 169.713 587.058 169.712L617.008 107.074C617.385 106.286 616.64 105.427 615.806 105.689L512.644 138.087C511.662 138.395 511.731 139.807 512.738 140.02L549.979 147.871C550.438 147.968 550.768 148.372 550.772 148.841L550.94 167.721C550.948 168.592 551.988 169.037 552.624 168.442L562.719 158.983C563.138 158.591 563.142 157.927 562.726 157.53L560.771 155.663C559.901 154.832 560.97 153.455 561.991 154.091L587.054 169.715C587.056 169.716 587.058 169.715 587.058 169.713Z" fill="var(--global-secondary-color)"/>
+                        <defs>
+                        <filter id="filter0_b_2295_15586" x="115" y="38" width="177" height="199" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                        <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                        <feGaussianBlur in="BackgroundImageFix" stdDeviation="4"/>
+                        <feComposite in2="SourceAlpha" operator="in" result="effect1_backgroundBlur_2295_15586"/>
+                        <feBlend mode="normal" in="SourceGraphic" in2="effect1_backgroundBlur_2295_15586" result="shape"/>
+                        </filter>
+                        </defs>
+                    </svg>
+                {% else %}
+                    <img src="{% if instance.newsletter_image %} {{ instance.newsletter_image.url }} {% endif %}" class="img-fluid subscribe-us-image" alt="{% if instance.newsletter_image %}{{ instance.glossary.alt_newsletter_image }}{% endif %}"/>
+                    {%endif%}
+                {%endif%}
+
+            </div>
+        {% endif %}
+        <div class = "newsletter_content-{{instance.id}}">
+            {% if instance.glossary.marketing_list == "Email" %}
+                <div class = "tsf_container d-flex {% if instance.glossary.marketing_layouts_email == 'LAYOUT1' %}text_rows{% else %}text_columns{%endif%}">
+                    {% if instance.glossary.marketing_message %}
+                        <div class = "newsletter_message">
+                            {{instance.glossary.marketing_message|safe}}
+                        </div>
+                    {% endif %}
+                    <div>
+                        {% include 'plugins/includes/subscribe_us_form.html' with form=subscribe_form form_type='subscribe' marketing_list=marketing_list marketing_btn_style=marketing_btn_style marketing_button_text=marketing_button_text %}
+                    </div>
+                </div>
+            {% else %}
+                <div class = "tsf_container d-flex {% if instance.glossary.marketing_layouts_sms == 'LAYOUT6' %}text_rows{% else %}text_columns{%endif%}">
+                    {% if instance.glossary.marketing_message %}
+                        <div class = "newsletter_message">
+                            {{instance.glossary.marketing_message|safe}}
+                        </div>
+                    {% endif %}
+                    <div>
+                        {% include 'plugins/includes/subscribe_us_form.html' with form=subscribe_form form_type='subscribe' marketing_list=marketing_list marketing_btn_style=marketing_btn_style marketing_button_text=marketing_button_text %}
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+        {% if instance.glossary.marketing_list == "Email" %}
+            <div class = "newsletter_right_img {% if instance.glossary.marketing_layouts_email == 'LAYOUT3' or instance.glossary.marketing_layouts_email == 'LAYOUT5' or instance.glossary.marketing_layouts_email == 'LAYOUT2'%} {% else %}d-none{% endif %}">
+                
+                {% if instance.glossary.marketing_layouts_email == 'LAYOUT5'%}
+                    <img src="{% if instance.newsletter_right_image %} {{ instance.newsletter_right_image.url }} {% endif %}" class="img-fluid subscribe-us-image" alt="{% if instance.newsletter_right_image %} {{ instance.glossary.alt_newsletter_right_image }} {% endif %}"/>
+                {%elif instance.glossary.marketing_layouts_email == 'LAYOUT3' %}
+                {% if not instance.newsletter_image %}
+                    <svg class="" viewBox="0 0 636 252" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path opacity="0.4" d="M1.99999 136.5C1.99999 136.5 73.4728 196 129.703 196C185.932 196 257.405 136.5 257.405 136.5C257.405 136.5 328.878 77 385.108 77C492.932 77 561 160.064 561 160.064" stroke="var(--global-secondary-color)" stroke-width="5" stroke-linejoin="round" stroke-dasharray="16 16"/>
+                        <g filter="url(#filter0_b_2295_15586)">
+                        <path d="M263.875 47.2445L143.125 95.6497C132.056 99.6835 123 113.802 123 125.903V213.637C123 225.739 132.056 231.789 143.125 227.755L263.875 179.35C274.944 175.317 284 161.198 284 149.097V61.3627C284 49.2614 274.944 43.2107 263.875 47.2445ZM269.913 73.464L209.537 167.249L142.119 121.869C141.113 120.861 138.094 117.835 140.106 114.81C142.119 110.776 147.15 112.793 147.15 112.793L210.544 135.987C210.544 135.987 258.844 72.4555 261.863 68.4218C262.869 66.4049 265.887 65.3964 268.906 67.4133C271.925 69.4302 270.919 72.4555 269.913 73.464Z" fill="var(--global-secondary-color)"/>
+                        </g>
+                        <path d="M587.058 169.713C587.058 169.713 587.058 169.713 587.058 169.712L617.008 107.074C617.385 106.286 616.64 105.427 615.806 105.689L512.644 138.087C511.662 138.395 511.731 139.807 512.738 140.02L549.979 147.871C550.438 147.968 550.768 148.372 550.772 148.841L550.94 167.721C550.948 168.592 551.988 169.037 552.624 168.442L562.719 158.983C563.138 158.591 563.142 157.927 562.726 157.53L560.771 155.663C559.901 154.832 560.97 153.455 561.991 154.091L587.054 169.715C587.056 169.716 587.058 169.715 587.058 169.713Z" fill="var(--global-secondary-color)"/>
+                        <defs>
+                        <filter id="filter0_b_2295_15586" x="115" y="38" width="177" height="199" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                        <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                        <feGaussianBlur in="BackgroundImageFix" stdDeviation="4"/>
+                        <feComposite in2="SourceAlpha" operator="in" result="effect1_backgroundBlur_2295_15586"/>
+                        <feBlend mode="normal" in="SourceGraphic" in2="effect1_backgroundBlur_2295_15586" result="shape"/>
+                        </filter>
+                        </defs>
+                    </svg>
+                {% else %}
+                    <img src="{% if instance.newsletter_image %}{{ instance.newsletter_image.url }}{% endif %}" class="img-fluid subscribe-us-image" alt="{% if instance.newsletter_image %}{{ instance.glossary.alt_newsletter_image }}{% endif %}"/>
+                {% endif %}
+            {% endif %}
+
+            </div>
+        {% else %}
+            <div class = "newsletter_right_img {% if instance.glossary.marketing_layouts_sms == 'LAYOUT8' or instance.glossary.marketing_layouts_sms == 'LAYOUT10' or instance.glossary.marketing_layouts_sms == 'LAYOUT7'%} {% else %}d-none{% endif %}">
+                    
+                {% if instance.glossary.marketing_layouts_sms == 'LAYOUT10'%}
+                    <img src="{% if instance.newsletter_right_image %} {{ instance.newsletter_right_image.url }} {% endif %}" class="img-fluid subscribe-us-image" alt="{% if instance.newsletter_right_image %} {{ instance.glossary.alt_newsletter_right_image }} {% endif %}"/>
+                {% else %}
+                    <img src="{% if instance.newsletter_image %}{{ instance.newsletter_image.url }}{% endif %}" class="img-fluid subscribe-us-image" alt="{% if instance.newsletter_image %}{{ instance.glossary.alt_newsletter_image }}{% endif %}"/>
+                {% endif %}
+
+            </div>
+        {%endif%}
+    </div>
+</div>

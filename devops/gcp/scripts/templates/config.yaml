@@ -1,0 +1,14 @@
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: SITENUM-config
+  namespace: websites-v2
+spec:
+  healthCheck:
+    checkIntervalSec: 30
+    timeoutSec: 8
+    healthyThreshold: 1
+    unhealthyThreshold: 5
+    type: HTTP
+    requestPath: /health/check/
+    port: 8000

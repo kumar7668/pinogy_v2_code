@@ -1,0 +1,537 @@
+{% load cms_tags sekizai_tags %}
+{% load static %}
+{% addtoblock 'css' %}
+<style>
+   .pet-card-section {
+      border: 1px solid rgba(255, 255, 255, 0.5);
+   }
+
+   .pet-name-titlee {
+      font-style: normal;
+      font-weight: 700;
+      line-height: 110%;
+      text-transform: capitalize;
+      text-decoration: none;
+   }
+
+   .pet-name-titlee:hover {
+      text-decoration: underline;
+   }
+
+   span.pet-collection-form-title {
+      font-family: var(--general-font);
+      font-weight: 400;
+      font-size: 18px;
+      line-height: 115%;
+      color: var(--global-primary-color);
+   }
+
+   .pet-collection-form-title {
+      font-family: var(--general-font);
+      font-style: normal;
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 115%;
+      color: var(--White, #FFF);
+   }
+
+   .breed-img {
+      height: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+   }
+
+   .badge-img {
+      width: 75px;
+      height: 75px;
+   }
+
+   .nav-pills .nav-link,
+   .nav-pills .show>.nav-link {
+      color: var(--global-primary-color);
+      background-color: #fff !important;
+   }
+
+   .nav-link.active {
+      color: #0d6efd !important;
+      background-color: #fff !important;
+      border-bottom: 3px solid var(--global-primary-color);
+      border-radius: 0px;
+   }
+
+   @media only screen and (max-width: 991px) {
+      .breed-avail-btn-fixed {
+         position: fixed;
+         bottom: 0;
+         left: 0;
+         width: 100%;
+         z-index: 1;
+      }
+   }
+
+   .spn_title {
+      font-style: normal;
+      font-weight: 400;
+      font-size: 20px;
+      line-height: 140%;
+      color: var(--global-primary-color);
+      font-family: var(--general-font);
+   }
+
+   .spn_value {
+      font-weight: 600;
+      font-size: 20px;
+      line-height: 160%;
+      color: var(--global-primary-color);
+      font-family: var(--general-font);
+   }
+
+   .tabcaption {
+      font-family: var(--general-font);
+      font-style: normal;
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 115%;
+      display: flex;
+      align-items: center;
+      text-align: center color:var(--global-primary-color)
+   }
+
+   .petcls {
+      font-style: normal;
+      font-weight: 800;
+      font-size: 30px;
+      line-height: 110%;
+      text-transform: uppercase;
+      color: var(--global-primary-color);
+   }
+
+   .discount {
+      text-decoration: line-through;
+      color: var(--global-primary-color);
+      text-align: right;
+      /* Primary3-SemiBold */
+      font-family: var(--general-font);
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: 140%;
+      /* 22.4px */
+      opacity: 0.6;
+   }
+
+   .price {
+      text-align: right;
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 125%;
+      color: var(--global-primary-color) !important;
+      font-family: var(--general-font);
+   }
+
+   #petDetail-PRseparater .container.cms-plugin,
+   #petDetail-PRseparater .container.cms-plugin #open-popup {
+      padding: 0;
+   }
+
+   .btn-info {
+      background: var(--global-primary-color) border:1px solid var(--global-primary-color)
+   }
+
+   .pet-traits-bar .progress-bar {
+      background-color: var(--global-secondary-color);
+   }
+
+   .pet-traits-bar .progress {
+      border-radius: 0;
+      margin-bottom: 5px;
+   }
+
+   .nav-link.tabcaption {
+      opacity: 0.6;
+   }
+
+   .tabcaption.active {
+      color: var(--global-primary-color) !important;
+      opacity: 1;
+   }
+
+   @media (min-width: 767px) {
+      .hidden-mobile {
+         display: none;
+      }
+   }
+
+   ul {
+      padding-left: 1rem;
+      padding-top: 1rem;
+   }
+
+   .clslist {
+      border: 1px solid #d5d5d5;
+      border-radius: 8px;
+   }
+
+   #carousel-thumbs {
+      padding: 0px !important;
+      height: 162px !important;
+   }
+
+   .nav-item :has(.active) {
+      border-bottom: 3px solid var(--global-primary-color)
+   }
+
+   .carousel-inner {
+      overflow: visible;
+      height: 100%;
+   }
+
+   .pet-nav-slider .slick-slide{
+        display: flex !important;
+        justify-content: center;
+        opacity: 0.7;
+        padding: 5px;
+    }
+
+    .pet-nav-slider .slick-slide.slick-current{
+        opacity: 1;
+    }
+
+   .ml-1 {
+      margin-left: 1px;
+   }
+
+   .pet-main-slider .carousel-item {
+      width: 100% !important;
+      left: 0px !important;
+   }
+
+   .carousel-item {
+      height: 100% !important;
+   }
+
+   .pet-main-slider .slick-track {
+      width: 100% !important;
+   }
+
+   .poptitle {
+      color: var(--global-primary-color);
+      text-align: center;
+      font-size: 18px;
+      padding: 5px 0px 5px 0px;
+   }
+
+   .clsbreeder {
+      font-style: normal;
+      font-weight: 600;
+      font-size: 20px;
+      line-height: 115%;
+      display: flex;
+      align-items: center;
+      text-align: center color:var(--global-primary-color);
+      padding: 10px 5px 0px 10px;
+      opacity: .8;
+   }
+
+   .custom-a-tag {
+      color: var(--global-primary-color);
+      text-decoration: none;
+   }
+
+   .custom-a-tag:hover,
+   .custom-a-tag:focus,
+   .custom-a-tag:active {
+      color: var(--global-primary-color);
+      /* Change this to your desired hover/focus/active color */
+   }
+
+   .pet-nav-slider,
+   .pet-nav-slider .slick-list,
+   .pet-nav-slider .slick-track,
+   .image-shape {
+      height: 100% !important;
+   }
+
+   .notes {
+      color: var(--global-primary-color);
+      font-family: var(--general-font);
+   }
+
+   .image-ratio {
+      aspect-ratio: 1 !important;
+   }
+
+   .slick-prev:before,
+   .slick-next:before {
+      color: var(--global-primary-color);
+      font-size: 2rem !important;
+      font-family: 'FontAwesome';
+      opacity: 1 !important;
+   }
+
+   .slick-next:before {
+      content: '›' !important;
+   }
+
+   .slick-prev::before {
+      content: '‹' !important;
+   }
+
+   .custom-general-font {
+      font-family: var(--general-font) !important;
+      font-size: 20px !important;
+   }
+
+   .video-container {
+      position: relative;
+      width: 100%;
+      max-height: 500px;
+      overflow: hidden;
+      aspect-ratio: 1;
+   }
+
+   .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+   }
+
+   .pet-status {
+      font-size: 18px;
+      font-weight: 600;
+      border-radius: var(--border-radius);
+   }
+
+   .promo-banner-image-container {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      height: 250px;
+   }
+
+   .promo-banner-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+   }
+
+   .pet-detail-sg {
+      display: flex;
+      align-items: flex-start;
+   }
+
+   .status-dender {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+   }
+
+   .sg-heading {
+      align-self: stretch;
+      color: var(--global-primary-color);
+      /* Primary1-Regular */
+      font-family: "Open Sans";
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 140%;
+      /* 28px */
+      opacity: 0.6;
+   }
+
+   .sg-text {
+      align-self: stretch;
+      color: var(--global-primary-color);
+      /* Primary1-Bold */
+      font-family: "Open Sans";
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 140%;
+      /* 28px */
+   }
+
+   .pet-form-div {
+      display: flex;
+      padding: 12px 20px;
+      align-items: center;
+      justify-content: space-between;
+      align-self: stretch;
+      background: var(--global-primary-color);
+   }
+
+   .pet-form-icon img{
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+   }
+
+   /* Media query for small screen mobile devices */
+   @media (max-width: 768px) {
+      .fixed-bottom {
+         display: flex;
+         opacity: 0.9;
+         /* Show the fixed bottom div on small screens */
+      }
+   }
+
+   .pet-detail-badges {
+      justify-content: space-between;
+   }
+
+   .breed-paw-icon {
+      display: flex !important;
+      gap: 15px;
+   }
+
+   .breed-form-icon img {
+      width: 32px;
+      height: 32px;
+   }
+
+   .pet-collection-form-outer {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 4px 4px 37px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(3px);
+      padding: 0px 15px 15px 15px;
+    }
+
+    .carousel {
+        position: relative;
+     }
+  
+     .carousel-item img {
+        object-fit: cover;
+     }
+  
+     #carousel-thumbs {
+        background: rgba(255, 255, 255, .3);
+        bottom: 0;
+        left: 0;
+        padding: 0 50px;
+        right: 0;
+     }
+  
+     #carousel-thumbs img {
+        cursor: pointer;
+     }
+  
+     #carousel-thumbs img:hover {
+        border-color: rgba(255, 255, 255, .3);
+     }
+  
+     #carousel-thumbs .selected img {
+        border-color: var(--global-primary-color);
+     }
+  
+     .carousel-control-prev,
+     .carousel-control-next {
+        width: 50px;
+     }
+  
+     @media all and (min-width: 576px) {
+        .carousel-container #carousel-thumbs {
+           position: absolute;
+        }
+     }
+  
+     .carousel-container #carousel-thumbs {
+        position: initial;
+     }
+  
+     @media (max-width: 576px) {
+        .carousel-container #carousel-thumbs {
+           padding-left: 1.5rem !important;
+           padding-right: 1.5rem !important;
+        }
+     }
+  
+     #myCarousel {
+        padding: 0px 0px 0px 0px;
+     }
+</style>
+{% endaddtoblock %}
+{% if pet_data %}
+    <div class="container pb-2 pt-4">
+        <div class="pet-detail-block">
+            {% comment %} Pet Detail Section {% endcomment %}
+            {% include 'plugins/pet_detail/includes/pet_detail_section.html' %}
+
+            {% comment %} Pet Info Section {% endcomment %}
+            {% include 'plugins/pet_detail/includes/pet_info_section.html' %}
+        </div>
+    </div>
+{% else %}
+    <div>
+        <h1>Pet is not Present or wrong plugin is added</h1>
+    </div>
+{%endif%}
+
+{% addtoblock "js"  %}
+<!-- Main Slider -->
+<script>
+    $(document).ready(function() {
+       // Initialize main slider
+       $('.pet-main-slider').slick({
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          arrows: false,
+          fade: true,
+          variableWidth: true,
+          adaptiveHeight: true,
+          asNavFor: '.pet-nav-slider'
+       });
+ 
+       // Get the number of slides in the navigation slider
+       var slideCount = $('.pet-nav-slider .nav-slide').length;
+ 
+       // If no slides are found, set slideCount to 1
+       if (slideCount === 0) {
+          slideCount = 1;
+       }
+ 
+       // Initialize navigation slider
+       $('.pet-nav-slider').slick({
+          dots: false,
+          slidesToShow: slideCount > 2 ? 3 : 2,
+          slidesToScroll: 1,
+          asNavFor: '.pet-main-slider',
+          focusOnSelect: true,
+          centerMode: slideCount > 2,  // Enable centerMode only if there are more than 2 slides
+          adaptiveHeight: true,
+          arrows: slideCount > 2,  // Show arrows only if there are more than 2 slides
+          infinte: slideCount > 2, // Show infinite only if there are more than 2 slides
+          responsive: [
+             {
+                breakpoint: 1024,
+                settings: {
+                   slidesToShow: Math.min(slideCount, 3),
+                   slidesToScroll: 1
+                }
+             },
+             {
+                breakpoint: 600,
+                settings: {
+                   slidesToShow: Math.min(slideCount, 2),
+                   slidesToScroll: 1
+                }
+             },
+             {
+                breakpoint: 480,
+                settings: {
+                   arrows: true,
+                   slidesToShow: 1,
+                   slidesToScroll: 1
+                }
+             }
+          ]
+       });
+    });
+ </script>
+{% endaddtoblock  %}

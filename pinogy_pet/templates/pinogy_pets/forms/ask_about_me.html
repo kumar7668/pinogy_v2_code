@@ -1,0 +1,334 @@
+{% load sekizai_tags thumbnail %}
+
+{% addtoblock "css" %}
+    <style>
+        /* Override styles for valid form controls within a validated form */
+        .was-validated .form-control:valid {
+            border-color: var(--global-primary-color); /* Set the default border color for form-control */
+            box-shadow: none; /* Remove any box shadow */
+        }
+        .was-validated .form-control:valid:focus {
+            border-color: var(--global-primary-color); /* Set the desired border color on focus */
+            box-shadow: none; /* Remove any box shadow */
+        }
+        .was-validated .form-check-input:valid {
+            border-color: var(--global-primary-color); 
+        }
+        .was-validated .form-check-input:valid:checked {
+            background-color: white; 
+        }
+        .was-validated .form-check-input:valid:focus {
+            box-shadow: none; 
+        }
+        input:-webkit-autofill{
+            -webkit-text-fill-color: var(--global-primary-color) !important;
+        }
+        .focus-color:focus {
+            color: var(--global-primary-color)
+        }
+        .contact-form-pet-card__title {
+            font-size: 18px;
+            font-weight: 600;
+            color: rgb(5, 74, 160);
+        }
+        .petinfo {
+            align-items: center !important;
+        }
+        .modal-header {
+            border-bottom: 0px solid;
+        }
+        .clscall,.clscall:hover{
+            color: var(--global-primary-color);
+            cursor:pointer;
+        } 
+    </style>
+{% endaddtoblock %}
+
+<div class="modal fade" id="petLsitCollectionForm" tabindex="1" aria-label="petLsitCollectionFormLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-body">
+                    {% comment %} Pet Info {% endcomment %}
+                    <div class="row petinfo">
+                        <div class="col-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="float: right; font-size: 15px"></button>
+                        </div>
+                        <div class="col-12 col-lg-5 col-md-5 col-sm-12 col-xs-12">
+                            {% comment %} Image link will be added through JS {% endcomment %}
+                            <img id="ask_about_me_pet_picture" src="" class="card-img-top" alt="" style="width: 100%" loading="lazy" />
+                        </div>
+                        <div class="col-12 col-lg-7 col-md-7 col-sm-12 col-xs-12">
+                            <div class="contact-form-pet-card__title mb-3">
+                                Send Me More Info On This Pet!
+                            </div>
+                            <span id="ask_about_me_contact">
+                                {% comment %} Contact data {% endcomment %}
+                                {% if pet and  pet.phone_number %}
+                                    <a href="tel:{{ pet.phone_number }}" aria-label="Call us at {{ pet.phone_number }}">
+                                        <i class="fa fa-phone" aria-hidden="true"></i> &nbsp;
+                                        {{ pet.phone_number }}
+                                    </a> 
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    {% comment %} Collection Form {% endcomment %}
+                    <div id="pet_collection_form_outer" >
+                        {% if success_message %}
+                            <p class="fw-bolder fs-6 label mt-3 mb-0 text-success " id="colletion_form_success_msg">
+                                {{ success_message }}
+                            </p>
+                        {% endif %}
+                        
+                        {% comment %} error message will be added dynamically.  {% endcomment %}
+                        <div class="general-error-msg"></div>
+                        
+                        <form class="theme-form needs-validation" id="pet_collection_form" method="post" action="{% url 'pinogy_pet:pet_collection_form' %}" novalidate>
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-12 col-lg-6">
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}
+                                        <div class="text-danger pt-1">
+                                        {% for error in form.first_name.errors %}
+                                            {{error}}<br/>
+                                        {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    <div class="invalid-feedback">Please fill out this field.</div>
+                                </div>
+                                <div class="col-12 col-lg-6">
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}
+                                        <div class="text-danger pt-1">
+                                        {% for error in form.last_name.errors %}
+                                            {{error}}<br/>
+                                        {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    <div class="invalid-feedback">Please fill out this field.</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 col-lg-6">
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                        <div class="text-danger pt-1">
+                                        {% for error in form.email.errors %}
+                                            {{error}}<br/>
+                                        {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    <div class="invalid-feedback">Please fill out this field.</div>
+                                </div>
+                                <div class="col-12 col-lg-6">
+                                    {{ form.phone }}
+                                    {% if form.phone.errors %}
+                                        <div class="text-danger pt-1">
+                                        {% for error in form.phone.errors %}
+                                            {{error}}<br/>
+                                        {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    <div class="invalid-feedback">Please enter a valid 10-digit number.</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    {{ form.message }}
+                                    {% if form.message.errors %}
+                                        <div class="text-danger pt-1">
+                                        {% for error in form.message.errors %}
+                                            {{error}}<br/>
+                                        {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    <div class="invalid-feedback">Please fill out this field.</div>
+                                </div>
+                            </div>
+                    
+                            {% if shopwindow_enable %}
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="mt-3">
+                                            <label class="pt-0">
+                                                <input class="form-check-input mt-0" type="checkbox" name="{{ form.shop_window.name }}" checked>
+                                                Yes, Send Me Puppy Information And Any Coupons.
+                                            </label>
+                                            {% if form.shop_window.errors %}
+                                                <div class="text-danger pt-1">
+                                                {% for error in form.shop_window.errors %}
+                                                    {{error}}<br/>
+                                                {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <p class="label mb-0">
+                                            I consent to being contacted via the channels I have provided ie SMS text message/email etc.
+                                        </p>
+                                        <p class="text-center mt-2 mb-0">Shopwindow<a href="https://shopwindow.io/terms-of-use" class="text-decoration-none" target="_blank"> Terms of Use</a>.</p>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="row">
+                                    <div class="col-12">
+                                        <p class="label mb-0">
+                                            I agree to receive pet & promotional information via the options selected below.
+                                        </p>
+                                        <div class="mt-2">
+                                            <label class="pt-0">
+                                                <input class="form-check-input mt-0" type="checkbox" name="{{ form.sms_okay.name }}" checked>
+                                                It's okay to text me.
+                                            </label>
+                                            {% if form.sms_okay.errors %}
+                                                <div class="text-danger pt-1">
+                                                {% for error in form.sms_okay.errors %}
+                                                    {{error}}<br/>
+                                                {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="mt-2">
+                                            <label class="pt-0">
+                                                <input class="form-check-input mt-0" type="checkbox" name="{{ form.email_me_more.name }}" checked>
+                                                It's okay to email me.
+                                            </label>
+                                            {% if form.email_me_more.errors %}
+                                                <div class="text-danger pt-1">
+                                                {% for error in form.email_me_more.errors %}
+                                                    {{error}}<br/>
+                                                {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                    
+                            <input type="hidden" name="form" value="{{ form_type }}" maxlength="17" id="id_form">
+                            <input type="hidden" name="site_url" value="{{ request.scheme }}://{{ request.get_host }}" maxlength="17" id="id_site_url">
+                            <input type="hidden" name="page_referer" value="{{ request.build_absolute_uri }}" maxlength="17" id="id_page_referer">
+                            
+                            {% comment %} Pet related Fields {% endcomment %}
+                            <input type="hidden" name="pet_id" value="" maxlength="55" id="id_pet_id">
+                            <input type="hidden" name="pet_gender" value="" maxlength="55" id="id_pet_gender">
+                            <input type="hidden" name="location_id" value="" maxlength="55" id="id_location_id">
+                            <input type="hidden" name="location" value="" maxlength="55" id="id_location_name">
+                            <input type="hidden" name="breed" value="" maxlength="55" id="id_breed_name">
+                            <input type="hidden" name="breed_slug" value="" maxlength="55" id="id_breed_slug">
+                            <input type="hidden" name="pet_type_slug" value="" maxlength="55" id="id_pet_type_slug">
+                    
+                            {{ form.captcha }}
+                            {% if form.captcha.errors %}
+                                <div class="text-danger pt-1">
+                                {% for error in form.captcha.errors %}
+                                    {{error}}<br/>
+                                {% endfor %}
+                                </div>
+                            {% endif %}
+                    
+                            <div class="row">
+                                <div class="col-12">
+                                    <button type="submit" id="formsubmissionclick" class="theme-primary-btn w-100 mt-3 submit_form.">
+                                        Submit
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+    </div>
+</div>
+
+{% addtoblock 'js' %}
+<script>
+
+    function askAboutMe(petData) {
+        // Fill the values of input fields with petData passed
+        $('#ask_about_me_pet_picture').attr('src', petData.pet_image_link);
+
+        $('#pet_collection_form #id_pet_id').val(petData.pet_id);
+        $('#pet_collection_form #id_pet_gender').val(petData.pet_gender);
+        $('#pet_collection_form #id_location_id').val(petData.location_id);
+        $('#pet_collection_form #id_location_name').val(petData.location_name);
+        $('#pet_collection_form #id_breed_name').val(petData.breed);
+        $('#pet_collection_form #id_breed_slug').val(petData.breed_slug);
+        $('#pet_collection_form #id_pet_type_slug').val(petData.pet_type_slug);
+
+        // Open the popup form
+        $("#petLsitCollectionForm").modal("show");
+    }
+
+    function showErrorMessage(formOuter, errorMsg){
+        // Adding error message in `general-error-msg`
+        const errorMessage = `<div class="alert alert-danger mt-3 mb-0" role="alert"><strong>${errorMsg}</strong></div>`
+        formOuter.find('.general-error-msg').html(errorMessage);
+
+        setTimeout(function() {
+            formOuter.find('.general-error-msg').remove();
+        }, 5000);
+    }   
+
+    $(document).on("submit", "#pet_collection_form", function (event) {
+        event.preventDefault();
+    
+        const collectionForm = $("#pet_collection_form");
+        const form = document.getElementById("pet_collection_form");
+        const formOuter = $("#pet_collection_form_outer");
+    
+        // Check if the captcha field is empty or the value attribute is not present
+        const captchaField = $('#pet_collection_form input.django-recaptcha-hidden-field');
+        const captchaValue = captchaField.val();
+        if (!captchaValue || captchaField.attr('value') === undefined) {
+            showErrorMessage(formOuter, "No Captcha found. Please refresh.");
+            return false;
+        }
+    
+        // Manually submit the form using Fetch API
+        var formData = new FormData(form);
+    
+        var url = form.action;
+        fetch(url, {
+            method: "POST",
+            body: formData,
+        })
+        .then(response => {
+            if (response.status === 201) {
+                // clear the form
+                collectionForm.find("input[type='text']").val('');
+                collectionForm.find("input[type='email']").val('');
+                collectionForm.find("textarea").val('');
+    
+                // redirect to thank you page
+                window.location.href = '/thank-you/';
+    
+                return response.text();
+            } else if (response.status === 400) {
+                return response.text();
+            } else {
+                return false;
+            }
+        })
+        .then(data => {
+            if (data) {
+                formOuter.html($(data).find("#pet_collection_form_outer"));
+            } else {
+                showErrorMessage(formOuter, "Something went wrong. Please try again.");
+            }
+        });
+    
+        return false;
+    });
+    
+    document.getElementById("pet_collection_form").addEventListener("submit", function(event) {
+        event.preventDefault();
+        if (this.checkValidity() === false) {
+            event.stopPropagation();
+            this.classList.add("was-validated");
+        }
+    });
+</script>
+{% endaddtoblock %}

@@ -1,0 +1,213 @@
+{% extends 'carousel/carousel_plugin.html' %}
+{% load  static menu_tags sekizai_tags global_theme_config_tags %}
+{% global_theme_object as global_theme_config %}
+
+{% load static %}
+
+{% block carousel_items %}
+{% addtoblock "css"  %}
+<style>
+    .hr-promotion-box{
+        border: 4px solid {{instance.glossary.card_bg_color}};
+        display:flex;
+        margin: 10px;
+        {% comment %} background: {{instance.glossary.card_bg_color}} !important; {% endcomment %}
+    }
+    .hr-carousel-item-box-img {
+        flex-shrink: 0;
+    }
+    .offer{
+        font-size: 18px !important;
+        font-weight:500 !important;
+        line-height: 140%;
+        color: #FFFFFF;
+        opacity: 0.9;
+    }
+    .hr-desc{
+        font-size: 20px !important;
+        font-weight: 600 !important;  
+        line-height: 100%;
+        line-height: 115%;
+        opacity: 0.9;
+        font-family:var(--general-font);
+        background:{{instance.glossary.card_bg_color}};
+        color:{{instance.glossary.card_text_color}} !important;
+    }
+    .message{        
+        font-size: 12px !important;
+        font-weight:400 !important;
+        line-height: 140%;
+        opacity: 0.9;
+        flex: none;
+        order: 1;
+        flex-grow: 0;
+        color:{{instance.glossary.card_text_color}} !important;
+        font-style: normal;
+        font-size: 14px !important;
+                         
+           }
+    .offer, .hr-desc, .message{
+        margin: 0;
+    }
+    .promo-hr-desc-box{
+       height: 20vh !important;
+       word-wrap: break-word !important;
+    }
+    .more_view{
+        font-weight: 400;
+        line-height: 140%;
+        text-transform: lowercase;
+        color: var(--global-secondary-color);
+        text-decoration: none;
+        font-size: 15px;
+    }
+    .more_view:hover{
+        color: transparent;
+    }
+    @media (min-width: 419px){
+        .box-theme-sub-title, .info-layout-title{
+            font-size: 18px !important;
+        }
+        .hr-carousel-item-box .promo-hr-desc-box .offer{
+            font-size: 10px !important;
+            font-weight:300 !important;
+        }
+        .hr-carousel-item-box .promo-hr-desc-box .hr-desc{
+            font-size: 12px !important;
+            font-weight: 400 !important;  
+        }
+        .hr-carousel-item-box .promo-hr-desc-box .message{
+            font-size: 8px !important;
+            font-weight: 300 ;  
+        }
+    }
+    
+    @media (min-width: 420px) and (max-width: 767px){        
+        .box-theme-sub-title, .info-layout-title{
+            font-size: 24px !important;
+        }
+        .hr-carousel-item-box .promo-hr-desc-box .offer{
+            font-size: 12px !important;
+            font-weight:450 !important;
+        }
+        .hr-carousel-item-box .promo-hr-desc-box .hr-desc{
+            font-size: 14px !important;
+            font-weight: 550 !important;  
+        }
+        .hr-carousel-item-box .promo-hr-desc-box .message{
+            font-size: 10px !important;
+            font-weight: 300 ;  
+        }
+    }
+    @media (min-width: 768px) and (max-width: 990px){
+        .box-theme-sub-title, .info-layout-title{
+            font-size: 28px !important;
+        }  
+        .hr-carousel-item-box .promo-hr-desc-box .offer{
+            font-size: 12px !important;
+            font-weight:480 !important;
+        }
+        .hr-carousel-item-box .promo-hr-desc-box .hr-desc{
+            font-size: 16px  !important;
+            font-weight: 550  !important;  
+        }
+        .hr-carousel-item-box .promo-hr-desc-box .message{
+            font-size: 10px  !important;
+            font-weight: 300 ;  
+        }
+    }
+    .horizontal-image-box{
+        height: 300px;
+    }
+    .hr-carousel-item-box-hr-desc{
+        background:{{instance.glossary.card_bg_color}};
+        height:100%;
+        padding:10px
+    }
+    .hr-carousel-item-box a{
+        text-decoration:none !important;
+    }
+</style>
+{% endaddtoblock %}
+    
+    {% if items %}
+    {% for item in items %}
+        <div>
+            <div class="hr-carousel-item-box hr-carousel-item-box-style-5 hr-promotion-box">
+            <div class="row g-0 " style="align-items: center;
+            background: {{instance.glossary.card_bg_color}};width:100%">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-sx-12">
+                <a href='{{ item.product_page_url }}'>
+                    <div class="hr-carousel-item-box-img horizontal-image-box">
+                        <img src="{{ item.images }}" class="car_main_img" alt="car_main_img" style=" height: 100% !important;
+                        object-fit: fill;width:100%">   
+                    </div>
+                </a>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 col-sx-12">
+                    <a href='{{ item.product_page_url }}'>
+                        <div class="hr-carousel-item-box-hr-desc">
+                            <div class="hr-desc" 
+                                style="font-style: normal;
+                                font-weight: 700;
+                                line-height: 115%;">
+                                {{item.name}}
+                            </div>
+                            <br/>
+                            <div class="message" style="">{{item.description|truncatechars:180}}                       
+                                {% if item.description|length > 180 %}                            
+                                More
+                                {% endif %}
+                            </div>                    
+                        </div>  
+                    </a>
+            </div>
+        </div>
+            </div>
+        </div>
+    {% endfor %}
+    {% endif %}
+{% endblock carousel_items %}
+
+{% block initilize_carousel %}
+    $( document ).ready(function() {
+        $('.more_view').on('click', function () {
+            var more_text = $(this).data("text");
+            $('.more-body-text').html(more_text);
+            $('#moreModal').modal('show');
+            return false;
+        });
+
+        $(".modal-close").on('click', function () {
+            $('#moreModal').modal('toggle');
+            return false;
+        });
+
+        $('.carousel-layout-slider-{{instance.id}}').slick({
+            dots: false,
+            arrows: true,
+            infinite: true,
+            speed: 300,
+            slidesToShow: 2,
+            slidesToScroll: 2,
+           responsive: [
+                {
+                    breakpoint: 600,
+                    settings: {
+                        slidesToShow: 2,
+                        slidesToScroll: 2
+                    }
+                },
+                {
+                    breakpoint: 480,
+                    settings: {
+                        slidesToShow: 1,
+                        slidesToScroll: 1
+                    }
+                }
+              
+            ]
+        });
+        $('.carousel-layout-slider-{{instance.id}}').removeClass("d-none");
+    });
+{% endblock %}

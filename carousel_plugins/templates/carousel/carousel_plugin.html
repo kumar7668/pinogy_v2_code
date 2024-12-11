@@ -1,0 +1,299 @@
+{% load static cms_tags sekizai_tags global_theme_config_tags %}
+
+{% if items %}
+
+{% global_theme_object as global_theme_config %}
+
+{% addtoblock "css"  %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/custom-carousel-preview.css' %}">
+    <style>
+        @media screen only and(max-width: 300px) {
+            .carousel-layout-wrap-footer{
+                display: block !important;
+            }
+        }
+        {% if global_theme_config.primary_button_shape %}
+        .carousel-{{instance.id}} .carousel-btn1.pill,
+        .carousel-{{instance.id}} .carousel-btn2.pill{
+            border-radius: 100px;
+        }
+        .carousel-{{instance.id}} .carousel-btn1.rounded,
+        .carousel-{{instance.id}} .carousel-btn2.rounded{
+            border-radius: 12px;
+        }
+        .carousel-{{instance.id}} .carousel-btn1.rectangle,
+        .carousel-{{instance.id}} .carousel-btn2.rectangle{
+            border-radius: 0;
+        }
+        {% endif %}
+
+        {% comment %} Change slider arrows
+        .carousel-plugin .slick-prev:before {
+            content: url({% static 'images/ic-left.svg' %});
+        }
+
+        .carousel-plugin .slick-next:before {
+            content: url({% static 'images/ic-right.svg' %});
+        }{% endcomment %}
+
+        .slick-prev:before,
+        .slick-next:before{
+            color: var(--global-primary-color);
+            font-size: 2rem !important;
+            font-family: 'FontAwesome';
+            opacity: 1 !important;
+        }
+        .slick-next:before{
+            content: '›' !important;
+        }
+        .slick-prev::before {
+            content: '‹'!important;
+        }
+
+        @media (max-width: 768px) {
+            .carousel-btns button {
+                width: 100%;
+            }
+        }
+        @media (max-width: 575px) {
+            .slick-arrow{
+                {% comment %} display:none !important {% endcomment %}
+            }
+        }
+        .carous-title-{{instance.id}}{
+            color: {{instance.glossary.carous_title_color}} !important;
+        }
+        .cardbg-{{instance.id}}{
+            background-color: {{instance.glossary.blog_bg_color}};
+            --bs-card-border-color: none;
+        }
+        .more_view{
+            font-weight: 400;
+            line-height: 140%;
+            text-transform: lowercase;
+            color: var(--global-secondary-color);
+            text-decoration: none;
+            font-size: 15px;
+        }
+        .more_view:hover{
+            color: transparent;
+        }
+        .h2-theme-bold{
+            {% comment %} text-transform:capitalize !important  {% endcomment %}
+
+            {% comment %} this code commented because of woofmeow {% endcomment %}
+        }
+        .title_text .sub_title_text{
+            color: var(--global-primary-color) !important;
+        }
+        .mb-80{
+            margin-bottom: 80px;
+        }
+    </style>
+{% endaddtoblock  %}
+
+<div class="container carousel-{{instance.id}} carousel-plugin px-4 mb-80">
+    <div class="row">
+        <div class="col-12">
+            <div>
+                <div class="h2-theme-bold carous-title-{{instance.id}} text-center title_text">
+                {{instance.glossary.title_text | safe}}
+            </div>
+            <p class="semi-bold mt-3 text-center sub_title_text">
+                {{instance.glossary.sub_title_text | safe}}
+            </p>
+        </div>
+        <div class="mt-4">
+            <div class="carousel-layout-wrap">
+                <div class="carousel-layout-wrap-inner" onclick="$('#tp_1').click();">
+                    <div class="carousel-layout-slider-{{instance.id}} car_slider_cls d-none">
+                        {% block carousel_items %}
+                        {% endblock carousel_items %}
+                    </div>
+                    {% comment %} <div class="carousel-layout-slider-arrows  carousel-layout-slider-{{instance.id}}-arrows">
+                    </div> {% endcomment %}
+                </div>
+                {% comment %} <div class="carousel-layout-slider-dots carousel-layout-slider-{{instance.id}}-dots">
+                </div> {% endcomment %}
+                {% if instance.glossary.first_button_text or instance.glossary.second_button_text %}   
+                <div class="carousel-layout-wrap-footer text-center pt-3">
+                    <div class="info-layout-box container 12 p-0">
+                      
+                        <div class="row">
+                            <div class="col-12 carousel-btns"> 
+                                {% if instance.glossary.first_button_text %}
+                                    <button class="mt-2 {% if instance.glossary.first_button_style == 'outline' %}theme-secondary-btn{% else %}theme-primary-btn{% endif %}" onclick="onNavigationClick('{{first_btn_link}}')">
+                                        {{instance.glossary.first_button_text}}
+                                    </button>
+                                {% endif %}
+                                {% if instance.glossary.second_button_text %}
+                                    <button class="mt-2 {% if instance.glossary.second_button_style == 'outline' %}theme-secondary-btn{% else %}theme-primary-btn{% endif %}" onclick="onNavigationClick('{{second_btn_link}}')">
+                                        {{instance.glossary.second_button_text}}
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>  
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- Modal -->
+    <div class="modal fade" id="moreModal" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header p-0">
+                    <button type="button" class="modal-close p-2 pb-0">&times;</button>
+                </div>
+                <div class="modal-body more-body-text pt-0">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% addtoblock "js"  %}
+    <script type="text/javascript">
+        {% block initilize_carousel %}
+        {% comment %} Override for initilize carousel with diff setiing. {% endcomment %}
+            $( document ).ready(function() {
+                $('.more_view').on('click', function () {
+                    var more_text = $(this).data("text");
+                    $('.more-body-text').html(more_text);
+                    $('#moreModal').modal('show');
+                    return false;
+                });
+
+                $(".modal-close").on('click', function () {
+                    $('#moreModal').modal('toggle');
+                    return false;
+                });
+
+                const card_size = `{{instance.glossary.card_size}}`
+                let slides_xxl = 6
+                let slides_xl = 4
+                let slides_l = 3
+                let slides_sm = 2
+                if( card_size == 'LARGE' ){
+                    slides_xxl = 4
+                    slides_xl = 3
+                    slides_l = 2
+                    slides_sm = 1
+                }
+                $('.carousel-layout-slider-{{instance.id}}').slick({
+                    dots: false,
+                    arrows: true,
+                    infinite: true,
+                    speed: 300,
+                    slidesToShow: slides_xxl,
+                    slidesToScroll: slides_xxl,
+                    //appendDots: ".carousel-layout-slider-{{instance.id}}-dots",
+                    //appendArrows: ".carousel-layout-slider-{{instance.id}}-arrows",
+                    //prevArrow: "<button type='button' class='slick-prev'><img src='{% static 'images/ic-left.svg' %}' alt='arrow-left'></button>",
+                    //nextArrow: "<button type='button' class='slick-next'><img src='{% static 'images/ic-right.svg' %}' alt='arrow-right'></button>",
+                    responsive: [
+                        {
+                            breakpoint: 1800,
+                            settings: {
+                                slidesToShow: slides_xxl,
+                                slidesToScroll: slides_xxl,
+                                infinite: true,
+                                dots: false
+                            }
+                        },
+                        {
+                            breakpoint: 1000,
+                            settings: {
+                                slidesToShow: slides_xl,
+                                slidesToScroll: slides_xl,
+                                infinite: true,
+                                dots: false
+                            }
+                        },
+                        {
+                            breakpoint: 768,
+                            settings: {
+                                dots: false,
+                                slidesToShow: slides_l,
+                                slidesToScroll: slides_l
+                            }
+                        },
+                        {
+                            breakpoint: 480,
+                            settings: {
+                                dots: false,
+                                slidesToShow: slides_sm,
+                                slidesToScroll: slides_sm
+                            }
+                        }
+                        // You can unslick at a given breakpoint now by adding:
+                        // settings: "unslick"
+                        // instead of a settings object
+                    ]
+                });
+                $('.carousel-layout-slider-{{instance.id}}').removeClass("d-none");
+            });
+        {% endblock initilize_carousel %}
+
+        function onNavigationClick(url){
+            window.location.href=url;
+        }
+    </script>
+{% endaddtoblock  %}
+{% else %}
+    {% if instance.glossary.pet_source == "AVAILABLE_PETS" %}
+        <div class="container pet-list-container">
+            <div class="row">
+                <div class="col-12 col-lg-1 d-flex flex-column align-items-center justify-content-center">
+                    {% include 'plugins/includes/paws-left.html' %}
+                </div>
+                <div class="col-12 col-lg-10 mb-40">
+                    {% comment %} <div class="h2-theme-bold text-center py-3">Want {%if selected_pet_data.pbrd_display_name %}{{selected_pet_data.pbrd_display_name}}{% else %}{{selected_breed_data.name}}{% endif %} {{ selected_pet_type_slug }} in your inbox? </div> {% endcomment %}
+                    {% comment %} <p class="semi-bold text-center">We'll notify you when new {%if selected_pet_data.pbrd_display_name %}{{selected_pet_data.pbrd_display_name}}{% else %}{{selected_breed_data.name}}{% endif %} {{ selected_pet_type_slug }} are added so that you don't miss out!</p> {% endcomment %}
+                    <div>
+                        <div class="h2-theme-bold carous-title-{{instance.id}} text-center title_text mt-40">
+                            {{instance.glossary.title_text | safe}}
+                        </div>
+                        <p class="semi-bold text-center mb-0 mt-3">
+                            All pets have found there homes!
+                            Sign up to be notified when new pets are added so you don't miss out.
+                        </p>
+                    </div>
+                    <div class="col-12 col-lg-7 mx-auto">
+                        {% include 'plugins/includes/available_puppy_collection_form.html' with form=available_puppy_collection_form  marketing_list_id=instance.glossary.marketing_list %}
+                        
+                    </div>
+                </div>
+                <div class="col-12 col-lg-1 d-flex flex-column align-items-center justify-content-center">
+                    {% include 'plugins/includes/paws-right.html' %}
+                </div>
+            </div>
+        </div>
+        
+        {%else%}
+        <div class="container carousel-{{instance.id}} carousel-plugin px-4 mb-80">
+            <div class="row">
+                <div class="col-12">
+                    <div>
+                        <div class="h2-theme-bold carous-title-{{instance.id}} text-center title_text">
+                            {{instance.glossary.title_text | safe}}
+                        </div>
+                        <p class="semi-bold mt-3 text-center sub_title_text">
+                            {{instance.glossary.sub_title_text | safe}}
+                        </p>
+                    </div>
+                </div>
+                <div class="col-12" style="text-align:center;">
+                    <span style="
+                    opacity: .5;
+                    font-size: 23px;
+                    font-family: var(--heading-font);">Nothing here for now, but check back soon!</span>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    
+{% endif %}

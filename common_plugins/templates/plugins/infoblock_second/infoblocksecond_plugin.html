@@ -1,0 +1,97 @@
+{% load static sekizai_tags global_theme_config_tags %}
+
+{% global_theme_object as global_theme_config %}
+
+{% addtoblock "css"  %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/custom-info.css' %}">
+    <style>
+        .infosecond-{{instance.id}} .infosecond-btn,
+        .infosecond-{{instance.id}} .infosecond-btn:hover{
+            background: {% if instance.glossary.button_style == 'fill' %}{{instance.glossary.button_fill_color}}{% else %}#fff{% endif %};
+            border: 1px solid {{instance.glossary.button_outline_color}};
+            color: {{instance.glossary.button_font_color}};
+            text-decoration: none;
+        }
+        .infosecond-{{instance.id}} .infosecond-title{
+            color: {{instance.glossary.title_text_color}};
+            text-transform: {{'capitalize'}};
+        }
+        .infosecond-{{instance.id}} .infosecond-sub-title2{
+            color: {{instance.glossary.sub_title_text_color}};
+            font-weight: 400;
+            line-height: 140%;
+            
+        }
+        .infosecond-{{instance.id}} .infosecond-sub-title{
+            font-size: 18px !important;
+            line-height: 140%;
+            color: {{instance.glossary.message_text_color}};         
+        }
+        .infosecond-{{instance.id}} .infosecond-img{
+            max-width: 378px;
+            max-height: 540px;
+        }
+        {% if global_theme_config.primary_button_shape %}
+        .infosecond-{{instance.id}} .infosecond-btn.pill{
+            border-radius: 100px;
+        }
+        .infosecond-{{instance.id}} .infosecond-btn.rounded{
+            border-radius: 12px;
+        }
+        .infosecond-{{instance.id}} .infosecond-btn.rectangle{
+            border-radius: 0;
+        }
+        {% endif %}
+        @media (max-width :780px){
+            .btnnav{
+                font-size:15px !important;
+            }
+        }
+    </style>
+{% endaddtoblock  %}
+<div class="info-preview-section py-5 infosecond-{{instance.id}}">
+    <div class="info-layout-wrap no-hover">
+        <div class="info-layout-wrap-inner">
+            <div class="info-layout-box container">
+                <div class="row">
+                    <!-- Focus on order-->
+                    <div class="col-12 col-sm-4 order-1 d-flex justify-content-center flex-column">
+                        <div class="info-layout-content-img">
+                            <img src="{% if instance.image_left %}{{instance.image_left.url}}{% else %}{% static 'images/default-placeholder-image.webp' %}{% endif %}" alt="info-img left" class="info_placeholder img-fluid infosecond-img" loading="lazy">
+                        </div>
+                    </div>
+                    <!-- Focus on order-->
+                    <div class=" col-12 col-sm-4 order-2 d-flex align-items-center">
+                        <div class="info-layout-content">
+                            <div class="info-layout-content-inner">
+                                <div class="h2-theme-bold pb-3">
+                                    {{instance.glossary.title_text|safe}}
+                                </div>
+                                <div class="info-layout-sub-title infosecond-sub-title2">
+                                    {{instance.glossary.sub_title_text |safe}}
+                                </div>
+                                <div class="info-layout-sub-title infosecond-sub-title">
+                                    {{instance.glossary.message_text|safe}}
+                                </div>
+
+                                {% ifequal 'True'  instance.glossary.isbutton %}
+                                <div class="info-layout-action d-flex">
+                                    <a class="{% if instance.glossary.button_style == 'outline' %} theme-secondary-btn {% else %} theme-primary-btn {% endif %} sw-100" href="{{btn_link}}" area-label = "{{instance.glossary.button_text}}">
+                                        {{instance.glossary.button_text}}
+                                    </a>
+                                </div>
+                                {%endifequal%}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Focus on order-->
+                    <div class="col-12 col-sm-4 order-3 d-flex justify-content-center flex-column">
+                        <div class="info-layout-content-img">
+                            <img src="{% if instance.image_right %}{{instance.image_right.url}}{% else %}{% static 'images/default-placeholder-image.webp' %}{% endif %}" alt="info-img right" class="info_placeholder img-fluid infosecond-img" loading="lazy">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

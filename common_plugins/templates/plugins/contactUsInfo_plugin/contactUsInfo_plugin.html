@@ -1,0 +1,86 @@
+{% load static sekizai_tags global_theme_config_tags %}
+
+{% global_theme_object as global_theme_config %}
+
+{% addtoblock "css"  %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/custom-info.css' %}">
+    <style>
+        .clsrow{
+            background-image: url("{{instance.glossary.bg_image.url}}");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+        }
+        .clslocationdetail{
+            margin: auto;
+        }
+        .clstitle{
+            font-style: normal;
+            font-weight: 700;
+            font-size: 40px;
+            line-height: 160%;
+            text-transform: uppercase;
+            color:var(--global-primary-color); 
+        }
+        .clsdec{
+            font-style: normal;
+            font-weight: 400;
+            font-size: 20px;
+            line-height: 140%;
+            color: #2F2626;
+            opacity: 0.9;
+        }
+        .clslocation{
+            font-family: 'Open Sans';
+            font-style: normal;
+            font-weight: 400;
+            font-size: 18px;
+            line-height: 140%;
+            color: #EB1717;
+            padding-top:10px;
+        }
+    </style>
+{% endaddtoblock  %}
+<div class="container">
+    <div class="row">
+        {% comment %} <div class="col-lg-12">
+title
+        </div>
+        <div class="col-lg-12">
+        Sub title    
+        </div> {% endcomment %}
+    </div>
+    <div class="row clsrow">
+    <div class="col-lg-4">
+        <img src="{{ instance.glossary.side_image.url }}" class="img-fluid subscribe-us-image" alt="contactus-info-img-alt" loading="lazy"/>
+        {% comment %} <img src="{% if instance.image_left %}{{instance.image_left.url}}{% else %}{% static 'images/default-placeholder-image.webp' %}{% endif %}" alt="info-img" class="info_placeholder img-fluid infosecond-img"> {% endcomment %}
+    </div>
+    <div class="col-lg-4 clslocationdetail">
+        <div class="">
+        <div class="h2-theme-bold pb-3">
+            {{store.receipt_name}}
+        </div>
+        <div class="clsdec"> {% if store.entity.notes %}{{store.entity.notes}}{% else %} We are inside Colonie Center, lower level next to Macy's {% endif %}
+        </div>
+        <div class="clslocation"> 
+            <p class="inner-map-address mb-0">
+            <i class="fa fa-map-marker" aria-hidden="true"></i> {{store.entity.address_1}} , {{store.entity.city}} , {{store.entity.region_fullname}} , {{store.entity.postal_code}}
+            </p>
+<br/>
+            <a
+            id="contactus"
+            href="{{instance.glossary.btn_link}}" 
+            area-label = "this is contact us link" 
+            class="action-button theme-primary-btn d-block">
+               <span> Contact Us</span>
+            </a>
+            <br/> <br/>
+        </div>
+        
+    </div>
+</div>
+    <div class="col-lg-4">
+        <iframe src="https://maps.google.com/maps?q={{store.latitude}},{{store.longitude}}&amp;z=13&amp;output=embed&amp;maptype=satellite" allowfullscreen="" maptype="satellite" loading="lazy" title="contactus-info-map" style="width: 100%; height: 450px;"></iframe>
+        </div>
+</div>
+</div>

@@ -1,0 +1,35 @@
+{% extends "custom_design/forms/widgets/base-widget.html" %}
+{% load static %}
+
+{% block widget_section %}
+<div class="w-50 admin-form">
+    {# Text Box Label #}
+    {% if widget.attrs.label %}
+        <div class="primary-label">
+            {{ widget.attrs.label|capfirst }}
+        </div>
+    {% endif %}
+
+    <div class="box-theme-form-item">
+        <div class="box-theme-form-item-inline">
+            {# Text Box  #}
+            <div class="box-theme-form-item-inline-input">
+                <input name="{{widget.name}}" id="{{widget.attrs.id}}" type="{{widget.attrs.input_type}}"
+                       {% if widget.attrs.class %} class="{{ widget.attrs.class }}" {% endif %}
+                       value="{% if widget.value %}{{widget.value}}{% endif %}"
+                       {% if widget.attrs.placeholder %} placeholder="{{ widget.attrs.placeholder }}" {% endif %}
+                       class="form-input" {% if widget.required %} required {% endif %}>
+            </div>
+
+            {# Color Picker Preview #}
+            {% if widget.attrs.is_color_box_display %}
+                <div class="dev_colorpicker">
+                    <div class="form-color-picker-box dev_colorpicker_preview title-color-display" style="background: #000;">
+                        <img src="{% static 'images/ic-buck.svg' %}">
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

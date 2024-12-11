@@ -1,0 +1,21 @@
+{% extends "custom_design/forms/widgets/base-widget.html" %}
+
+{% block widget_section %}
+    <div class="admin-form">
+        {% for checkbox_elem in checkbox_elements %}
+            <div class="form-check checkbox-outer d-flex align-items-center gap-2 p-0">
+                <input class="form-check-input custom-checkbox m-0" name="{{ widget.name }}" type="checkbox"
+                       value="{{ checkbox_elem.value }}" id="{{ checkbox_elem.attrs.id }}"
+                        {% if checkbox_elem.selected %} checked {% endif %}>
+                <label class="form-check-label custom-checkbox-label m-0" for="{{ checkbox_elem.attrs.id }}">
+                    {{ checkbox_elem.label }}
+                </label>
+            </div>
+        {% empty %}
+            <h3 class="section-header">
+                <p class="section-sub-header">No choices are available.</p>
+            </h3>
+        {% endfor %}
+    </div>
+
+{% endblock %}

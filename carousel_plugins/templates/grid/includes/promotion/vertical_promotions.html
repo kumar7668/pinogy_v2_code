@@ -1,0 +1,67 @@
+
+
+{% load sekizai_tags static %}  <!-- Load Sekizai tags -->
+
+<!-- Add custom CSS to the "css" block -->
+{% addtoblock "css" %}
+<style>
+    {% if instance.glossary.grid_card_size == 'SMALL' and instance.glossary.promotion_layout == 'promotion_layout_1' %}
+            .grid-container {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(291px, 1fr)); /* four equal columns */
+              gap: 20px; /* Space between grid items */
+              align-items : center;
+          }
+          {% elif instance.glossary.grid_card_size == 'LARGE' and instance.glossary.promotion_layout == 'promotion_layout_1'%} 
+            .grid-container {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* three equal columns */
+              gap: 20px; /* Space between grid items */
+              align-items : center;
+            }
+    {% endif %}
+    .grid-item-{{instance.id}} h3{
+        color : black;
+    }
+    .grid-item-{{instance.id}}  {
+        position : relative;
+        text-align: center;
+        background-color: #f9f9f9;
+        display :none;
+      }
+      .grid-item-title{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        padding: 12px;
+      }
+      .grid-item-{{instance.id}} .logo-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto;
+    }
+
+    .grid-item-{{instance.id}} .logo-box img {
+        max-width: 100%;
+        max-height: 100%;
+        aspect-ratio : 1;
+    }
+
+
+</style>
+{% endaddtoblock %}
+
+{% for item in promotion_data %}
+
+    <div class="grid-item-{{instance.id}}">
+        <a class='stretched-link text-decoration-none' href="{{item.product_page_url}}" >
+        </a>
+        <div class="logo-box">
+                <img src="{{item.images}}" alt="{{item.name}}" loading = "lazy">
+        </div>
+        <div class="grid-item-title">{{item.name}}</div>
+    </div>
+
+{% endfor %}

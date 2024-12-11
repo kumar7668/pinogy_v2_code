@@ -1,0 +1,117 @@
+{% load cms_tags sekizai_tags %}
+
+{% addtoblock "css" %}
+<style>
+    .with-label{
+        margin-top: 8px !important;
+    }
+    @media (max-width: 767px) {
+        /* Apply styles only for screens with a maximum width of 767 pixels (typically mobile devices) */
+        .f-width {
+          width: 100%;
+        }
+    }
+
+    /* Override styles for valid form controls within a validated form */
+    .was-validated .form-control:valid {
+        border-color: var(--global-primary-color); /* Set the default border color for form-control */
+        box-shadow: none; /* Remove any box shadow */
+    }
+    .was-validated .form-control:valid:focus {
+        border-color: var(--global-primary-color); /* Set the desired border color on focus */
+        box-shadow: none; /* Remove any box shadow */
+    }
+    .was-validated .form-check-input:valid {
+        border-color: var(--global-primary-color); 
+    }
+    .was-validated .form-check-input:valid:checked {
+        background-color: white; 
+    }
+    .was-validated .form-check-input:valid:focus {
+        box-shadow: none; 
+    }
+    input:-webkit-autofill{
+        -webkit-text-fill-color: var(--global-primary-color) !important;
+    }
+    .focus-color:focus {
+        color: var(--global-primary-color);
+    }
+</style>
+{% endaddtoblock %}
+
+<div class="container pt-3 form-builder-error-{{ instance.cmsplugin_ptr_id|slugify }}" style="display: none;">
+    <div class="alert alert-danger d-flex align-items-center" role="alert">
+        <p class="m-0 text-danger">Something went wrong, please contact admin !</p>
+    </div>
+</div>
+
+<div class="pt-3 form-builder-success-msg-{{ instance.cmsplugin_ptr_id|slugify }}" style="display: none;">
+    <h3>{{ sucess_message }}</h3>
+</div>
+
+<form method="POST" action="{% url 'pinogy_form_builder:submit-builder-form' %}" class="pt-2 pb-5 theme-form needs-validation" {% if instance.cmsplugin_ptr_id %} id="id-{{ instance.cmsplugin_ptr_id|slugify }}" {% endif %} novalidate>
+    {% csrf_token %}
+
+
+    {% for plugin in instance.child_plugin_instances %}
+        {% render_plugin plugin %}
+    {% endfor %}
+
+    {% comment %} Hidden Fields {% endcomment %}
+    <input type="hidden" name="form" value="{{ instance.form_name }}" required />
+
+    {{ form.captcha }}
+    {% if form.captcha.errors %}
+        <div class="text-danger pt-1">
+        {% for error in form.captcha.errors %}
+            {{error}}<br/>
+        {% endfor %}
+        </div>
+    {% endif %}
+
+    <button class="theme-primary-btn mt-3 f-width check_validation" >Submit</button>
+</form>
+
+{% addtoblock "js" %}
+<script>
+    $(document).ready(function () {
+        $("#id-{{ instance.cmsplugin_ptr_id|slugify }}").submit(function (event) {
+            event.preventDefault();
+
+            // Check if the form is valid
+            if ($(this).get(0).checkValidity()) {
+                // Hide error message, if Something went wrong earlier
+                $(".form-builder-error-{{ instance.cmsplugin_ptr_id|slugify }}").hide();
+
+                // If the form is valid, proceed with the Fetch request
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: new FormData($(this).get(0)),
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        $("#id-{{ instance.cmsplugin_ptr_id|slugify }}").hide();
+                        $(".form-builder-success-msg-{{ instance.cmsplugin_ptr_id|slugify }}").show();
+                        // redirect to thank you page
+                        window.location.href = '/thank-you/';
+                    },
+                    error: function (error) {
+                        // Show error message, if Something go wrong
+                        $(".form-builder-error-{{ instance.cmsplugin_ptr_id|slugify }}").show();
+                    }
+                });
+            } else {
+                // Add the class "was-validated" to the form
+                $(this).addClass('was-validated');
+                // Scroll to the first invalid element
+                var firstInvalidElement = $(this).find(':invalid').first()[0];
+                if (firstInvalidElement) {
+                    firstInvalidElement.focus();
+                    firstInvalidElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        });
+    });
+</script>
+{% endaddtoblock %}

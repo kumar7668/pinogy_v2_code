@@ -1,0 +1,229 @@
+
+{% load static sekizai_tags %}  <!-- Load Sekizai tags -->
+
+
+    <!-- Render the "css" block here -->
+    {% addtoblock 'css' %}
+         <link rel="stylesheet" type="text/css" href="{% static 'css/common-grid.css' %}">
+         <style>
+          {% if instance.glossary.grid_card_size == 'SMALL' %}
+            .grid-container {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(198px, 1fr)); /* six equal columns */
+              gap: 20px; /* Space between grid items */
+          }
+          {% else %} 
+            .grid-container {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(271px, 1fr)); /* four equal columns */
+              gap: 20px; /* Space between grid items */
+            }
+          {% endif %}
+          .grid-title-{{instance.id}}{
+            color : {{instance.glossary.title_text_color}};
+            text-align : center;
+          }
+          .grid-subtitle-{{instance.id}}{
+            color : {{instance.glossary.sub_title_text_color}};
+            text-align : center;
+          }
+         </style>
+    {% endaddtoblock %}
+    <!-- Main content of the page -->
+    <div class = 'container mt-40 mb-40'>
+
+      <!-- TITLE -->
+      <div class = "h1-theme-bold grid-title-{{instance.id}}">{{instance.glossary.title_text}}</div>
+
+      <!-- SUB TITLE -->
+      <div class = "h2-theme-bold grid-subtitle-{{instance.id}}">{{instance.glossary.sub_title_text}}</div>
+
+      <!-- GRID NAME -->
+      <div></div>
+      {% if pet_type_data%}
+      <div class="grid-container mt-40 mb-40">
+
+        <!-- PETS -->
+
+        {% if instance.glossary.grid_type == 'PETS' %}
+            <!-- PETS LAYOUT1 -->
+            {% if instance.glossary.pet_layout == 'pet_layout_1' %}
+                {% include 'grid/includes/pet/grid_page_pets_layout1.html' with pet_detail=pet_type_data %}
+            
+            <!-- PETS LAYOUT2 -->
+            {% elif instance.glossary.pet_layout == 'pet_layout_2' %}
+                {% include 'grid/includes/pet/grid_page_pets_layout2.html' with pet_detail=pet_type_data %}
+
+            <!-- PETS LAYOUT3 -->
+            {% elif instance.glossary.pet_layout == 'pet_layout_3' %}
+                {% include 'grid/includes/pet/grid_page_pets_layout3.html' with pet_detail=pet_type_data %}
+
+            <!-- PETS LAYOUT4 -->
+            {% elif instance.glossary.pet_layout == 'pet_layout_4' %}
+                {% include 'grid/includes/pet/grid_page_pets_layout4.html' with pet_detail=pet_type_data %}
+                
+            {% endif %}
+
+        {% elif instance.glossary.grid_type == 'BRANDS'%}
+            <!-- BRANDS LAYOUT1 -->
+            {% if instance.glossary.brand_layout == 'brand_layout_1' %}
+                {% include 'grid/includes/brand/grid_page_brand_layout1.html' with breeds_data=pet_type_data %}
+            
+            <!-- BRANDS LAYOUT2 -->
+            {% elif instance.glossary.brand_layout == 'brand_layout_2'%}
+                {% include 'grid/includes/brand/grid_page_brand_layout2.html' with breeds_data=pet_type_data %}
+            {% endif %}
+            
+        {% elif instance.glossary.grid_type == 'PROMOTIONS'%}
+            <!-- PROMOTIONS LAYOUT1 -->
+            {% if instance.glossary.promotion_layout == 'promotion_layout_1' %}
+                {% include 'grid/includes/promotion/vertical_promotions.html' with promotion_data=pet_type_data %}
+            
+             <!-- PROMOTIONS LAYOUT2-->
+            {% elif instance.glossary.promotion_layout == 'promotion_layout_2'%}
+                {% include 'grid/includes/promotion/horizontal_promotions.html' with promotion_data=pet_type_data %}
+            {% endif %}
+            
+        {% elif instance.glossary.grid_type == 'TESTIMONIALS'%}
+            <!-- TESTIMONIALS LAYOUT1 -->
+            {% if instance.glossary.testimonial_layout == 'testimonials_layout_1' %}
+                {% include 'grid/includes/testimonials/grid_testimonials1.html' with testimonial_data=pet_type_data %}
+            
+             <!-- TESTIMONIALS LAYOUT2-->
+            {% elif instance.glossary.testimonial_layout == 'testimonials_layout_2'%}
+                {% include 'grid/includes/testimonials/grid_testimonials2.html' with testimonial_data=pet_type_data %}
+            {% endif %}
+
+        {% elif instance.glossary.grid_type == 'BLOG'%}
+            <!-- BLOG LAYOUT1 -->
+            {% if instance.glossary.promotion_layout == 'blog_layout_1' %}
+                {% include 'grid/includes/promotion/grid_testimonials1.html' with testimonial_data=pet_type_data %}
+            
+             <!-- BLOG LAYOUT2-->
+            {% elif instance.glossary.promotion_layout == 'blog_layout_2'%}
+                {% include 'grid/includes/promotion/grid_testimonials2.html' with testimonial_data=pet_type_data %}
+            {% endif %}
+        {% endif %}
+        
+      </div>
+      <div class = "d-flex align-items-center justify-content-center gap-3">
+        <a class = "F2" href = "#" id = "loadMore"> Load More </a>
+        {% for index,grid_items in instance.grid_button_data.items %}
+        {% comment %} <a class = "" href = "#" id = "loadMore">{{grid_items}} </a> {% endcomment %}
+          {% for item,val in grid_items.items %}
+              <a class = "{{val.button_color_pattern}}" href = "#" >{{val.button_text}} </a>
+          {% endfor %}
+        {% endfor %}
+      </div>
+      {% else %}
+        <div class="container no-pet-{{instance.id}} px-4 mt-40 mb-40">
+          <div class="row">
+              <div class="col-12" style="text-align:center;">
+                  <span style="
+                  opacity: .5;
+                  font-size: 23px;
+                  font-family: var(--heading-font);">Nothing here for now, but check back soon!</span>
+              </div>
+          </div>
+      </div>
+
+      {% endif %}
+
+    </div>
+
+    <!-- Render the "js" block here -->
+    {% addtoblock 'js' %}
+      <script type="text/javascript">
+      $(document).ready (function () {  
+        let insId = {{instance.id|safe}};
+
+        // calculate how many rows you want to show in grid plugin
+        let show = 6
+        let grid_type = `{{instance.glossary.grid_type|safe}}`;
+        let grid_size = `{{instance.glossary.grid_card_size|safe}}`;
+        
+        if( grid_type == 'PETS' && grid_size== 'SMALL'){
+          show = 6
+        } 
+        else{
+          show = 4
+        }
+        if(grid_type == 'BRANDS' && grid_size== 'SMALL'){
+          let grid_brand_layout = `{{instance.glossary.brand_layout|safe}}`;
+          show = 6
+        }
+        else{
+          show = 4
+        }
+
+        if(grid_type == 'PROMOTIONS' && grid_size== 'SMALL'){
+          let grid_brand_layout = `{{instance.glossary.promotion_layout|safe}}`;
+          if(grid_brand_layout == 'promotion_layout_2'){
+            show = 3
+          }
+          else{
+            show = 4
+          }
+          
+        }
+        else if (grid_type == 'PROMOTIONS' && grid_size== 'LARGE'){
+          let grid_brand_layout = `{{instance.glossary.promotion_layout|safe}}`;
+          if(grid_brand_layout == 'promotion_layout_2'){
+            show = 2
+          }
+          else{
+            show = 3
+          }
+        }
+
+        if(grid_type == 'TESTIMONIALS' && grid_size== 'SMALL'){
+          
+          let grid_testimonials_layout = `{{instance.glossary.testimonial_layout|safe}}`;
+          if(grid_testimonials_layout == 'testimonials_layout_1'){
+            show = 2
+          }
+          else{
+            show = 4
+          }
+          
+        }
+        else if(grid_type == 'TESTIMONIALS' && grid_size== 'LARGE'){
+          let grid_testimonials_layout = `{{instance.glossary.testimonial_layout|safe}}`;
+          if(grid_testimonials_layout == 'testimonials_layout_1'){
+            show = 2
+          }
+          else{
+            show = 4
+          }
+        }
+
+        // on load how many rows will be shown according to the plugin filter (number of row)
+        let start = 0
+        let no_of_rows = {{instance.glossary.grid_no_of_rows|safe}};
+
+        if (no_of_rows == 0){
+          $(`.grid-item-${insId}`).show()
+        }
+
+        while(no_of_rows > 0 ){
+          let end = start + show
+          
+          $(`.grid-item-${insId}`).slice(start, end).show(); 
+          start += show;
+          no_of_rows -= 1 
+        }
+
+        // onclick of load more button
+        $("#loadMore").on("click", function(e){  
+          e.preventDefault();  
+          $(`.grid-item-${insId}:hidden`).slice(0, show).show();  
+          if ($(`.grid-item-${insId}:hidden`).length == 0) {  
+            //$("#loadMore").text("").addClass("noContent");  
+            $("#loadMore").remove(); 
+          }  
+        });  
+
+      })  
+      </script>
+{% endaddtoblock %}
+

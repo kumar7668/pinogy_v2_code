@@ -1,0 +1,13 @@
+{% extends CMS_TEMPLATE %}
+
+{% block content %}
+    {% if testimonials %}
+    <ul class=class="testimonials-list">
+        {% for testimonial in testimonials %}
+        {% include "testimonials_new/includes/testimonial.html" %}
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>There are no approved testimonials yet. Why not be the first?</p>
+    {% endif %}
+{% endblock %}

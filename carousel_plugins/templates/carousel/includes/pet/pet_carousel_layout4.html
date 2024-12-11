@@ -1,0 +1,32 @@
+{% extends 'carousel/carousel_plugin.html' %}
+{% load static thumbnail %}
+{% block carousel_items %}
+{% for item in items %}
+    <div>
+        <div class="carousel-item-box carousel-item-box-style-4">
+            <a style="text-decoration-line: none;" href="{% url 'pinogy_pet:pet_detail' item.ptype_slug item.pbrd_slug item.pet_id %}">
+                <div class="carousel-item-box-img">
+                    {% if item.pet_images %}
+                        {% thumbnail item.pet_images.file_image 250x250 as thumb %}
+                        {% if thumb.url %}
+                        <img src="{{thumb.url}}" class="car_main_img image-shape image-border" alt="car_main_img_{{ thumb.url }}" loading="lazy">
+                        {% endif %}
+                        <img src="{% static 'images/default-placeholder-image.webp' %}" class="car_place_img image-shape" alt="car_place_img" loading="lazy">
+                    {% endif %}
+                </div>
+                <div class="carousel-item-box-desc">
+                    
+                    {% if item.pet_name and pet_setting.petname.visible and 'NAME' in instance.glossary.pet_info_display %}{{item.pet_name}}{% endif %}
+                    {% if pet_setting.sex.visible and 'SEX' in instance.glossary.pet_info_display %}{{item.pet_gender}}{% endif %}
+                    {% if pet_setting.petname.visible and 'NAME' in instance.glossary.pet_info_display %} <br />{% endif %}
+                
+                    {% if 'BREED' in instance.glossary.pet_info_display %}{{item.pbrd_display_name}} <br />{% endif %}
+                
+                    {% if 'LOCATION' in instance.glossary.pet_info_display %}{{item.loc_receipt_name}}{% endif %}
+                </div>
+            </a>
+        </div>
+    </a>
+    </div>
+{% endfor %}
+{% endblock carousel_items %}

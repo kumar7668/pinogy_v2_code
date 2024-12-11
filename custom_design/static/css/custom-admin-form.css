@@ -1,0 +1,177 @@
+:root {
+    --custom-primary: #003F5A;
+    --custom-secondary: #12BBD2;
+}
+
+div.form-row, div.form-row.errors {
+    border-bottom: 0;
+}
+
+.section-header {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 115%;
+    color: var(--custom-primary);
+    margin-top: 0 !important;
+    padding-left: 0 !important;
+    margin-bottom: 16px !important;
+}
+
+.section-sub-header {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 140%;
+    color: var(--custom-primary);
+    margin-top: 0 !important;
+    padding-left: 0 !important;
+    font-weight: 400;
+    line-height: 140%; /* 25.2px */
+    opacity: 0.6000000238418579;
+    margin-bottom: 16px !important;
+}
+
+.section-header-description {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 140%;
+    color: var(--custom-primary);
+    opacity: 0.6;
+}
+
+.section-divider {
+    background: rgba(0, 63, 90, 0.2);
+    height: 2px !important;
+    margin: 0px 0 20px;
+    display: block;
+}
+
+.admin-form .primary-label {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 140%;
+    color: var(--custom-primary);
+    margin-bottom: 20px;
+}
+
+.admin-form .secondary-label {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 140%;
+    color: var(--custom-primary);
+    margin-bottom: 10px;
+}
+
+.admin-form .coloris, .admin-form .clr-field button {
+    width: 84px !important;
+    box-shadow: 1px 2px 11px rgb(2 27 37 / 13%);
+    border-radius: 8px !important;
+    cursor: pointer;
+    border: 0 !important;
+    color: inherit !important;
+}
+
+.admin-form ul.theme-color-tab {
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0;
+}
+
+.theme-color-tab li {
+    padding: 0px !important;
+    border-top: none !important;
+}
+
+.admin-form .box-theme-form-item {
+    padding: 0;
+}
+
+.theme-color-tab li.active-border {
+    background-color: rgba(18, 187, 210, 0.1);
+    border: 2px dashed #12BBD2 !important;
+    padding: 3px !important;
+    border-radius: 8px;
+}
+
+/* Checkbox Css and Radio button */
+form input[type=checkbox].custom-checkbox, 
+form input[type=radio].custom-radio,
+.inline-group .module:not(.aligned) .form-row input[type="radio"],
+.inline-group .module:not(.aligned) .form-row input[type="checkbox"]
+{
+    width: 24px !important;
+    height: 24px;
+    border: 1px solid var(--custom-primary) !important;
+    top: 0;
+}
+form input[type=radio].custom-radio,
+.inline-group .module:not(.aligned) .form-row input[type="radio"]{
+    border: 2px solid var(--custom-secondary) !important;
+    background-color: white;
+}
+
+form input[type=checkbox].custom-checkbox{
+    border-radius: 4px;
+}
+
+.custom-checkbox:checked, .custom-radio:checked {
+    background-color: var(--custom-secondary);
+    border-color: var(--custom-secondary);
+}
+.form-check-input:checked[type=radio] {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'><circle r='2' fill='%2312BBD2'/></svg>");
+    /* background-image: url("data:image/svg+xml<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'><circle r='2' fill='#12BBD2'/></svg>"); */
+}
+.custom-checkbox:focus, .custom-radio:focus {
+    box-shadow: 0 0 0 0.25rem rgba(18, 187, 210, 0.1);
+}
+
+.custom-checkbox-label, .custom-radio-label {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 140%;
+    color: var(--custom-primary);
+    /* padding-left: 10px !important; */
+    padding-top: 3px !important;
+    width: auto !important;
+    float: left !important;
+}
+
+.admin-form .checkbox-outer, .admin-form .radio-outer{
+    margin: 20px 0 20px 0;
+}
+
+.admin-form.horizontal-checkbox .radio-outer{
+    margin: 0;
+}
+
+form .aligned ul.errorlist {
+     margin-left: 0px;
+     padding-left: 0px;
+}
+
+.horizontal-checkbox{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+/* Link Widget CSS */
+.box-theme-form-item-inline .form-input.select2-container {
+    padding: 0px !important;
+}
+
+form .select2-container .select2-choice{
+    height: 36px !important;
+}

@@ -1,0 +1,259 @@
+.page-header-top {
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.page-header-center {
+    flex-grow: 1;
+    text-align: center;
+    align-self: center;
+}
+
+ul.page-header-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+ul.page-header-menu li a {
+    font-family: var(--heading-font);
+    font-style: normal;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 140%;
+    text-decoration: none;
+    padding: 10px;
+    display: inline-block;
+}
+
+/* Header Menu Wrapping */
+@media (max-width: 1200px){
+    ul.page-header-menu li a {
+        padding: 5px;
+        font-size: 18px;
+    }
+}
+
+ul.page-header-menu li a:hover {
+    text-decoration: underline;
+}
+.only-stroke{
+fill: var(--global-primary-color) !important;;
+}
+
+ul.page-header-menu li {
+    display: inline-block;
+}
+
+.page-header-left {
+    flex-shrink: 0;
+    align-self: center;
+}
+
+.page-header-right {
+    flex-shrink: 0;
+    align-self: center;
+    display: flex;
+    gap: 20px;
+}
+
+.page-header-contact {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-weight: 400;
+}
+.page-header-contact a{
+    display: flex;
+    gap: inherit;
+    font-size: 20px !important;
+}
+
+.page-header-social {}
+
+ul.page-header-top-social {
+    list-style: none;
+    display: flex;
+    max-width: 28px;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    gap: 2px;
+}
+
+ul.page-header-top-social li {
+    line-height: 10px;
+    display: inline-block;
+}
+
+ul.page-header-top-social li a img {
+    max-width: 12px;
+}
+
+ul.page-header-top-social li a:hover {
+    opacity: 0.8;
+}
+
+/* .page-header-bottom.style-1 {
+    background: #efefef;
+} */
+
+.page-header-bottom-inner {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    align-items: center;
+}
+
+ul.page-header-bottom-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+    align-self: center;
+}
+
+ul.page-header-bottom-menu li > a {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    font-family: var(--general-font);
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 140%;
+    color: var(--global-primary-color);
+    text-decoration: none;
+}
+
+li.has-sub-menu{
+    list-style: none;
+}
+
+li.has-sub-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 100%;
+    left: 0px;
+    display: none;
+    z-index: 999;
+}
+
+.page-header-menu li.has-sub-menu ul {
+    left: 0px;
+}
+.page-header-menu li.has-sub-menu ul li a{
+    text-decoration: none;
+}
+
+li.has-sub-menu.menu-right ul {
+    right: 0;
+    left: auto;
+}
+.page-header-menu li.has-sub-menu.menu-right ul {
+    right: 0;
+    left: auto;
+}
+li.has-sub-menu {
+    position: relative;
+}
+
+li.has-sub-menu ul li a,
+.store-change-outer
+{
+    font-family: var(--heading-font);
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 140%;
+    color: var(--global-primary-color);
+    padding: 10px;
+    /* background: #efefef; */
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.store-change-outer{
+    padding: 0;
+}
+
+ul.page-header-bottom-social {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+}
+
+ul.page-header-bottom-social li a:hover {
+    opacity: 0.8;
+}
+
+ul.page-header-bottom-social lia {
+    display: inline-block;
+}
+
+
+.page-header-bottom.style-2 {
+    background: var(--global-primary-color);
+}
+
+.page-header-bottom.style-2 ul.page-header-bottom-menu li a {
+    color: #fff;
+}
+
+.page-header-bottom.style-2 ul.page-header-bottom-menu li.has-sub-menu ul li >  a {
+    color: var(--global-primary-color);
+}
+
+.page-header-bottom-search {
+    position: relative;
+}
+
+.page-header-bottom-search button {
+    position: absolute;
+    right: 4px;
+    top: 5px;
+    background: transparent;
+    border: 0;
+}
+
+.page-header-bottom-search input {
+    width: 100%;
+    height: 40px;
+    padding: 10px;
+    font-family: var(--general-font);
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 40px;
+/* identical to box height, or 28px */
+    text-align: center;
+
+/* Primary */
+    color: var(--global-primary-color);
+    padding-right: 40px;
+    border-radius: var(--border-radius);
+}
+
+.page-header-bottom-right {
+    display: flex;
+    align-content: center;
+    gap: 20px;
+}
+
+.page-header-bottom-left {
+    align-self: center;
+}
+
+@media (min-width: 768px) {
+
+}
+
+@media (min-width: 991px) {
+
+}

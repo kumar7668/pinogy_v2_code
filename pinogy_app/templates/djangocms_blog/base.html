@@ -1,0 +1,18 @@
+{% extends CMS_TEMPLATE %}
+{% load cms_tags %}
+{% comment %} {% block meta %}
+    {%  if meta %}
+        {% include "meta/meta.html" %}
+    {% endif %}
+{% endblock meta %} {% endcomment %}
+
+{% block main %}
+<div class="app app-blog">
+    {% block content_blog %}{% endblock %}
+</div>
+{% endblock main %}
+{% comment %} <header>
+    {% load cms_tags %}
+    {% placeholder top_header %}
+    {% placeholder top_header %}
+</header> {% endcomment %}

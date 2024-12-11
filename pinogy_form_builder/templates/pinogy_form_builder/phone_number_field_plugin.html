@@ -1,0 +1,17 @@
+<div class="label">
+    {% if instance.label %}
+        <label for="{{ instance.name|slugify }}" class="form-label mb-0">
+            {{ instance.label }}
+        </label>
+    {% endif %}
+    <input type="tel" 
+        name="{{ instance.name }}" 
+        placeholder="{{ instance.placeholder_text|default:'' }}" 
+        id="{{ instance.name|slugify }}"
+        class="form-control phone-validation {% if instance.label %} with-label {% endif %}"
+        maxlength="17"
+        {% if instance.is_required %} required {% endif %} 
+    />
+    <!-- The following div provides feedback for an invalid input -->
+    <div class="invalid-feedback">Please enter a valid 10-digit number.</div>
+</div>

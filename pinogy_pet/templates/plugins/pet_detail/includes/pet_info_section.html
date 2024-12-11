@@ -1,0 +1,476 @@
+{% load cms_tags sekizai_tags %}
+{% load static %}
+{% addtoblock 'css' %}
+<style>
+
+    {% comment %} Breed Traits Styling {% endcomment %}
+
+    .breed-traits-title {
+        color: var(--global-primary-color);
+        font-family: var(--heading-font);
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 140%; /* 28px */
+    }
+
+    .breed-traits-bar .progress {
+        border-radius: 0;
+        margin-bottom: 5px;
+        background-color: var(--primary-color-01-opacity);
+    }
+
+    .breed-traits-bar .progress-bar {
+        background-color: var(--global-secondary-color);
+    }
+
+    .progress-bar-text {
+        font-style: normal;
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 140%;
+        color: var(--global-secondary-color);
+    }
+
+    .radialProgressBar {
+        position: relative;
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: conic-gradient(var(--global-secondary-color) var(--progress, 0%), var(--primary-color-01-opacity) var(--progress, 0%) 100%);
+    }
+
+    .radialProgressBar .overlay {
+        position: absolute;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: #fff;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: var(--global-secondary-color);
+    }
+
+    .breed-layout-info {
+        color: var(--global-primary-color);
+        font-family: "Open Sans";
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        width: 100%;
+    }
+
+    .traits-layout-3 {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .layout-3-heading {
+        width: 95px;
+        color: var(--global-primary-color);
+        font-family: "Open Sans";
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 140%;
+    }
+
+    .layout3-progress-style {
+        height: 12px;
+        width: 65px;
+        border-radius: 50px !important;
+    }
+
+    .layout-3-subheading {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .subheading-section-2 {
+        display: flex;
+        justify-content: end;
+    }
+
+    .breed-traits-block {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    @media (min-width: 498px) {
+      .layout3-progress-style {
+          width: 95px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .layout3-progress-style {
+          width: 130px;
+      }
+    }
+
+    @media (min-width: 992px) {
+      .layout3-progress-style {
+          width: 55px;
+      }
+    }
+
+    @media (min-width: 1200px) {
+        .layout3-progress-style {
+           width: 65px;
+        }
+    }
+
+    @media (min-width: 1400px) {
+        .layout3-progress-style {
+            width: 75px;
+        }
+    }
+
+    .breed-desc-div {
+        display: flex;
+        flex-direction: column;
+        margin-top: 20px;
+    }
+
+    .breed-desc {
+        display: flex;
+        flex-direction: column;
+        margin-top: 20px;   
+    }
+
+    .breed-desc-info {
+        color: var(--global-primary-color);
+        font-family: var(--general-font);
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 140%; /* 28px */
+        margin-top: 20px;
+    }
+
+    .more-about-breed {
+        margin-top: 24px;
+    }
+
+    .mt-10 {
+        margin-top: 10px;
+    }
+</style>
+{% endaddtoblock %}
+<div class="row">
+    <ul class="nav nav-pills mb-3 pet-detail-tabs" id="pills-tab" role="tablist"
+        style="border-bottom: 0.2px solid var(--global-primary-color);">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active tabcaption" id="pills-home-tab" data-bs-toggle="pill"
+                data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home"
+                aria-selected="true">About Me
+            </button>
+        </li>
+        {% if pet_data.breed_detail.metrics or pet_data.breed_detail.notes %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link tabcaption" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile"
+                    type="button" role="tab" aria-controls="profile" aria-selected="false">Breed Info
+                </button>
+            </li>
+        {% endif %}
+    </ul>
+
+    <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-label="pills-home-tab">
+            <div class="row">
+                <div class="col-12 col-lg-6 pb-4">
+                    <div class="row">
+                        {% if pet_setting.petid.visible_detail_only %}
+                            <div class="col-4">
+                                <span class="spn_title">ID</span>
+                            </div>
+                            <div class="col-8">
+                                <span class="spn_value">{{ pet_data.pet_id }}</span>
+                            </div>
+                        {% endif %}
+
+                        {% if pet_setting.sex.visible_detail_only %}
+                            <div class="col-4">
+                                <span class="spn_title">Sex</span>
+                            </div>
+                            <div class="col-8">
+                                <span class="spn_value">{{ pet_data.pet_gender }}</span>
+                            </div>
+                        {% endif %}
+
+                        {% if pet_setting.storecitystate.visible_detail_only and pet_data.loc_receipt_name.visible_detail_only %}
+                            <div class="col-4">
+                                <span class="spn_title">Store, City, State</span>
+                            </div>
+                            <div class="col-8">
+                                <span class="spn_value">
+                                    <a href="https://www.google.com/maps?q={{ pet_data.selected_store.latitude }},{{ pet_data.selected_store.longitude }}"
+                                        class="custom-a-tag" target="_blank">
+                                        {{ pet_data.loc_receipt_name }}{% if pet_data.loc_addr_city %}, {{ pet_data.loc_addr_city }}{% endif %}{% if pet_data.loc_addr_iso_code %}, {{ pet_data.loc_addr_iso_code }} {% endif %}
+                                    </a>
+                                </span>
+                            </div>
+                        {% endif %}
+
+                        {% if pet_setting.storephone.visible_detail_only and pet_data.loc_contact_numbers.visible_detail_only %}
+                            <div class="col-4">
+                                <span class="spn_title">Store Phone</span>
+                            </div>
+                            <div class="col-8">
+                                <span class="spn_value">
+                                    <a 
+                                    href="tel:{{ pet_data.phone_number }}" 
+                                    id="phonecallclick" 
+                                    class="custom-a-tag" 
+                                    target="_blank">
+                                    {{ pet_data.display_phone_number }}
+                                    </a>
+                                </span>
+                            </div>
+                        {% endif %}
+
+                        <div id='divvalidate' class="clsvalidate  {% if 'true' in instance.glossary.consumer_verification or pet_setting.breedername.visible_verification_detail_only or pet_setting.breedercitystate.visible_verification_detail_only or pet_setting.usda.visible_verification_detail_only %} d-none {%endif%}">
+                            <div class="row">
+                                {% if pet_setting.usda.visible_detail_only or pet_setting.usda.visible_verification_detail_only %}
+                                    {% if pet_data.pbreeder_usda_num %}
+                                        <div class="col-4">
+                                            <span class="spn_title">USDA#</span>
+                                        </div>
+                                        <div class="col-8">
+                                            <span class="spn_value">
+                                                <a class="custom-a-tag" href="https://aphis.my.site.com/PublicSearchTool/s/inspection-reports" target="_blank">{{ pet_data.pbreeder_usda_num }}</a>
+                                            </span>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+
+                                {% if pet_setting.breedername.visible_detail_only or pet_setting.breedername.visible_verification_detail_only %}
+                                    {% if pet_data.pbreeder_name %}
+                                        <div class="col-4">
+                                            <span class="spn_title">Breeder Name</span>
+                                        </div>
+                                        <div class="col-8">
+                                            <span class="spn_value">{{ pet_data.pbreeder_name }}</span>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+
+                                {% if pet_setting.breedercitystate.visible_detail_only or pet_setting.breedercitystate.visible_verification_only  %}
+                                    {% if pet_data.pbreeder_ent_addr_city %}
+                                        <div class="col-4">
+                                            <span class="spn_title">Breeder City, State</span>
+                                        </div>
+                                        <div class="col-8">
+                                            <span class="spn_value">{{ pet_data.pbreeder_ent_addr_city }}{% if pet_data.pbreeder_ent_addr_iso_code %}, {{ pet_data.pbreeder_ent_addr_iso_code }}{% endif %}</span>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        {% if pet_setting.birthdate.visible_detail_only %}
+                            <div class="col-4">
+                                <span class="spn_title">Age</span>
+                            </div>
+                            <div class="col-8">
+                                <span class="spn_value">{{ pet_data.pet_age }}</span>
+                            </div>
+                        {% endif %}
+
+                        {% if 'true' in instance.glossary.consumer_verification or pet_setting.breedername.visible_verification_detail_only or pet_setting.breedercitystate.visible_verification_detail_only or pet_setting.usda.visible_verification_detail_only%}
+                            <div class="row py-3">
+                                <div id='btndivvalidate' class="btnclsvalidate">
+                                    <div class="col-12">
+                                        <div class="btn-info btn-block d-block theme-secondary-btn supporting-validation"
+                                            data-bs-toggle="modal" data-bs-target="#fieldvalidate{{ petsType.pet_id }}"
+                                            data-target=".fieldvalidate-{{ pet.pet_id }}" data-bs-whatever="@mdo"
+                                            style="cursor:pointer;">
+                                            <label style="font-size:16px;cursor: pointer;">Click to see Breeder Name, USDA #, City, & State</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        
+
+                        {% if pet_setting.birthdate.visible_detail_only %}
+                            <div class="col-4">
+                                <span class="spn_title">Birth Date</span>
+                            </div>
+                            <div class="col-8">
+                                <span class="spn_value">{{ pet_data.plttr_birthdate }}</span>
+                            </div>
+                        {% endif %}
+
+                        {% if pet_setting.petmarketingtext.visible_detail_only %}
+                            <div class="col-12 col-lg-12 pt-3">
+                                <div class="notes">
+                                    {% if pet_data.pet_marketing_notes %}
+                                    {{ pet_data.pet_marketing_notes|safe }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-6 p-0">
+                    <div class="pet-form-div card-img-top">
+                        <div class="pet-collection-form-title">Looking for more information?</div>
+                        <div class="breed-paw-icon">
+                            <div class="pet-form-icon"><img src="{% static 'images/breed_detail/paw1.png' %}" alt="pet left paw"></div>
+                            <div class="pet-form-icon"><img src="{% static 'images/breed_detail/paw2.png' %}" alt="pet right paw"></div>
+                        </div>
+                    </div>
+                    <div class="pet-collection-form-outer card-img-bottom">
+                        {% include 'plugins/includes/general_collection_form.html' with unique_id=pet_data.pet_id form=collection_form form_type='pet' location_id=pet_data.pet_loc_entity_id location_name=pet_data.loc_receipt_name pet_id=pet_data.pet_id pet_gender=pet_data.pet_gender breed_name=pet_data.pbrd_display_name breed_slug=pet_data.pbrd_slug btn_style=instance.glossary.petform_button_style %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% comment %} Breed Traits {% endcomment %}
+{% if breed_metrics_info %}
+    <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-label="profile-tab">
+            <div>
+                <div class="">
+                    <h3 class="breed-traits-title">Traits</h3>
+                </div>
+                <div class="row breed-traits-bar">
+                    {% for metric in breed_metrics_info %}
+                        <div class="col-12 col-lg-4 breed-traits-block mt-10">
+                            <div class="layout-3-heading">{{ metric.3 }}</div>
+        
+                            {% if metric.3 == "Size" %}
+                                <div class="layout-3-subheading">
+                                    <div class="breed-layout-info">Small</div>
+                                    <div class="breed-layout-info subheading-section-2">X-Large</div>
+                                </div>
+                            {% elif metric.3 == "Trainability" %}
+                                <div class="layout-3-subheading">
+                                    <div class="breed-layout-info">Stubborn</div>
+                                    <div class="breed-layout-info subheading-section-2">Highly Trainable</div>
+                                </div>
+                            {% elif metric.3 == "Grooming" %}
+                                <div class="layout-3-subheading">
+                                    <div class="breed-layout-info">Hardly Ever</div>
+                                    <div class="breed-layout-info subheading-section-2">Daily</div>
+                                </div>
+                            {% elif metric.3 == "Energy" %}
+                                <div class="layout-3-subheading">
+                                    <div class="breed-layout-info">Calm</div>
+                                    <div class="breed-layout-info subheading-section-2">Energetic</div>
+                                </div>
+                            {% elif metric.3 == "Disposition" %}
+                                <div class="layout-3-subheading">
+                                    <div class="breed-layout-info">Low</div>
+                                    <div class="breed-layout-info subheading-section-2">High</div>
+                                </div>
+                            {% elif metric.3 == "Bark" %}
+                                <div class="layout-3-subheading">
+                                    <div class="breed-layout-info">Low</div>
+                                    <div class="breed-layout-info subheading-section-2">High</div>
+                                </div>
+                            {% endif %}
+                            <div class="traits-layout-3">
+                                {% for i in metric.0 %}
+                                    <div class="layout-3">
+                                        <div class="layout3-progress-style progress">
+                                            <div class="progress-bar" role="progressbar" style="width: 100%;"
+                                                aria-valuenow="{% widthratio metric.value 1 10 %}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+        
+                                {% for i in metric.1 %}
+                                    <div class="layout-3">
+                                        <div class="layout3-progress-style progress">
+                                            <div class="progress-bar" role="progressbar" style="width: 50%;"
+                                                aria-valuenow="{% widthratio metric.value 1 10 %}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+        
+                                {% for i in metric.2 %}
+                                    <div class="layout-3">
+                                        <div class="layout3-progress-style progress">
+                                            <div class="progress-bar" role="progressbar" style="width: 0%;"
+                                                aria-valuenow="{% widthratio metric.value 1 10 %}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% comment %} Breed description {% endcomment %}
+            {% if pet_data.breed_detail.description %}
+                <div class="breed-desc-div">
+                    <div class="breed-desc">
+                        <div class="breed-traits-title">Description</div>
+                        <div class="breed-desc-info">{{ pet_data.breed_detail.description }}</div>
+                    </div>
+                    
+                    {% if instance.glossary.more_about_breed %}
+                        <div class="more-about-breed">
+                            <button 
+                            type="button" 
+                            class="theme-primary-btn" 
+                            onclick="window.location.href='{% url 'pinogy_breeds:breed_detail' pet_data.ptype_slug pet_data.pbrd_slug %}'">
+                            More About Breed
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+           {% endif%}
+        </div>
+    </div>
+{% endif %}
+
+<!-- Modal for Scheduling a Play Date -->
+<div class="modal fade" id="schedule_a_play_date{{ petsType.pet_id }}" tabindex="-1" aria-label="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+                {% include 'plugins/includes/schedule_a_Playdate.html' with form=schedulePlaydate_form form_type='ask_me_about' pet=pet_data current_pet_box_visits_schedule=current_pet_box_visits_schedule pet_detail="True" %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Field Validation -->
+<div class="modal fade" id="fieldvalidate{{ petsType.pet_id }}" tabindex="-1" aria-label="fieldvalidateModel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+                {% include 'plugins/includes/supporting_validation.html' with unique_id=pet_data.pet_id form=CustomerVerificationForm formotp=CustomerOTPVerificationForm form_type='consumeValidation' location_id=pet_data.pet_loc_entity_id location_name=pet_data.loc_receipt_name pet_id=pet_data.pet_id pet_gender=pet_data.pet_gender breed_name=pet_data.pbrd_display_name breed_slug=pet_data.pbrd_slug %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for OTP Validation -->
+<div class="modal fade" id="optvalidation" tabindex="-1" aria-label="otpvalidationModel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="consumer_validation_form">
+                    {% include 'plugins/includes/otp_verification.html' with unique_id=pet_data.pet_id form=CustomerVerificationForm formotp=CustomerOTPVerificationForm form_type='consumeValidation' location_id=pet_data.pet_loc_entity_id location_name=pet_data.loc_receipt_name pet_id=pet_data.pet_id pet_gender=pet_data.pet_gender breed_name=pet_data.pbrd_display_name breed_slug=pet_data.pbrd_slug %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

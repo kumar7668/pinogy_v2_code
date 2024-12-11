@@ -1,0 +1,56 @@
+{% load static sekizai_tags global_theme_config_tags thumbnail %}
+{% load cms_tags %}
+{% global_theme_object as global_theme_config %}
+{% addtoblock "css"  %}
+    <style>
+        .faq-tabs .nav-link{
+            color: var(--global-secondary-color);
+        }
+        .faq-tabs .nav-link.active, .faq-tabs .show>.nav-link {
+            background-color: var(--global-primary-color) !important;
+        }
+        @media only screen and (max-width: 768px){
+            .faq-tabs {
+                flex-direction: column;
+                align-content: center;
+            }
+            .faq-tabs .nav-item{
+                display: contents;
+            }
+        }
+    </style>
+{% endaddtoblock  %}
+
+<div class="faq-block-{{instance.id}} container py-5">
+    <div class="row">
+        <div class="col-12">
+            {% comment %} FAQ Title {% endcomment %}
+            {% if instance.glossary.faq_block_title %}
+                <div class="h2-theme-bold pb-3 faq-block-title-{{instance.id}}">{{instance.glossary.faq_block_title | safe}}</div>
+            {% endif %}
+            {% comment %} FAQ Tabs {% endcomment %}
+            {% if tabs|length > 1 %}
+                <ul class="nav nav-pills mb-3 d-flex justify-content-center faq-tabs" id="pills-tab" role="tablist">
+                    {% for tab in tabs %}
+                        <li class="nav-item tabs_trigger" role="presentation">
+                            <button class="nav-link tabs_btn {% if forloop.first %} active {% endif %}" id="pills-tab-{{tab.id}}" data-bs-toggle="pill" data-bs-target="#pills-{{tab.id}}" type="button" role="tab" aria-controls="pills-{{tab.id}}" aria-selected="{% if forloop.first %} true {% else %} false {% endif %}">{{ tab.glossary.faq_tab_title | safe}}</button>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            {% comment %} FAQ Tab Content {% endcomment %}
+            <div class="tab-content tabs_content_trigger" id="pills-tabContent">
+                {% for tab in tabs %}
+                    <div class="tab-pane fade {% if forloop.first %} active show {% endif %}" id="pills-{{tab.id}}" role="tabpanel" aria-labelledby="pills-tab-{{tab.id}}">
+                        {% for plugin in instance.child_plugin_instances %}
+                            {% if plugin.glossary.faq_acc_tab_title == tab.glossary.faq_tab_title %}
+                              {% render_plugin plugin %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+

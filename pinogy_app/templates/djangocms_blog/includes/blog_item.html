@@ -1,0 +1,78 @@
+{% load djangocms_blog i18n easy_thumbnails_tags cms_tags %}
+
+<style>
+    .post-item {
+        margin: 0 0 20px;
+    }
+    .blog-lead p {
+        margin: 0 0 0;
+        text-align: justify;
+    }
+    .blog-visual {
+        float: left;
+        margin-bottom: 15px;
+    }
+</style>
+
+<article id="post-{{ post.slug }}" class="post-item">
+    <div class="post-item__content bg-white">
+        {% if image and post.main_image %}
+            <div class="row">
+                <div class="col-12 col-md-12 col-xl-2 col-lg-3 blog-visual">
+                    {% comment %} {% thumbnail post.main_image post.thumbnail_options.size crop=post.thumbnail_options.crop upscale=post.thumbnail_options.upscale subject_location=post.main_image.subject_location as thumb %} {% endcomment %}
+                    <img src="{{ thumb.url }}" alt="{{ post.main_image.default_alt_text }}" width="{{ thumb.width }}" height="{{ thumb.height }}" />
+                </div>
+                <div class="col-12 col-md-12 col-xl-10 col-lg-9 blog-content">
+                    <h3 class="post-item__title mb-2">
+                        <a href="{{ post.get_absolute_url }}">
+                            {{ post.title }}
+                        </a>
+                    </h3>
+                    <header class="mb-2">
+                        {% if post.subtitle %}
+                            <h5>{{ post.subtitle }}</h5>
+                         {% endif %}
+                    </header>
+                    <div class="blog-date">
+                        <p><strong>{{ post.date_published|date:"F d, Y" }}</strong></p>
+                    </div>
+                    <div class="blog-lead">
+                        {% if not TRUNCWORDS_COUNT %}
+                            {% render_model post "abstract" "" "" "safe" %}
+                        {% else %}
+                            {% render_model post "abstract" "" "" "truncatewords_html:TRUNCWORDS_COUNT|safe"  %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <h3 class="post-item__title mb-2">
+                <a href="{{ post.get_absolute_url }}">
+                    {{ post.title }}
+                </a>
+            </h3>
+
+            <header class="mb-2">
+                {% if post.subtitle %}
+                    <h5>{{ post.subtitle }}</h5>
+                {% endif %}
+            </header>
+
+            <div class="blog-lead">
+                {% if not TRUNCWORDS_COUNT %}
+                    {% render_model post "abstract" "" "" "safe" %}
+                {% else %}
+                    {% render_model post "abstract" "" "" "truncatewords_html:TRUNCWORDS_COUNT|safe"  %}
+                {% endif %}
+            </div>
+        {% endif %}
+        <footer style="text-align: right">
+            <div>
+                {% block blog_meta %}
+                    {% include "djangocms_blog/includes/blog_meta.html" %}
+                {% endblock %}
+            </div>
+            <a class="post-item__link" href="{{ post.get_absolute_url }}"> {% trans "Read more" %}</a>
+        </footer>
+    </div>
+</article>

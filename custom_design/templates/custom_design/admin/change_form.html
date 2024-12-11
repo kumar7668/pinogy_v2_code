@@ -1,0 +1,54 @@
+{# CMS base change_form #}
+{#{% extends "admin/cms/usersettings/change_form.html" %} #}
+{# Cascade base change_form #}
+{% extends "cascade/admin/change_form.html" %}
+{% load static admin_style_tags %}
+
+{% block extrahead %}
+    {#{{ block.super }}#}
+
+    {# Override from djangocms_admin_tyle/templates/admin/base_site.html #}
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" type="text/css" href="{% static 'djangocms_admin_style/css/djangocms-admin.css' %}" />
+    {% if request.user.is_superuser %}{% render_update_notification %}{% endif %}
+    <script src="{% static 'djangocms_admin_style/js/dist/bundle.adminstyle.min.js' %}"></script>
+    {% include 'admin/inc/extrahead.html' %}
+
+    {#  override from admin/change_form.html  #}
+    <script src="{% url 'admin:jsi18n' %}"></script>
+    {{ media }}
+
+    {# override from admin/cms/usersettings/change_form.html #}
+    <script>
+        // we have to wait till the window is loaded, otherwise
+        // the sideframe code will override the url, because every time
+        // the iframe is loaded, it's current url is saved in the settings
+        window.onload = function () {
+            // we have to setTimeout here because the cms.sideframe load event
+            // fires after this one :(
+            setTimeout(function () {
+                var CMS = window.parent.CMS;
+                // we need to reload the parent window once "?reload_window" is defined and
+                // set the new url for the sideframe with the correct language specification
+                if (location.href.indexOf('reload_window') > -1 && CMS) {
+                    // save url in settings
+                    CMS.settings.sideframe.url = window.location.href.replace(/[?&]reload_window/, '');
+                    CMS.settings = CMS.API.Helpers.setSettings(CMS.settings);
+                    // reload everything
+                    CMS.API.Helpers.reloadBrowser();
+                }
+            }, 0);
+        }
+    </script>
+
+{% endblock %}
+
+
+{% block admin_change_form_document_ready %}
+{{ block.super }}
+    <script type="text/javascript">
+    $( document ).ready(function() {
+        $(".form-row > div > label").hide();
+    });
+    </script>
+{% endblock %}

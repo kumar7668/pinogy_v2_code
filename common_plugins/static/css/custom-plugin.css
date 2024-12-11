@@ -1,0 +1,30 @@
+
+.plugin-main-flex{
+    display: flex;
+    gap : 40px;
+    flex-direction: column;
+}
+
+.plugin-section-flex{
+    display: flex;
+    gap : 20px;
+    flex-direction: column;
+}
+
+.main_plugin_header{
+    color: var(--Primary, #003F5A);
+    /* H2 */
+    font-family: "Open Sans";
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 125%; /* 50px */
+    text-transform: capitalize;
+}
+.mt-40{
+    margin-top: 40px;
+}
+
+.mb-40{
+    margin-bottom: 40px;
+}

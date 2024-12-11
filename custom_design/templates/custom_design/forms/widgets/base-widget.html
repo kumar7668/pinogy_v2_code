@@ -1,0 +1,33 @@
+{% if widget.attrs.top_section_divider %}
+    <div class="section-divider"></div>
+{% endif %}
+
+{% if widget.attrs.section_heading %}
+    <h3 class="section-header">
+        {{ widget.attrs.section_heading }}
+    </h3>
+{% endif %}
+
+{% if widget.attrs.section_heading_desc %}
+    <h3 class="section-header">
+        <p class="section-header-description">{{ widget.attrs.section_heading_desc }}</p>
+    </h3>
+{% endif %}
+
+{% if widget.attrs.section_sub_heading %}
+    <h4 class="section-sub-header">
+        {{ widget.attrs.section_sub_heading }}
+    </h4>
+{% endif %}
+
+{% if widget.attrs.section_sub_heading_desc %}
+    <h4 class="section-sub-header">
+        <p class="section-header-description">{{ widget.attrs.section_sub_heading_desc }}</p>
+    </h4>
+{% endif %}
+
+{% block widget_section %}{% endblock %}
+
+{% if widget.attrs.section_divider %}
+    <div class="section-divider"></div >
+{% endif %}

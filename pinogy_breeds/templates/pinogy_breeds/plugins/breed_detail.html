@@ -1,0 +1,767 @@
+{% load cms_tags sekizai_tags %}
+{% load static %}
+{% addtoblock 'css' %}
+  <style>
+    {% comment %} Breed Detail Styling {% endcomment %}
+
+    .breed-img {
+      height: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+    }
+
+    @media only screen and (max-width: 991px) {
+      .breed-avail-btn-fixed {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1;
+      }
+    }
+
+    .breed-description {
+      font-family: var(--general-font);
+      font-style: normal;
+      font-weight: 400;
+      font-size: 18px;
+      line-height: 140%;
+      color: var(--global-primary-color);
+    }
+
+    .breed-description.more {
+      display: none;
+    }
+
+    .more-link {
+      color: var(--global-secondary-color);
+      font-family: "Open Sans";
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: 140%;
+      text-decoration: none;
+    }
+
+    .breed-detail-badges {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      align-self: stretch;
+    }
+
+    @media (max-width: 992px) {
+      .breed-detail-badges {
+        display: flex;
+        justify-content:center;
+        align-items: flex-start;
+        align-self: stretch;
+      }
+    }
+
+    .badge-img {
+      width: 95px;
+    } 
+
+    .breed-form-style {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 4px 4px 37px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(3px);
+      padding: 0px 15px 15px 15px;
+    }
+
+    .breed-form-div {
+      display: flex;
+      padding: 12px 20px;
+      align-items: center;
+      gap: 20px;
+      align-self: stretch;
+      justify-content: space-between;
+      background: var(--global-primary-color);
+    }
+
+    .breed-form-icon img {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+    }
+
+    .breed-collection-form-title {
+      font-family: var(--general-font);
+      font-style: normal;
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 115%;
+      color: var(--White, #FFF);
+    }
+
+    .breed-img-inner {
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+      width: 100%;
+      height: 100%;
+    }
+
+    .breed-img-carousel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .breed-nav-col {
+      width: 154px;
+      height: 154px;
+    }
+
+    .breed-img-inner img {
+      width: 144px;
+      height: 144px;
+      object-fit: cover;
+    }
+
+    .breed-img-inner .slick-list,
+    .breed-img-inner .slick-track{
+        width: 100%;
+    }
+
+    .breed-img-inner .slick-slide{
+      width: 165px !important;
+    }
+
+    .breed-img-inner .slick-track{
+      margin: 0px;
+    }
+
+    .breed-paw-icon {
+      display: flex !important;
+      gap: 15px;
+    }
+
+    .badges-logo {
+      display:flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    {% comment %} Breed Traits Styling {% endcomment %}
+
+    @media (min-width: 768px) {
+        .breed-traits-gap {
+            gap: 0px;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .breed-traits-gap {
+            gap: 96px;
+        }
+    }
+
+    @media (min-width: 1400px) {
+        .breed-traits-gap {
+            gap: 130px;
+        }
+    }
+
+    .breed-traits-bar .progress {
+        border-radius: 0;
+        margin-bottom: 5px;
+        background-color: var(--primary-color-01-opacity);
+    }
+
+    .breed-traits-bar .progress-bar {
+        background-color: var(--global-secondary-color);
+    }
+
+    .progress-bar-text {
+        font-style: normal;
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 140%;
+        color: var(--global-secondary-color);
+    }
+
+    .radialProgressBar {
+        position: relative;
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: conic-gradient(var(--global-secondary-color) var(--progress, 0%), var(--primary-color-01-opacity) var(--progress, 0%) 100%);
+    }
+
+    .radialProgressBar .overlay {
+        position: absolute;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: #fff;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: var(--global-secondary-color);
+    }
+
+    .traits-layout-2 {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+
+    @media screen and (max-width: 1000px) {
+        .traits-bar-layout-2 {
+            display: flex;
+            gap: 85px;
+            margin: 10px;
+        }
+    }
+
+    .breed-layout-info {
+        color: var(--global-primary-color);
+        font-family: "Open Sans";
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        width: 100%;
+    }
+
+    .traits-layout-3 {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .layout-3-heading {
+        width: 95px;
+        color: var(--global-primary-color);
+        font-family: "Open Sans";
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 140%;
+    }
+
+    .layout3-progress-style {
+        height: 12px;
+        width: 65px;
+        border-radius: 50px !important;
+    }
+
+    .layout-3-subheading {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .subheading-section-2 {
+        display: flex;
+        justify-content: end;
+    }
+
+    .breed-traits-block {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    @media (min-width: 498px) {
+      .layout3-progress-style {
+          width: 95px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .layout3-progress-style {
+          width: 130px;
+      }
+    }
+
+    @media (min-width: 992px) {
+      .layout3-progress-style {
+          width: 55px;
+      }
+    }
+
+    @media (min-width: 1200px) {
+        .layout3-progress-style {
+           width: 65px;
+        }
+    }
+
+    @media (min-width: 1400px) {
+        .layout3-progress-style {
+            width: 75px;
+        }
+    }
+
+    {% comment %} Breed Notes Styling {% endcomment %}
+
+    .breed-notes-outer .nav{
+      justify-content: flex-start;
+      border-bottom: 2px solid var(--primary-color-02-opacity);
+    }
+
+    .breed-notes-outer .nav-link{
+        font-family: var(--heading-font);
+        font-style: normal;
+        font-weight: 700;
+        font-size: 24px;
+        line-height: 115%;
+        color: var(--global-primary-color);
+        border: 0;
+        opacity: 0.6;
+    }
+
+    .breed-notes-outer .nav-link.active{
+        color: var(--global-primary-color);
+        border: 0;
+        border-bottom: 2px solid var(--global-primary-color);
+        opacity: 1;
+    }
+
+    .breed-notes-txt{
+        font-style: normal;
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 140%;
+        color: black;
+    }
+
+    .breed-notes-title-sec {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        cursor: pointer;
+
+    }
+
+    .img-up-arrow, .img-down-arrow {
+        cursor: pointer;
+    }
+
+    .img-up-arrow {
+        display: none; /* Initially hide the up arrow */
+    }
+
+    .breed-notes-txt {
+        display: none; /* Initially hide the description */
+        align-self: stretch;
+        color: var(--global-primary-color);
+        /* Primary2-Regular */
+        font-family: "Open Sans";
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 140%; /* 25.2px */
+    }
+
+    .line-break {
+        height: 2px;
+        align-self: stretch;
+        opacity: 0.2;
+        background: var(--global-primary-color);
+    }
+
+    .nav-tabs-scrollable {
+        overflow-x: auto; /* Enable horizontal scrolling */
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
+        display: flex; /* Align children in a single line */
+    }
+
+    .nav-tabs-scrollable::-webkit-scrollbar {
+        display: none; /* Hide scrollbar for Chrome, Safari */
+    }
+
+    .nav-tabs-scrollable .nav {
+        flex: 1 0 auto; /* Prevent wrapping */
+    }
+
+    {% comment %} common spacing classes {% endcomment %}
+
+    .mt-20 {
+      margin-top: 20px;
+    }
+
+    .mt-40 {
+      margin-top: 40px;
+    }
+
+    .mb-40 {
+      margin-bottom: 40px;
+    }
+
+    .mt-48 {
+      margin-top: 48px;
+    }
+
+    .mt-80 {
+      margin-top: 80px;
+    }
+
+    .mb-80 {
+      margin-bottom: 80px;
+    }
+
+    @media (max-width:768px){
+      .mv-spacing {
+        margin-top: 0px !important;
+      }
+    }
+
+    .pl-0 {
+      padding-left: 0px;
+    }
+
+    .f-20 {
+      font-size: 20px;
+    }
+  </style>
+{% endaddtoblock %}
+
+<div class="container mt-48 mv-spacing mb-80">
+
+  {% comment %} Breed Detail Section {% endcomment %}
+
+  <div class="row">
+    <div class="col-12">
+      <h1 class="h1-theme-bold breed-name-title">
+        <strong>{{ breed.name }}</strong>
+      </h1>
+    </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col-12 col-lg-6 mb-4 breed-img-carousel">
+      <div class="breed-img-outer">
+        {% for image in breed.images %}
+        <div>
+          <img
+          src="{{ image.image_url }}"
+          class="img-fluid breed-img image-shape"
+          alt="{{ image.alt }}"
+        />
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="breed-img-inner">
+
+        {% for image in breed.images %}
+          <div>
+            <img
+            src="{{ image.image_url }}"
+            class="img-fluid breed-img image-shape"
+            alt="{{ image.alt }}"
+          />
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-6 mb-4">
+      <div class="avail-btn-outer">
+        <a
+          class="theme-primary-btn breed-avail-btn-fixed d-block"
+          href="{% url 'pinogy_pet:breeds_pet_type' breed.pet_type.slug breed.slug %}"
+          role="button">See Available {{ breed.name }} {{ breed.pet_type.selected_plural }}</a>
+      </div>
+      {% if breed.description %}
+        <div class="breed-description-outer mt-4">
+          <p class="breed-description m-0">{{ breed.description }}</p>
+        </div>
+      {% endif %}
+
+      <div class="row breed-detail-badges breed-text-center">
+        {% if badges_length == 4 %}
+          {% for badge in breed.badge_images %}
+            <div class="col-6 col-lg-2 badges-logo">
+              <img
+                src="{{ badge.image_url }}"
+                class="img-fluid badge-img mt-4"
+                alt="{{ badge.alt }}"
+              />
+            </div>
+          {% endfor %}
+        {% else %}
+          {% for badge in breed.badge_images %}
+            <div class="col-4 col-lg-2 badges-logo">
+              <img
+                src="{{ badge.image_url }}"
+                class="img-fluid badge-img mt-4"
+                alt="{{ badge.alt }}"
+              />
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+      <div class="breed-form-div card-img-top mt-4">
+        <div class="breed-collection-form-title">{{ instance.glossary.message }}</div>
+        <div class="breed-paw-icon">
+          <div class="breed-form-icon"><img src="{% static 'images/breed_detail/paw1.png'%}" alt="breed left paw icon"></div>
+          <div class="breed-form-icon"><img src="{% static 'images/breed_detail/paw2.png' %}" alt="breed right paw icon"></div>
+        </div>
+      </div>
+      <div class="breed-collection-form-outer breed-form-style card-img-bottom">
+        {% include 'plugins/includes/general_collection_form.html' with unique_id=breed.id form=collection_form form_type='breed' breed_name=breed.name location_id=location_id btn_style=instance.glossary.breedform_button_style form_shape="" %}
+      </div>
+    </div>
+  </div>
+
+  {% comment %} Breed Traits Section {% endcomment %}
+  <div class="mt-80 mb-80">
+    {% if breed_traits and  instance.glossary.show_breed_traits == "True" %}
+      {% if instance.glossary.traits_layouts == "LAYOUT1" %}
+          <div class="mb-4">
+              <h3 class="h3-theme-bold breed-traits-title">Breed Traits</h3>
+          </div>
+          <div class="row breed-traits-bar d-flex justify-content-between">
+              {% for metric in breed_traits %}
+              <div class="col-6 col-md-4 col-lg-2 layout-1">
+                  <div class="progress" style="height: 20px;">
+                      <div class="progress-bar" role="progressbar" style="width: {% widthratio metric.value 1 10 %}%;"
+                          aria-valuenow="{% widthratio metric.value 1 10 %}" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <p class="progress-bar-text">{{ metric.name }}</p>
+              </div>
+              {% endfor %}
+          </div>
+      {% elif instance.glossary.traits_layouts == "LAYOUT2" %}
+          <div class="">
+              <h3 class="h3-theme-bold breed-traits-title m-0">Breed Traits</h3>
+          </div>
+          <div class="row breed-traits-bar breed-traits-gap">
+              {% for metric in breed_traits %}
+              <div class="col-4 col-md-2 col-lg-1 traits-layout-2 mt-4">
+                  <div class="radialProgressBar" style="--progress: {% widthratio metric.value 1 10 %}%;">
+                      <div class="overlay">{{ metric.value }}</div>
+                  </div>
+                  <div class="progress-bar-text">{{ metric.name }}</div>
+              </div>
+              {% endfor %}
+          </div>
+          <div class="mt-4 breed-layout-info">Pet traits are ranked on a scale of 1 to 10 with 1 being the lowest and 10 being the highest.</div>
+      {% else %}
+          <div class="">
+              <h3 class="h3-theme-bold breed-traits-title">Breed Traits</h3>
+          </div>
+          <div class="row breed-traits-bar">
+              {% for metric in breed_metrics_info %}
+              <div class="col-12 col-lg-4 breed-traits-block mt-20">
+                  <div class="layout-3-heading">{{ metric.3 }}</div>
+
+                  {% if metric.3 == "Size" %}
+                  <div class="layout-3-subheading">
+                      <div class="breed-layout-info">Small</div>
+                      <div class="breed-layout-info subheading-section-2">X-Large</div>
+                  </div>
+                  {% elif metric.3 == "Trainability" %}
+                  <div class="layout-3-subheading">
+                      <div class="breed-layout-info">Stubborn</div>
+                      <div class="breed-layout-info subheading-section-2">Highly Trainable</div>
+                  </div>
+                  {% elif metric.3 == "Grooming" %}
+                  <div class="layout-3-subheading">
+                      <div class="breed-layout-info">Hardly Ever</div>
+                      <div class="breed-layout-info subheading-section-2">Daily</div>
+                  </div>
+                  {% elif metric.3 == "Energy" %}
+                  <div class="layout-3-subheading">
+                      <div class="breed-layout-info">Calm</div>
+                      <div class="breed-layout-info subheading-section-2">Energetic</div>
+                  </div>
+                  {% elif metric.3 == "Disposition" %}
+                  <div class="layout-3-subheading">
+                      <div class="breed-layout-info">Low</div>
+                      <div class="breed-layout-info subheading-section-2">High</div>
+                  </div>
+                  {% elif metric.3 == "Bark" %}
+                  <div class="layout-3-subheading">
+                      <div class="breed-layout-info">Low</div>
+                      <div class="breed-layout-info subheading-section-2">High</div>
+                  </div>
+                  {% endif %}
+                  <div class="traits-layout-3">
+                      {% for i in metric.0 %}
+                      <div class="layout-3">
+                          <div class="layout3-progress-style progress">
+                              <div class="progress-bar" role="progressbar" style="width: 100%;"
+                                  aria-valuenow="{% widthratio metric.value 1 10 %}" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                      </div>
+                      {% endfor %}
+
+                      {% for i in metric.1 %}
+                      <div class="layout-3">
+                          <div class="layout3-progress-style progress">
+                              <div class="progress-bar" role="progressbar" style="width: 50%;"
+                                  aria-valuenow="{% widthratio metric.value 1 10 %}" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                      </div>
+                      {% endfor %}
+
+                      {% for i in metric.2 %}
+                      <div class="layout-3">
+                          <div class="layout3-progress-style progress">
+                              <div class="progress-bar" role="progressbar" style="width: 0%;"
+                                  aria-valuenow="{% widthratio metric.value 1 10 %}" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                      </div>
+                      {% endfor %}
+                  </div>
+              </div>
+              {% endfor %}
+          </div>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  {% comment %} Breed Notes Section {% endcomment %}
+  {% if breed_notes and instance.glossary.show_breed_notes == "True" %}
+    <div class="breed-notes-outer mt-80 mb-80">
+      <div class="nav-tabs-scrollable">
+          <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+              {% for group_note_name, group_notes in breed_notes.items %}
+              <li class="nav-item" role="presentation">
+                  <button class="nav-link pl-0 {% if forloop.counter0 == 0 %} active {% endif %}" id="home-tab" data-bs-toggle="tab" data-bs-target="#{{ group_note_name|cut:" " }}_id" type="button" role="tab" aria-controls="{{ group_note_name|cut:" " }}" aria-selected="true">
+                      {{ group_note_name }}
+                  </button>
+              </li>
+              {% endfor %}
+          </ul>
+      </div>
+      <div class="tab-content" id="myTabContent">
+          {% for group_note_name, group_notes in breed_notes.items %}
+          <div class="tab-pane fade show {% if forloop.counter0 == 0 %} active {% endif %}" id="{{ group_note_name|cut:" " }}_id" role="tabpanel" aria-label="{{ group_note_name }}-tab">
+              <div class="row">
+                  {% for note in group_notes %}
+                  <div class="col-12">
+                      <div class="breed-notes-txt-outer">
+                          <div class="breed-notes-title-sec" onclick="toggleDescription(this)">
+                              <div class="breed-notes-sec-1">
+                                  <h3 class="h3-theme-bold f-20 breed-notes-title">{{ note.header }}</h3>
+                              </div>
+
+                              <div class="breed-notes-sec-2">
+                                  {% comment %} up arrow {% endcomment %}
+                                  <div class="img-up-arrow">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="var(--global-primary-color)">
+                                          <path d="M18.6024 17.2322L13.999 11.7336L9.39763 17.2322C9.32803 17.3156 9.23931 17.3829 9.13813 17.4293C9.03695 17.4757 8.92594 17.4999 8.81345 17.5L7.18657 17.5C7.03063 17.5 6.94452 17.331 7.03994 17.2168L13.4145 9.60003C13.7148 9.24443 14.2873 9.24443 14.5852 9.60003L20.9601 17.2168C21.0555 17.331 20.9694 17.5 20.8134 17.5L19.1866 17.5C19.0741 17.4999 18.9631 17.4757 18.8619 17.4293C18.7607 17.3829 18.672 17.3156 18.6024 17.2322Z"
+                                          fill="var(--global-primary-color)" />
+                                      </svg>
+                                  </div>
+                                  {% comment %} down arrow {% endcomment %}
+                                  <div class="img-down-arrow">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="var(--global-primary-color)">
+                                          <path d="M18.6024 11.9319L13.999 17.4304L9.39763 11.9319C9.32803 11.8485 9.23931 11.7811 9.13813 11.7347C9.03695 11.6884 8.92594 11.6642 8.81345 11.6641L7.18657 11.6641C7.03063 11.6641 6.94452 11.8331 7.03994 11.9472L13.4145 19.564C13.7148 19.9196 14.2873 19.9196 14.5852 19.564L20.9601 11.9472C21.0555 11.8331 20.9694 11.6641 20.8134 11.6641L19.1866 11.6641C19.0741 11.6642 18.9631 11.6884 18.8619 11.7347C18.7607 11.7811 18.672 11.8485 18.6024 11.9319Z"
+                                          fill="var(--global-primary-color)" />
+                                      </svg>
+                                  </div>
+                              </div>
+                          </div>
+                          <p class="breed-notes-txt">{{ note.description }}</p>
+                      </div>
+                      <div class="line-break mb-4"></div>
+                  </div>
+                  {% endfor %}
+              </div>
+          </div>
+          {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+{% addtoblock 'js' %}
+{% comment %} Breed Detail JS {% endcomment %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const descriptionElement = document.querySelector('.breed-description');
+      const fullText = descriptionElement.textContent;
+      const maxLength = 200; // Set the character limit for the initial displayed text
+  
+      // Show only the first part of the text followed by "..."
+      descriptionElement.textContent = fullText.slice(0, maxLength) + (fullText.length > maxLength ? '...' : '');
+      
+      // If the text is longer than the maxLength, add the "More" link
+      if (fullText.length > maxLength) {
+          const moreLink = document.createElement('a');
+          moreLink.href = '#';
+          moreLink.className = 'more-link';
+          moreLink.textContent = 'More';
+          moreLink.setAttribute('aria-label', 'Read more about this content');
+  
+          moreLink.onclick = function (event) {
+              event.preventDefault();
+              // Show the full text when "More" is clicked
+              descriptionElement.textContent = fullText;
+              // Remove the "More" link
+              moreLink.remove();
+          };
+  
+          descriptionElement.appendChild(document.createTextNode(' '));
+          descriptionElement.appendChild(moreLink);
+      }
+    });  
+  </script>
+
+  <script>
+    $(document).ready(function(){
+      $('.breed-img-outer').slick({
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        arrows: true,
+        fade: true,
+        infinite: true,
+        asNavFor: '.breed-img-inner'
+      });
+      
+      $('.breed-img-inner').slick({
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        asNavFor: '.breed-img-outer',
+        dots: true,
+        focusOnSelect: true,
+        infinite: true,
+        responsive: [
+        {
+          breakpoint: 1400,
+          settings: {
+            slidesToShow: 2
+          }
+        },
+        {
+          breakpoint: 480,
+          settings: {
+            slidesToShow: 1
+          }
+        }
+       ]
+      });
+    });
+  </script>
+
+  {% comment %} Breed Notes JS {% endcomment %}
+  <script>
+    function toggleDescription(element) {
+        const parent = element.closest('.breed-notes-txt-outer');
+        const description = parent.querySelector('.breed-notes-txt');
+        const upArrow = parent.querySelector('.img-up-arrow');
+        const downArrow = parent.querySelector('.img-down-arrow');
+
+        if (description.style.display === 'none' || description.style.display === '') {
+            description.style.display = 'block';
+            upArrow.style.display = 'block';
+            downArrow.style.display = 'none';
+        } else {
+            description.style.display = 'none';
+            upArrow.style.display = 'none';
+            downArrow.style.display = 'block';
+        }
+    }
+</script>
+{% endaddtoblock %}

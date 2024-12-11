@@ -1,0 +1,50 @@
+{% load cms_tags sekizai_tags %}
+
+{% if filter_type == 'True' %}
+    {% if sh_date_choice == 'True' and sh_location_choice == 'True' %}
+        {# Filter by both date and location #}
+        {% if not current_store_in_list and not current_date_in_range %}
+            {# Render plugins if conditions are met #}
+            {% for plugin in instance.child_plugin_instances %}
+                {% render_plugin plugin %}
+            {% endfor %}
+        {% endif %}
+    {% elif sh_date_choice == 'True' %}
+        {# Filter by date only #}
+        {% if not current_date_in_range %}
+            {% for plugin in instance.child_plugin_instances %}
+                {% render_plugin plugin %}
+            {% endfor %}
+        {% endif %}
+    {% elif sh_location_choice == 'True' %}
+        {# Filter by location only #}
+        {% if not current_store_in_list %}
+            {% for plugin in instance.child_plugin_instances %}
+                {% render_plugin plugin %}
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+{% else %}
+    {% if sh_date_choice == 'True' and sh_location_choice == 'True' %}
+        {# Reverse filtering: show if both date and location match #}
+        {% if current_store_in_list and current_date_in_range %}
+            {% for plugin in instance.child_plugin_instances %}
+                {% render_plugin plugin %}
+            {% endfor %}
+        {% endif %}
+    {% elif sh_date_choice == 'True' %}
+        {# Reverse filtering: show if date matches #}
+        {% if current_date_in_range %}
+            {% for plugin in instance.child_plugin_instances %}
+                {% render_plugin plugin %}
+            {% endfor %}
+        {% endif %}
+    {% elif sh_location_choice == 'True' %}
+        {# Reverse filtering: show if location matches #}
+        {% if current_store_in_list %}
+            {% for plugin in instance.child_plugin_instances %}
+                {% render_plugin plugin %}
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+{% endif %}

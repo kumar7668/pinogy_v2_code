@@ -1,0 +1,92 @@
+{% load static sekizai_tags global_theme_config_tags thumbnail %}
+
+{% global_theme_object as global_theme_config %}
+
+{% addtoblock "css"  %}
+    <style>
+        /* TODO: need to decide and move unrequired into css file insted of here */
+        .sinfo-outer-{{instance.pk}}{
+            background-color: {{instance.glossary.bg_color}};
+        }
+
+        .carousel-item-box-desc-desc {
+            word-wrap: break-word;
+        }
+
+        .card_tc_image{
+            height: 220px;
+            width: 220px;
+            object-fit: cover;
+            border: 10px solid #FFFFFF;
+            box-shadow: 1px 2px 18px 0px #505E9459;
+        }
+
+        .more_view{
+            font-weight: bold;
+        }
+    </style>
+{% endaddtoblock  %}
+
+<div class="sinfo-outer-{{instance.pk}} sinfo-{{instance.id}}">
+    <div class="container">
+        <div class="row m-auto">
+            {% for item in instance %}
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <div class="carousel-item-box py-3 carousel-item-box-style-5">
+                        {% if item.photo %}
+                            <div class="carousel-item-box-img text-center mb-3 tcImage">
+                                {% thumbnail item.photo 200x200 as thumb %}
+                                <img src="{{ thumb.url }}" class="card_tc_image img-fluid" alt="testimonial-image">
+                            </div>
+                        {% endif %}
+                        <div class="carousel-item-box-desc">
+                            <div class="carousel-item-box-desc-title h3-theme-bold">
+                                {{item.subject}}
+                            </div>
+                            <div class="carousel-item-box-desc-desc my-2">
+                                <p class="m-0">{{item.body|truncatechars:100}} <a href="#" class="more_view" data-text="{{item.body}}" area-label = "more">More </a></p>
+                            </div>
+                            {% if item.display_name %}
+                                <h5 class="carousel-item-box-desc-auth">- {{item.display_name}}
+                                </h5>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal carousel-plugin fade" id="moreModal" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="text-end m-2 mb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <p class="more-body-text m-0"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% addtoblock "js"%}
+<script>
+    $( document ).ready(function() {
+        $('.more_view').on('click', function () {
+            var more_text = $(this).data("text");
+            $('.more-body-text').html(more_text);
+            $('#moreModal').modal('show');
+            return false;
+        });
+
+        $(".modal-close").on('click', function () {
+            $('#moreModal').modal('toggle');
+            return false;
+        });
+    });
+</script>
+{% endaddtoblock %}
+    

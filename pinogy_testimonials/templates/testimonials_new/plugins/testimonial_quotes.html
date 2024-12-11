@@ -1,0 +1,98 @@
+{% load cms_tags l10n sekizai_tags static thumbnail %}
+
+{% addtoblock "css" %}
+    <style>
+        .testimonials-quotes {
+            padding: 0 50px;
+            position: relative;
+        }
+
+        .testimonials-quotes .testimonial-author {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+        }
+
+        .testimonials-quotes .img-thumbnail {
+            margin-right: 20px;
+        }
+
+        .testimonials-quotes.owl-carousel .owl-nav button.owl-prev,
+        .testimonials-quotes.owl-carousel .owl-nav button.owl-next {
+            transition: opacity .2s linear;
+            opacity: 1;
+        }
+
+        .testimonials-quotes.owl-carousel .owl-nav button.owl-prev.disabled,
+        .testimonials-quotes.owl-carousel .owl-nav button.owl-next.disabled {
+            opacity: 0;
+        }
+
+        .testimonials-quotes.owl-carousel .owl-nav button.owl-prev {
+            left: -50px;
+        }
+
+        .testimonials-quotes.owl-carousel .owl-nav button.owl-next {
+            right: 50px;
+        }
+
+        .testimonial-owl-item {height: 0 !important;}    
+        .testimonial-owl-item.active {height: auto !important;}
+    </style>
+{% endaddtoblock %}
+
+<div id="testimonial-quotes-{{ instance.pk|unlocalize }}" class="pinogy-testimonials testimonials-quotes {% if testimonial_list.count %} owl-carousel own-theme owl-loaded owl-drag owl-carousel-init manual {% endif %}">
+    <div class="owl-stage-outer">
+        <div class="owl-stage">
+            {% for testimonial in testimonial_list %}
+                <div class="owl-item testimonial-owl-item">
+                    <blockquote class="testimonial">
+                        {{ testimonial.body}}
+                    </blockquote>
+                    <div class="testimonial-arrow-down"></div>
+                    <div class="testimonial-author">
+                        {% if testimonial.photo %}
+                            <div class="img-thumbnail img-thumbnail-small">
+                                <img src="{% thumbnail testimonial.photo 60x60 crop %}" height="60" width="60">
+                            </div>
+                        {% endif %}
+                        <p>
+                            <strong>{{ testimonial.display_name }}</strong>
+                            <span>Customer</span>
+                        </p>
+                    </div>
+                </div>
+            {% empty %}
+                <div>
+                    <p class="info">There are no approved testimonials yet. Why not be the first?</p>
+                    <a href="{{ share_url }}" class="btn btn-primary btn-md">{{instance.share_button_text}}</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% if testimonial_list.count %}
+    {% addtoblock "js" %}
+        <script>
+            $(document).ready(function() {
+                $("#testimonial-quotes-{{ instance.pk|unlocalize }}").owlCarousel({
+                    items: 1,
+                    singleItem: true,
+                    autoPlay: true,
+                    stopOnHover: true,
+                    dots: false,
+                    nav: true,
+                    rewindNav: true,
+                    scrollPerPage: true,
+                    pagination: true,
+                    autoHeight: false
+                });
+            });
+        </script>
+    {% endaddtoblock %}
+{% endif %}

@@ -1,0 +1,30 @@
+{% extends CMS_TEMPLATE %}
+{% load cms_tags menu_tags i18n sekizai_tags %}
+{% block title %}Available {{ selected_pet_type_slug }} {% endblock title %}
+{% block breadcrumb %}
+    <div class="container pt-5">
+        <div class="row avail-wrap">
+            <div class="col-12 col-md-8 d-none d-md-block">
+                {% show_breadcrumb 0 "pinogy_app/includes/breadcrumb.html" 0 %}
+            </div> 
+            {% comment %} <div class="col-12 col-sm-12 col-md-4 d-flex justify-content-between justify-content-md-end">
+                <a href="{% url 'pinogy_pet:pet_type' selected_pet_type_slug %}" class="me-3 share-title no-underline">All {{ selected_pet_type_slug }}</a>
+                {% include 'plugins/includes/share_page_link.html' %}
+            </div> {% endcomment %}
+        </div>
+    </div>
+{% endblock %} 
+{% block meta %}
+    <meta property="url" content="{{ request.scheme }}://{{ request.get_host }}{{  request.path }}" />
+    <meta property="type" content="List"/>
+    <meta name="description" content="Available {{ selected_pet_type_slug }} for Sale. "/>
+    <meta name="keywords" content="Available {{ selected_pet_type_slug }} for Sale">
+{% endblock %}
+{% block canon %}
+    <link rel="canonical" href="{{ canonical_url }}">
+{% endblock %}
+{% block main %}
+    {% static_placeholder 'pet_list_header' %}
+    {% static_placeholder 'pet_list_body' %}
+    {% static_placeholder 'pet_list_footer' %}
+{% endblock %}

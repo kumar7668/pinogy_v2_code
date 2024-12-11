@@ -1,0 +1,131 @@
+[
+    {
+        "page_data": {
+            "title": "Home",
+            "template": "fullwidth.html",
+            "language": "en",
+            "reverse_id": "Home",
+            "published": true,
+            "created_by": "db-initialization",
+            "in_navigation": false
+        },
+        "is_home": true
+    },
+    {
+        "page_data": {
+            "title": "Shop",
+            "template": "fullwidth.html",
+            "language": "en",
+            "reverse_id": "Shop",
+            "published": true,
+            "created_by": "db-initialization",
+            "in_navigation": true
+        }
+    },
+    {
+        "page_data": {
+            "title": "Pets",
+            "template": "fullwidth.html",
+            "language": "en",
+            "reverse_id": "Pets",
+            "published": true,
+            "created_by": "db-initialization",
+            "in_navigation": true
+        }
+    },
+    {
+        "page_data": {
+            "title": "Contact Us",
+            "template": "fullwidth.html",
+            "language": "en",
+            "reverse_id": "Contact Us",
+            "published": true,
+            "created_by": "db-initialization",
+            "in_navigation": true
+        }
+    },
+    {
+        "page_data": {
+            "title": "Plugins",
+            "template": "fullwidth.html",
+            "language": "en",
+            "reverse_id": "Plugins",
+            "published": true,
+            "created_by": "db-initialization",
+            "in_navigation": true
+        },
+        "plugins": [
+            {
+                "plugin_name": "BannerPlugin",
+                "data": {
+                    "image": "",
+                    "glossary": {
+                        "layout": "TEXT 2 BUTTONS LEFT",
+                        "title_text": "Enter title text here",
+                        "title_text_color": "#003f5aff",
+                        "sub_title_text": "Enter subtitle text here",
+                        "sub_title_text_color": "#003f5aff",
+                        "first_button_text": "Button1 text",
+                        "first_button_link": "/",
+                        "first_button_internallink":"",
+                        "first_button_style": "fill",
+                        "first_button_fill_color": "#ffffffff",
+                        "first_button_font_color": "#12bbd2ff",
+                        "first_button_outline_color": "#12bbd2ff",
+                        "first_button_color_pattern":"",
+                        "second_button_text": "Button2 text",
+                        "second_button_link": "/",
+                        "second_button_internallink":"",
+                        "second_button_style": "outline",
+                        "second_button_fill_color": "#ffffffff",
+                        "second_button_font_color": "#12bbd2ff",
+                        "second_button_outline_color": "#12bbd2ff",
+                        "second_button_color_pattern":""
+                    }
+                }
+            },
+            {
+                "plugin_name": "InfoBlockFirstPlugin",
+                "data": {
+                    "image": "",
+                    "glossary": {
+                        "layout": "LAYOUT1",
+                        "title_text": "Enter title text here",
+                        "title_text_color": "#003f5aff",
+                        "message_text": "Enter your content here...",
+                        "message_text_color": "#003f5aff",
+                        "button_text": "Button text",
+                        "button_link": "/",
+                        "button_internallink":"",
+                        "button_style": "fill",
+                        "button_fill_color": "#ffffffff",
+                        "button_font_color": "#12bbd2ff",
+                        "button_outline_color": "#12bbd2ff"
+                    }
+                }
+            },
+            {
+                "plugin_name": "InfoBlockSecondPlugin",
+                "data": {
+                    "image_left": "",
+                    "image_right": "",
+                    "glossary": {
+                        "title_text": "Enter title text here",
+                        "title_text_color": "#003f5aff",
+                        "sub_title_text": "Enter subtitle text here",
+                        "sub_title_text_color": "#003f5aff",
+                        "message_text": "Enter your content here...",
+                        "message_text_color": "#003f5aff",
+                        "button_text": "Click Me",
+                        "button_link": "/",
+                        "button_internallink":"",
+                        "button_style": "fill",
+                        "button_fill_color": "#ffffffff",
+                        "button_font_color": "#12bbd2ff",
+                        "button_outline_color": "#12bbd2ff"
+                    }
+                }
+            }
+        ]
+    }
+]

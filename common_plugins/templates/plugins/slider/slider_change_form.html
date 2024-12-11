@@ -1,0 +1,109 @@
+{% extends 'admin/base_change_form.html' %}
+
+{% load cms_tags menu_tags sekizai_tags static admin_modify %}
+{% load global_theme_config_tags %}
+
+{% block content %}
+    {% global_theme_object as global_theme_config %}
+
+    {% addtoblock 'css' %}
+        <style>
+            {% if global_theme_config.primary_color and global_theme_config.secondary_color %}
+                :root {
+                    --primary-element: {{global_theme_config.primary_color}};
+                    --secondary-element: {{global_theme_config.secondary_color}};
+                }
+            {% endif %}
+
+            /* Django admin style override */
+            ul > li {
+                list-style-type: none;
+            }
+        </style>
+    {% endaddtoblock %}
+
+    <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}{% if form_url %}action="{{ form_url }}" {% endif %}method="post" id="{{ opts.model_name }}_form" novalidate>
+        {% csrf_token %}
+        <div class="box-theme">
+            <div class="box-theme-title banner-text-layout">
+                Slider Section
+            </div>
+            <div class="box-theme-form-devider button-layout">
+            </div>
+            <div class="box-theme-title banner-text-layout">
+                Navigation arrows
+            </div>
+            <div class="box-theme-help-text">
+                {{adminform.form.arrow_display.help_text}}
+            </div>
+            <div class="box-theme-form-item">
+                {{adminform.form.arrow_display}}
+                {% if adminform.form.arrow_display.errors %}
+                    {% for error in adminform.form.arrow_display.errors  %}
+                        <div class="alert alert-danger error-block" role="alert">
+                            {{error}}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="box-theme-form-devider button-layout">
+            </div>
+            <div class="box-theme-title banner-text-layout">
+                Navigation dots
+            </div>
+            <div class="box-theme-help-text">
+                {{adminform.form.dots_display.help_text}}
+            </div>
+            <div class="box-theme-form-item">
+                {{adminform.form.dots_display}}
+                {% if adminform.form.dots_display.errors %}
+                    {% for error in adminform.form.dots_display.errors  %}
+                        <div class="alert alert-danger error-block" role="alert">
+                            {{error}}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="box-theme-form-devider button-layout">
+            </div>
+            <div class="box-theme-title banner-text-layout">
+                Looping
+            </div>
+            <div class="box-theme-help-text">
+                {{adminform.form.slider_loop.help_text}}
+            </div>
+            <div class="box-theme-form-item">
+                {{adminform.form.slider_loop}}
+                {% if adminform.form.slider_loop.errors %}
+                    {% for error in adminform.form.slider_loop.errors  %}
+                        <div class="alert alert-danger error-block" role="alert">
+                            {{error}}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="box-theme-title banner-text-layout">
+                Autoplay
+            </div>
+            <div class="box-theme-help-text">
+                {{adminform.form.slider_autoplay.help_text}}
+            </div>
+            <div class="box-theme-form-item">
+                {{adminform.form.slider_autoplay}}
+                {% if adminform.form.slider_autoplay.errors %}
+                    {% for error in adminform.form.slider_autoplay.errors  %}
+                        <div class="alert alert-danger error-block" role="alert">
+                            {{error}}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+    </form>
+
+    {% addtoblock 'js' %}
+
+    {% endaddtoblock %}
+{% endblock content %}

@@ -1,0 +1,69 @@
+[
+    {
+        "page_data": {
+            "title": "Home",
+            "template": "fullwidth.html",
+            "language": "en",
+            "reverse_id": "Home",
+            "published": true,
+            "created_by": "db-initialization",
+            "in_navigation": false
+        },
+        "is_home": true
+    },
+    {
+        "page_data": {
+            "title": "Shop",
+            "template": "fullwidth.html",
+            "language": "en",
+            "reverse_id": "Shop",
+            "published": true,
+            "created_by": "db-initialization",
+            "in_navigation": true
+        }
+    },
+    {
+        "page_data": {
+            "title": "Pets",
+            "template": "fullwidth.html",
+            "language": "en",
+            "reverse_id": "Pets",
+            "published": true,
+            "created_by": "db-initialization",
+            "in_navigation": true
+        }
+    },
+    {
+        "page_data": {
+            "title": "Services",
+            "template": "fullwidth.html",
+            "language": "en",
+            "reverse_id": "Services",
+            "published": true,
+            "created_by": "db-initialization",
+            "in_navigation": true
+        }
+    },
+    {
+        "page_data": {
+            "title": "About Us",
+            "template": "fullwidth.html",
+            "language": "en",
+            "reverse_id": "About Us",
+            "published": true,
+            "created_by": "db-initialization",
+            "in_navigation": true
+        }
+    },
+    {
+        "page_data": {
+            "title": "Contact Us",
+            "template": "fullwidth.html",
+            "language": "en",
+            "reverse_id": "Contact Us",
+            "published": true,
+            "created_by": "db-initialization",
+            "in_navigation": true
+        }
+    }
+]

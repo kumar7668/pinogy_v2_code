@@ -1,0 +1,32 @@
+{% extends CMS_TEMPLATE %}
+{% load cms_tags i18n %}
+
+{% block main %}
+    {% if is_redirect %}
+        <script>
+            window.addEventListener('load', function() {
+
+                if(window.location.href === document.referrer) {
+                    console.log('No redirect to the same page');
+                } else {
+                    window.setTimeout(function () {
+                        window.location.href = document.referrer;
+                    }, 5000);
+                }
+            });
+        </script>
+    {% endif %}
+    <script>
+        document.getElementById("redirect-link").href = document.referrer;
+    </script>
+
+    {% static_placeholder "TestimonialSuccess" or %}
+    <div class="container" style="padding-top: 30px; padding-bottom: 30px;">
+        <h1 class="h1-theme-bold" style="text-align: center;">{% trans "Thank you for your pet story." %}</h1>
+        <div style="text-align: center;">{% trans "Our moderators will review your submission and mark it for publication soon." %}</div>
+        <div style="text-align: center;">
+            After a few seconds, the previous page will be loaded. If this did not happen <a id="redirect-link" href="#">click here</a>
+        </div>
+    </div>
+    {% endstatic_placeholder %}
+{% endblock %}

@@ -1,0 +1,199 @@
+{% extends CMS_TEMPLATE %}
+{% load cms_tags sekizai_tags %}
+{% load static %} 
+{% block main %}
+
+{% addtoblock 'css' %}
+
+<style>
+  .unsubs-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  .unsubs-form-div {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .unsubs-form {
+    display: flex;
+  }
+  
+  .unsubs-text-div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .success-msg {
+    text-align: center;
+    justify-content: center;
+  }
+  
+  .error-div {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+  }
+  
+  .title {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 40px;
+    text-align: center;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+  }
+  
+  .sub_title {
+    padding-top: 20px;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 28px;
+    text-align: center;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+  }
+  
+  .clsinfo {
+  
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 28px;
+    text-align: center;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+  }
+  
+  .error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    box-shadow: 2px 2px 5px #eeeeee;
+    margin: 10px
+  }
+</style>
+{% endaddtoblock %}
+
+{% if validation_error%}
+<div class="unsubs-form-div">
+  <div class="row">
+    <div class="col-12 error">
+      <h6 class="h6-theme-bold" style="    opacity: .8">
+        <strong>Error!</strong> A problem has been occurred please contact admin.
+      </h6>
+    </div>
+  </div>
+</div>
+{%else%}
+{% if sucess %}
+  <div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-12 col-sx-12"
+      style="display: flex; justify-content: center; align-items: center">
+      <div class="" style="padding: 20px; text-align: center">
+        <h4 class="title">
+          <i class="bi-exclamation-octagon-fill"></i>We’re Sad to See You Go, But You're Always Welcome Back! 
+        </h4>
+        <p class="sub_title">
+          You will no longer receive {{marketing_email}} 
+        </p>
+        <form method="POST" enctype="multipart/form-data" action="." id="unsubscribe" >
+          {% csrf_token %}
+        <button class="theme-primary-btn">
+          Unsubscribe Now
+        </button>
+      </form>
+      </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-sx-12" style="text-align:center">
+      <img src="{% static 'images/unsubscribe.svg' %}" width="70%" />
+    </div>
+  </div>
+{% else %}
+<div class="unsubs-div my-3">
+  <div class="success-msg my-3" style="display: none">
+    <h1 class="h1-theme-bold">THANK YOU</h1>
+    <p style="color: #408140; mt-2">
+      You have successfully unsubscribed. You will be redirected to the homepage
+      shortly.
+    </p>
+  </div>
+  <div class="error-msg my-3" style="display: none">
+    <h6 class="h6-theme-bold" style="color: red">
+      <strong>Error!</strong> A problem has been occurred please contact admin.
+    </h6>
+  </div>
+
+  <div class="unsubs-form-div">
+    <div class="row">
+      <div class="col-lg-6 col-md-6 col-sm-12 col-sx-12"
+        style="display: flex; justify-content: center; align-items: center">
+
+        <div class="" style="padding: 20px; text-align: center">
+          <p class="title">Unsubscribed</span>
+            <br />
+          <p class="sub_title">
+            You have been sucessfully unsubscribed from {{marketing_email}}
+            </span>
+          <p class="clsinfo">
+            To manage all notifications from us, log into your
+            <br /> Account now.
+          </p>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-6 col-sm-12 col-sx-12" style="text-align:center">
+        <img src="{% static 'images/unsubscribe_.svg' %}" width="70%" />
+      </div>
+    </div>
+  </div>
+</div>
+
+  {% endif %}
+  {% endif %}
+
+{% addtoblock 'js' %}
+<script>
+    $(document).ready(function() {
+        $('#unsubscribe').on('submit', function(event) {
+            event.preventDefault();
+            $('.success-msg').hide();
+            $('.error-msg').hide();
+            const urlParams = new URLSearchParams(window.location.search);
+            const _token = urlParams.get('token');
+            $.ajax({
+                url: "{% url 'unsubscribe' %}",
+                method: 'POST',
+                data: JSON.stringify({
+                    status: 'Unsubscribed',
+                    token: _token // Pass token from the view safely
+                }),
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'  // Include CSRF token for security
+                },
+                success: function(data) {
+                    if (data.success) {
+                        // Show success message and hide error message
+                        $('.success-msg').show();
+                        $('.error-msg').hide();
+                        $('.unsubs-form-div').hide();
+                    } else {
+                        $('.error-msg').show();
+                        $('.success-msg').hide();
+                    }
+                },
+                error: function(xhr, status, error) {
+                  let error=document.getElementById('unsubs')
+                  error.style.display="block"
+                  error.innerHTML=error
+   }
+            });
+        });
+    });
+</script>
+{% endaddtoblock %}
+{% endblock%}

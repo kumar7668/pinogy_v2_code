@@ -1,0 +1,24 @@
+.admin-form .box-theme-tab{
+    margin: 0;
+}
+
+.admin-form ul.theme-tab{
+    margin: 0;
+    border: 0;
+    padding: 0 !important;
+}
+
+.admin-form ul.theme-color-tab {
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0;
+}
+
+.admin-form ul.theme-tab li{
+    border: 0;
+    padding-top: 0;
+}
+
+.admin-form .box-theme-form-item{
+    padding: 0;
+}

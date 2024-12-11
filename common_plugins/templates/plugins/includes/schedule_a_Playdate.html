@@ -1,0 +1,405 @@
+{% load thumbnail %}
+{% load cms_tags sekizai_tags %}
+
+<!-- Custom CSS styles -->
+<style>
+  /* CSS styles */
+  .contact-form-pet-card__title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--global-primary-color);
+  }
+
+  .petinfo {
+    align-items: center !important;
+  }
+
+  .modal-header {
+    border-bottom: 0px solid;
+  }
+
+  .fs-18 {
+    font-size: 18px !important;
+  }
+
+  #playdate_accordion_{{ pet.pet_id }} .accordion-button {
+    padding: 1px !important;
+  }
+
+  .pet-card-play-date-slot-button {
+    margin: 0 15px 15px 0;
+    min-width: 100px;
+    text-align: center;
+    border-radius: 35px;
+  }
+
+  .pet-card-play-date-selected {
+    padding: 0;
+    margin: 1em 0;
+    font-size: 1.3em;
+  }
+
+  .date-btn-view {
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .selected-time {
+    background-color: #007bff; /* Change this to your desired active color */
+    color: red; /* Change this to your desired text color */
+  }
+
+  .contact-link a {
+    text-decoration: none; /* Remove underline by default */
+  }
+
+  .contact-link a:hover {
+    text-decoration: underline; /* Add underline on hover */
+  }
+
+  .btn-color {
+    color: var(--global-primary-color);
+  }
+
+  .btn-color:not(.collapsed) {
+    color: var(--global-primary-color);
+    background-color: white;
+  }
+
+  .btn-color:focus {
+    background-color: white;
+    border-color: var(--global-primary-color);
+    box-shadow: 0 0 0 1px var(--global-primary-color);
+  }
+
+  .border-color {
+    box-shadow: 0 0 0 1px var(--global-primary-color);
+  }
+
+  /* Remove border-top from all accordion items except the first one */
+  #playdate_accordion_{{ pet.pet_id }} .accordion-item:not(.first) {
+    border-radius: 2px;
+    border-top: 1px solid rgba(0,0,0,.125);
+  }
+</style>
+
+<div id="general_collection_form_outer_{{ pet.pet_id }}">
+
+  <!-- Error message container -->
+  <div class="container pt-3 playdate_error_msg_{{ pet.pet_id }}" style="display: none;">
+    <div class="alert alert-danger d-flex align-items-center" role="alert">
+      <p class="m-0 text-danger">Something went wrong, please contact admin !</p>
+    </div>
+  </div>
+
+  <!-- Success message container -->
+  <p class="fw-bolder fs-6 label mt-3 mb-0 text-success playdate_success_msg_{{ pet.pet_id }}" style="display: none;">
+    Your request submitted successfully
+  </p>
+
+  <!-- Pet information section -->
+  <div class="row petinfo">
+    <!-- Close button -->
+    <div class="col-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="float: right; font-size: 15px"></button>
+    </div>
+
+    <!-- Pet image -->
+    <div class="col-12 col-lg-5 col-md-5 col-sm-12 col-xs-12">
+      {% if not pet_detail %}
+      {% if pet.pet_images.file_image %}
+        <img src="{{ pet.pet_images.file_image.url }}" class="card-img-top" alt="{{ pet.pet_images.file_image.alt }}" style="width: 100%" loading="lazy" />
+      {%endif%}
+        {% elif pet.pet_images %}
+        {% for item in pet.pet_images %}
+          {% if forloop.first %}
+            <img src="{{ item.image_url }}" class="card-img-top" alt="{{ item.alt }}" style="width: 100%" loading="lazy" />
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    <!-- Pet details -->
+    <div class="col-12 col-lg-7 col-md-7 col-sm-12 col-xs-12">
+      <div class="contact-form-pet-card__title mb-3">
+        Send Me More Info On This Pet!
+      </div>
+
+      <!-- Location information -->
+      <div class="contact-form-pet-card__title mb-3">
+        <span class="contact-link">
+          <a href="https://www.google.com/maps/search/?api=1&query={{ pet.selected_store.latitude }},{{ pet.selected_store.longitude }}" class="location-link" target="_blank" area-label = "location receipt name {{ pet.loc_receipt_name }}">
+            <i class="fas fa-map-marker-alt"></i> &nbsp;
+            {{ pet.loc_receipt_name }}
+          </a>
+        </span>
+      </div>
+
+      <!-- Phone number -->
+      {% if pet.phone_number %}
+        <div class="contact-form-pet-card__title mb-3">
+          <span class="contact-link">
+            <a href="tel:{{ pet.phone_number }}" area-label = "phone number {{ pet.phone_number }}">
+              <i class="fa fa-phone" aria-hidden="true"></i> &nbsp;
+              {{ pet.phone_number }}
+            </a>
+          </span>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  <br />
+
+  <!-- Playdate scheduling section -->
+  <div>
+    <div class="row">
+      <div class="col">
+        <div class="accordion" id="playdate_accordion_{{ pet.pet_id }}">
+
+          <!-- Select Date Section -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+              <button class="accordion-button btn-color" type="button" data-bs-toggle="collapse" data-bs-target="#dateCollapse_{{ pet.pet_id }}" aria-expanded="true" aria-controls="dateCollapse_{{ pet.pet_id }}">
+                &nbsp; Select Date
+              </button>
+            </h2>
+            <div id="dateCollapse_{{ pet.pet_id }}" class="accordion-collapse collapse show" aria-label="headingOne" data-bs-parent="#playdate_accordion_{{ pet.pet_id }}">
+              <div class="accordion-body">
+                <!-- Date and time selection buttons -->
+                {% for date, times in current_pet_box_visits_schedule %}
+                  <h4>
+                    <button class="btn btn-color date-btn-view date-btn-view_{{ pet.pet_id }}" type="button" data-bs-toggle="collapse" data-bs-target="#timeCollapse_{{ pet.pet_id }}_{{ date|slugify }}" aria-expanded="false" aria-controls="timeCollapse_{{ pet.pet_id }}_{{ date|slugify }}">
+                      {{ date }}
+                    </button>
+                  </h4>
+                  <div class="collapse mt-3" id="timeCollapse_{{ pet.pet_id }}_{{ date|slugify }}">
+                    <div class="d-block">
+                      {% for time in times %}
+                        <button class="btn btn-outline-secondary button pet-card-play-date-slot-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo_{{ pet.pet_id }}" aria-expanded="false" aria-controls="timeCollapse1"
+                                data-date="{{ date }}" data-start-time="{{ time.start_time }}" onclick="selectDateTime(this, '{{ pet.pet_id }}', '{{ date }}', '{{ time.start_time }}', '{{ time.end_time }}', '{{ time.s_time }}', '{{ time.e_time }}')"
+                                >
+                          {{ time.start_time }}
+                        </button>
+                      {% endfor %}
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Selected Date and Time Display -->
+          <h3 id="selected_date_time_display_{{ pet.pet_id }}" class="pet-card-play-date-selected" aria-label="selected_date_time_display"></h3>
+
+
+          <!-- My Info Section -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+              <button class="accordion-button btn-color collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo_{{ pet.pet_id }}" aria-expanded="false" aria-controls="collapseTwo_{{ pet.pet_id }}">
+                &nbsp; My Info
+              </button>
+            </h2>
+            <div id="collapseTwo_{{ pet.pet_id }}" class="accordion-collapse collapse" aria-label="headingTwo" data-bs-parent="#playdate_accordion_{{ pet.pet_id }}">
+              <div class="accordion-body">
+                <!-- Playdate scheduling form -->
+                <form class="theme-form needs-validation" id="schedule_a_play_date_form_{{ pet.pet_id }}" method="post" action="{% url 'pinogy_common_ajax:playdate' %}" novalidate>
+                  {% csrf_token %}
+                  <!-- Form fields -->
+                  <div class="row">
+                    <div class="col-12 col-lg-6">
+                      {{ playdate_form.first_name }}
+                      <div class="invalid-feedback">Please fill out this field.</div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                      {{ playdate_form.last_name }}
+                      <div class="invalid-feedback">Please fill out this field.</div>
+                    </div>
+                    <div class="col-12 col-lg-12">
+                      {{ playdate_form.email }}
+                      <div class="invalid-feedback">Please fill out this field.</div>
+                    </div>
+                    <div class="col-12 col-lg-12">
+                      {{ playdate_form.phone }}
+                      {% if playdate_form.phone.errors %}
+                      <div class="text-danger pt-1">
+                        {% for error in playdate_form.phone.errors %}
+                        {{error}}<br/>
+                        {% endfor %}
+                      </div>
+                      {% endif %}
+                      <div class="invalid-feedback">Please enter a valid 10-digit number.</div>
+                    </div>
+                  </div>
+                  {{ playdate_form.captcha }}
+                  {% if playdate_form.captcha.errors %}
+                  <div class="text-danger pt-1">
+                    {% for error in playdate_form.captcha.errors %}
+                    {{error}}<br/>
+                    {% endfor %}
+                  </div>
+                  {% endif %}
+                  {% if shopwindow_enable %}
+                  <div class="row">
+                    <div class="col-12">
+                      <div class="mt-4">
+                        <label class="fs-18 pt-0">
+                          <input class="form-check-input mt-0" type="checkbox" name="shop_window" aria-label="reservation checkbox" checked>
+                          Yes, Send Me Puppy Information And Any Coupons.
+                        </label>
+                      </div>
+                      <p class="label mb-0 pt-2" style="font-size:16px;">
+                        I consent to being contacted via the channels I have provided ie SMS text message/email etc.
+                      </p>
+                      <p class="label p-0 mb-0" style="font-size:16px;">
+                          Shopwindow <a href="https://shopwindow.io/terms-of-use" class="text-decoration-none" target="_blank" area-label = "Terms of Use"> Terms of Use</a>
+                      </p>
+                      <div class="mt-2 d-flex">
+                        <label class="form-check-label fs-18 pt-0">
+                          <input class="form-check-input mt-0" type="checkbox" name="reservation" aria-label="reservation checkbox" checked>
+                        </label>
+                        <p class="fs-18 ms-1">I'm aware that scheduling an appointment is not reserving this pet for me, and that the pet might get sold.</p>
+                      </div>
+                    </div>
+                  </div>
+                  {% else %}
+                  <!-- Normal Info Section -->
+                  <div class="row">
+                    <div class="col-12">
+                      <p class="fs-18 mt-3 mb-0 pt-0">
+                        I agree to receive pet & promotional information via the options selected below.
+                      </p>
+                      <div class="mt-2">
+                        <label class="fs-18 pt-0">
+                          <input class="form-check-input mt-0" type="checkbox" name="sms_okay" checked>
+                          It's okay to text me.
+                        </label>
+                      </div>
+                      <div class="mt-2">
+                        <label class="fs-18 pt-0">
+                          <input class="form-check-input mt-0" type="checkbox" name="email_me_more" checked>
+                          It's okay to email me.
+                        </label>
+                      </div>
+                      <div class="mt-2 d-flex">
+                        <label class="form-check-label fs-18 pt-0">
+                          <input class="form-check-input mt-0" type="checkbox" name="reservation" aria-label="reservation checkbox" checked>
+                        </label>
+                        <p class="fs-18 ms-1">I'm aware that scheduling an appointment is not reserving this pet for me, and that the pet might get sold.</p>
+                      </div>
+                    </div>
+                  </div>
+                  {% endif %}
+
+                  {% comment %} 
+                  Form Specific Field 
+                  {% endcomment %}
+                  <input type="hidden" name="form" value="{{ form_type }}" maxlength="17" id="id_form" />
+                  <input type="hidden" name="pet_id" value="{{ pet.pet_id }}" maxlength="55" id="id_pet_id" />
+                  <input type="hidden" id="location_id" name="location_id" value="{{ pet.pet_loc_entity_id }}" />
+                  <input type="hidden" id="start_at_{{ pet.pet_id }}" name="start_at" />
+                  <input type="hidden" id="finish_at_{{ pet.pet_id }}" name="finish_at" />
+
+                  <div class="row">
+                    <div class="col-12">
+                      <button type="submit" id="formsubmissionclick" class="theme-primary-btn w-100">
+                        Schedule
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% addtoblock "js" %}
+
+<script>
+    $(document).ready(function () {
+      $("#schedule_a_play_date_form_{{ pet.pet_id }}").submit(function (event) {
+          event.preventDefault();
+          // Check if the form is valid
+          if ($(this).get(0).checkValidity()) {
+              // Hide error message, if Something went wrong earlier
+              $(".playdate_error_msg_{{ pet.pet_id }}").hide();
+
+              // If the form is valid, proceed with the AJAX request
+              $.ajax({
+                  type: 'POST',
+                  url: $(this).attr('action'),
+                  data: new FormData($(this).get(0)),
+                  processData: false,
+                  contentType: false,
+                  success: function (data) {
+                      $(".playdate_success_msg_{{ pet.pet_id }}").show();
+                      window.location.href = '/thank-you/' // Assuming you have a success message class
+                  },
+                  error: function (xhr, textStatus, errorThrown) {
+                      // Show error message if something goes wrong
+                      $(".playdate_error_msg_{{ pet.pet_id }}").show();
+                  }
+              });
+          }
+      });
+    });
+
+    document.getElementById("schedule_a_play_date_form_{{ pet.pet_id }}").addEventListener("submit", function(event) {
+      event.preventDefault();
+      if (this.checkValidity() === false) {
+          event.stopPropagation();
+          this.classList.add("was-validated");
+      }
+  });
+</script>
+
+
+<script>
+  // Function to handle selection of date and time
+  function selectDateTime(button, pet_id, date, start_time, end_time, s_time, e_time) {
+    var selectedDateTime = date + ' ' + start_time;
+    document.getElementById('start_at_'+ pet_id).value = s_time;
+    document.getElementById('finish_at_'+ pet_id).value = e_time;
+    document.getElementById('selected_date_time_display_'+ pet_id).innerText = "Selected Date and Time: " + selectedDateTime;
+    var buttons = document.querySelectorAll('.pet-card-play-date-slot-button');
+    buttons.forEach(function(btn) {
+      btn.classList.remove('active');
+    });
+    button.classList.add('active');
+  }
+
+  // Function to collapse other time sections when a date is selected
+  function collapseOtherTimeSections(selectedDate, pet_id) {
+    var dateCollapseButtons = document.querySelectorAll('.date-btn-view_' + pet_id);
+    dateCollapseButtons.forEach(function(button) {
+      var dateValue = button.innerText.trim();
+      if (dateValue !== selectedDate) {
+        var collapseId = button.getAttribute('data-bs-target');
+        var collapseElement = document.querySelector(collapseId);
+        if (collapseElement.classList.contains('show')) {
+          collapseElement.classList.remove('show');
+        }
+      }
+    });
+  }
+
+  // Function to handle click event on date buttons
+  function handleDateButtonClick(date, pet_id) {
+    collapseOtherTimeSections(date, pet_id);
+  }
+
+  // Event listener to monitor click events on date buttons
+  var dateButtons = document.querySelectorAll('.date-btn-view_{{ pet.pet_id }}');
+  dateButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+      var dateValue = button.innerText.trim();
+      handleDateButtonClick(dateValue, '{{ pet.pet_id }}');
+    });
+  });
+
+</script>
+{% endaddtoblock %}

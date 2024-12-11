@@ -1,0 +1,1050 @@
+{% load static sekizai_tags global_theme_config_tags %}
+
+{% global_theme_object as global_theme_config %}
+
+{% addtoblock "css"  %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/custom-info.css' %}">
+    <style>
+        {% if instance.glossary.bg_type == 'image' and instance.glossary.background == 'yes' and instance.bg_image %}
+                .infofirst-{{instance.id}}{
+                    background-image: url({{ instance.bg_image.url}});
+                    background-size: cover;
+                    background-repeat: no-repeat;  
+                    background-position: center center;
+                }
+
+                @media only screen and (max-width: 500px) {
+
+                    .infofirst-{{ instance.id }} {
+                        {% if instance.mobimage %}
+                        background-image:  url({{instance.mobimage.url}}) !important;
+                        {% endif %} 
+                        background-repeat: no-repeat;
+                        background-size: cover;
+                        background-position: center;
+                    }
+                }
+        {% elif instance.glossary.bg_type == 'color' and instance.glossary.background == 'yes' and instance.glossary.bg_color  %}
+                .infofirst-{{instance.id}}{
+                    background-color: {{ instance.glossary.bg_color }};
+                }
+        {% endif %}
+        .infofirst-{{instance.id}} .infofirst-btn,
+        .infofirst-{{instance.id}} .infofirst-btn:hover{
+
+            border: 1px solid {{instance.glossary.button_outline_color}};
+            color: {{instance.glossary.button_font_color}};
+            text-decoration: none;
+        }
+        {% comment %} .infofirst-title{
+            color: {{instance.glossary.title_text_color}};
+        }
+        .infofirst-sub-title{
+            color: {{instance.glossary.sub_title_text_color}};
+  
+        } {% endcomment %}
+
+        {% comment %} .infofirst-message > *{
+            color: {{instance.glossary.message_text_color}};
+  
+        } {% endcomment %}
+        .infofirst-{{instance.id}} .infofirst-img{
+            border-radius: {% if instance.glossary.layout == "LAYOUT3" or instance.glossary.layout == "LAYOUT4" %}50%;{% endif %}
+            width: 100%;
+            height: 100%;
+        }
+       
+        {% if global_theme_config.primary_button_shape %}
+        .infofirst-{{instance.id}} .infofirst-btn.pill{
+            border-radius: 100px;
+        }
+        .infofirst-{{instance.id}} .infofirst-btn.rounded{
+            border-radius: 12px;
+        }
+        .infofirst-{{instance.id}} .infofirst-btn.rectangle{
+            border-radius: 0;
+        }
+        {% endif %}
+        {%if instance.glossary.media_type == 'Image' and instance.glossary.quantity_of_image == "QTY1" and instance.image %}
+        .layout-img{
+            background-image: url({{instance.image.url}});
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            /* height: auto; */
+            max-height: 800px;
+            width: 100%;
+            height: 100vh;
+        }
+        {%endif%}
+        {% if instance.glossary.bg_type == 'image' and instance.glossary.background == 'yes' and instance.bg_image %}
+            .layout-img1{
+                background-image: url({{instance.bg_image.url}});
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-position: center;
+                max-height: 800px;
+                width: 100%;
+                height: 100vh;
+            }
+        {% elif instance.glossary.bg_type == 'color' and instance.glossary.background == 'yes' %}
+            .layout-img1{
+                background-color: {{instance.glossary.bg_color}};
+            }
+        {% endif %}
+
+        .infofirst-g5-{{ instance.id }} {
+            height : 100%;
+        }
+        .text-section{
+            height: 100%;
+        }
+        .flex-bscs{
+            flex-basis: content;
+        }
+        .info-layout-action {
+            gap : 15px;
+        }
+        .btn-flex{
+            flex-flow : wrap;
+        }
+    </style>
+     <style>
+        .infosecond-{{instance.id}} .infosecond-btn,
+        .infosecond-{{instance.id}} .infosecond-btn:hover{
+            background: {% if instance.glossary.button_style == 'fill' %}{{instance.glossary.button_fill_color}}{% else %}#fff{% endif %};
+            border: 1px solid {{instance.glossary.button_outline_color}};
+            color: {{instance.glossary.button_font_color}};
+            text-decoration: none;
+        }
+        .infosecond-{{instance.id}} .infosecond-title{
+            color: {{instance.glossary.title_text_color}};
+            text-transform: {{'capitalize'}};
+        }
+        .infosecond-{{instance.id}} .infosecond-sub-title2{
+            color: {{instance.glossary.sub_title_text_color}};
+            font-weight: 400;
+            line-height: 140%;
+            
+        }
+        .infosecond-{{instance.id}} .infosecond-sub-title{
+            font-size: 18px !important;
+            line-height: 140%;
+            color: {{instance.glossary.message_text_color}};         
+        }
+        .infosecond-{{instance.id}} .infosecond-img{
+            max-width: 378px;
+            max-height: 540px;
+        }
+        {% if global_theme_config.primary_button_shape %}
+        .infosecond-{{instance.id}} .infosecond-btn.pill{
+            border-radius: 100px;
+        }
+        .infosecond-{{instance.id}} .infosecond-btn.rounded{
+            border-radius: 12px;
+        }
+        .infosecond-{{instance.id}} .infosecond-btn.rectangle{
+            border-radius: 0;
+        }
+        {% endif %}
+        @media (max-width :780px){
+            .btnnav{
+                font-size:15px !important;
+            }
+        }
+
+    </style>
+    <style>
+
+        .info-block-first-content-l5{
+            font-size: 18px;
+            {% comment %} max-width : 500px; {% endcomment %}
+        }
+        .info-block-first-content-l5 p{
+            color: {{instance.glossary.message_text_color}};
+        }
+        .video-container{
+            /* position: relative;
+            width: 100%;
+            height: auto;
+            padding-bottom: 34.25%;
+            overflow: hidden; */
+            position: relative;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+        .video-container iframe{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            /* position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100vw;
+            height: 100vh;
+            transform: translate(-50%, -50%); */
+        }
+        .video-container video{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            /* position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100vw;
+            height: 100vh;
+            transform: translate(-50%, -50%); */
+        }
+        .centered-text{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        @media (max-width: 767px){
+            .info-block-first-content-l5 p{
+                font-size: 18px;
+            }
+            .info-block-first-content-l5 div{
+                font-size: 32px;
+            }
+            .info-block-first-content-l5 div > a{
+                font-size: 12px!important;
+            }
+        }
+        @media (max-width: 1024px){
+            .centered-text p{
+                font-size: 17px;
+                line-height: 1.2;
+            }
+            .centered-text div{
+                font-size: 32px;
+            }
+            .centered-text div > a{
+                font-size: 12px!important;
+            }
+        }
+        @media (max-width: 650px){
+            .centered-text p{
+                font-size: 15px;
+                line-height: 1.2;
+            }
+            .centered-text div{
+                font-size: 28px;
+            }
+            .centered-text div > a{
+                font-size: 12px!important;
+            }
+        }
+        @media (min-width : 570px) and (max-width: 768px){
+            .area-change .row{
+                display: block;
+            }
+        }
+    </style>
+{% endaddtoblock  %}
+
+
+
+<!-- for desktop view section -->
+<div class="d-none d-md-block"> 
+{% if instance.glossary.media_type == 'Image' and instance.glossary.quantity_of_image == 'QTY2' %}
+<div class="info-preview-section py-5 infofirst-{{instance.id}}">
+    <div class="info-layout-wrap no-hover">
+        <div class="info-layout-wrap-inner">
+            <div class="info-layout-box container">
+                <div class="row">
+                    <!-- Focus on order-->
+                    <div class="col-12 col-sm-4 order-1 d-flex justify-content-center flex-column">
+                        <div class="info-layout-content-img">
+                            <img src="{% if instance.image_left %}{{instance.image_left.url}}{% else %}{% static 'images/default-placeholder-image.webp' %}{% endif %}" alt="{{instance.glossary.alt_name_image_left}}" class="info_placeholder img-fluid infosecond-img" loading="lazy">
+                        </div>
+                    </div>
+                    <!-- Focus on order-->
+                    <div class=" col-12 col-sm-4 order-2 d-flex align-items-center">
+                        <div class="info-layout-content">
+                            <div class="info-layout-content-inner">
+                                <div class="h2-theme-bold pb-3 infofirst-title" >
+                                    {{instance.glossary.title_text|safe}}
+                                </div>
+                                <div class="info-layout-sub-title infosecond-sub-title infofirst-message">
+                                    {{instance.glossary.message_text|safe}}
+                                </div>
+
+                                
+                                <div class="info-layout-action d-flex btn-flex">
+                                    {% for index, value in instance.button_data.items %}
+                                        {% if value.button_text and value.id_button_internallink or value.button_link or value.button_phone_link %}
+                                            {% if value.id_button_internallink and value.link_choice_field == 'Internal link' %}
+                                            <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.id_button_internallink}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                                {{value.button_text}}
+                                            </a>
+                                            {% elif value.button_link and value.link_choice_field == 'External link' %}
+                                            <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.button_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                                {{value.button_text}}
+                                            </a>
+                                            {% elif value.button_phone_link and value.link_choice_field == 'Phone link'%}
+                                            <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="tel:{{value.button_phone_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                                {{value.button_text}}
+                                            </a>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Focus on order-->
+                    <div class="col-12 col-sm-4 order-3 d-flex justify-content-center flex-column">
+                        <div class="info-layout-content-img">
+                            <img src="{% if instance.image_right %}{{instance.image_right.url}}{% else %}{% static 'images/default-placeholder-image.webp' %}{% endif %}" alt="{{instance.glossary.alt_name_image_right}}" class="info_placeholder img-fluid infosecond-img" loading="lazy">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- half image rouded or square and half text and button area -->
+{% elif instance.glossary.media_type == 'Image' and instance.glossary.layout in layout_type1 and instance.glossary.quantity_of_image == 'QTY1' %}
+<div class="info-preview-section py-3 infofirst-{{instance.id}}">
+    <div class="info-layout-wrap no-hover">
+        <div class="info-layout-wrap-inner">
+            <div class="info-layout-box container">
+                <div class="row">
+
+                        <div class="col-12 col-md-6 col-lg-4 {% if instance.glossary.layout == "LAYOUT1" or instance.glossary.layout == "LAYOUT3" %}order-1 order-md-1{% else %}order-1 order-md-2{% endif %} d-flex align-items-center">
+                            
+                            <div class="info-layout-content-img">
+                                <img src="{% if instance.image %}{{instance.image.url}}{% else %}{% static 'images/default-placeholder-image.webp' %}{% endif %}" alt="{{instance.glossary.alt_name_image}}" class="info_placeholder img-fluid infofirst-img">
+                            </div>
+                          
+                        </div>
+                        
+                        <div class="col-12 col-md-6 col-lg-8 align-items-center d-flex {% if instance.glossary.layout == "LAYOUT1" or instance.glossary.layout == "LAYOUT3" %}order-2 order-md-2{% else %}order-2 order-md-1{% endif %}">
+                            <div class="info-layout-content">
+                                <div class="info-layout-content-inner">
+                                    
+                                    <div class="h2-theme-bold mb-3 infofirst-title">
+                                        {{instance.glossary.title_text|safe}}
+                                    </div>
+                                    <div class="h3-theme-bold mb-3 infofirst-sub-title infofirst-sub-title">
+                                        {{instance.glossary.sub_title_text|safe}}
+                                    </div>
+                                    
+                                    <div class="infofirst-message">
+                                        {{instance.glossary.message_text | safe}}
+                                    </div>
+                                    
+                                    
+                                    <div class="info-layout-action d-flex btn-flex">
+                                        {% for index, value in instance.button_data.items %}
+                                            {% if value.button_text or value.id_button_internallink or value.button_link or value.button_phone_link %}
+                                                {% if value.id_button_internallink and value.link_choice_field == 'Internal link' %}
+                                                <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.id_button_internallink}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                                    {{value.button_text}}
+                                                </a>
+                                                {% elif value.button_link and value.link_choice_field == 'External link' %}
+                                                <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.button_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                                    {{value.button_text}}
+                                                </a>
+                                                {% elif value.button_phone_link and value.link_choice_field == 'Phone link'%}
+                                                <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="tel:{{value.button_phone_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                                    {{value.button_text}}
+                                                </a>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                                          
+                                </div>
+                            </div>
+                        </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- half image and half text and button area -->
+{% elif instance.glossary.media_type == 'Image' and instance.glossary.layout in layout_type2 and instance.glossary.quantity_of_image == 'QTY1' %}
+
+<div class="container-fluid p-0 infofirst-{{ instance.id }}">
+{% comment %} <div class = "container"> {% endcomment %}
+    <div class="row m-auto">
+        <div class="col-12 col-lg-6 p-0 {% if instance.glossary.layout == "LAYOUT5" %}order-2{% elif instance.glossary.layout == "LAYOUT7" %}order-1{% endif %}">
+          
+                <img src="{% if instance.image %}{{instance.image.url}}{% else %}{% static 'images/default-placeholder-image.webp' %}{% endif %}" alt="{{instance.glossary.alt_name_image}}" class="img-fluid info-block-first-img-l5" loading="lazy">
+           
+        </div>
+        <div class="col-12 col-lg-6 d-flex align-items-center p-0 {% if instance.glossary.layout == "LAYOUT5" %}order-1{% elif instance.glossary.layout == "LAYOUT7" %}order-2{% endif %}">
+            <div class = "container">
+            <div class="info-block-first-content-l5 p-4">
+                <div class="h2-theme-bold mb-3 infofirst-title">
+                    {{instance.glossary.title_text | safe}}
+                </div>
+                <div class="infofirst-message">
+                    {{instance.glossary.message_text | safe}}
+                </div>
+             
+                <div class="info-layout-action d-flex btn-flex">
+                    {% for index, value in instance.button_data.items %}
+                        {% if value.button_text and value.id_button_internallink or value.button_link or value.button_phone_link %}
+
+                            {% if value.id_button_internallink and value.link_choice_field == 'Internal link' %}
+                            <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.id_button_internallink}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                {{value.button_text}}
+                            </a>
+                            {% elif value.button_link and value.link_choice_field == 'External link' %}
+                            <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.button_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                {{value.button_text}}
+                            </a>
+                            {% elif value.button_phone_link and value.link_choice_field == 'Phone link'%}
+                            <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="tel:{{value.button_phone_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                {{value.button_text}}
+                            </a>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+               
+            </div>
+            </div>
+        </div>
+    </div>
+{% comment %} </div> {% endcomment %}
+</div>
+
+<!-- full background images layout -->
+{% elif instance.glossary.media_type == 'Image' and instance.glossary.layout in layout_type3 and instance.glossary.quantity_of_image == 'QTY1' %}
+
+<div class="layout-img" width="600" height="400">
+<div class="container-fluid p-0 infofirst-g5-{{ instance.id }}">
+    <div class="row text-section">
+        {% if instance.glossary.layout != "LAYOUT10" and instance.glossary.layout != "LAYOUT11" %}
+        <div class="col-12 col-sm-6 {% if instance.glossary.layout == "LAYOUT8" %}order-2{% elif instance.glossary.layout == "LAYOUT9" %}order-1{% endif %}">
+        </div>
+        <div class="col-12 col-sm-6 d-flex align-items-center justify-content-center {% if instance.glossary.layout == "LAYOUT8" %}order-1{% elif instance.glossary.layout == "LAYOUT9" %}order-2 flex-bscs{% endif %}">
+            <div class="info-block-first-content-l5 mx-2 py-5">
+                <div class="h2-theme-bold mb-3 infofirst-title">
+                    {{instance.glossary.title_text | safe}}
+                </div>
+                <div class="h3-theme-bold mb-3 infofirst-sub-title">
+                    {{instance.glossary.sub_title_text | safe}}
+                </div>
+                <div class="infofirst-message">
+                    {{instance.glossary.message_text | safe}}
+                </div>
+                
+                <div class="info-layout-action d-flex btn-flex">
+                    {% for index, value in instance.button_data.items %}
+                        {% if value.button_text and value.id_button_internallink or value.button_link or value.button_phone_link %}
+                            {% if value.id_button_internallink and value.link_choice_field == 'Internal link' %}
+                            <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.id_button_internallink}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                {{value.button_text}}
+                            </a>
+                            {% elif value.button_link and value.link_choice_field == 'External link' %}
+                            <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.button_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                {{value.button_text}}
+                            </a>
+                            {% elif value.button_phone_link and value.link_choice_field == 'Phone link'%}
+                            <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="tel:{{value.button_phone_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                {{value.button_text}}
+                            </a>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+              
+            </div>
+        </div>
+        {% elif instance.glossary.layout == "LAYOUT10" and instance.glossary.layout != "LAYOUT11" %}
+            <div class="col col-12 text-center align-self-center py-4 pt-md-auto hero-text-col">
+                <div class="info-block-first-content-l5 mx-2 py-5">
+                    <div class="h2-theme-bold mb-1 infofirst-title">
+                        {{instance.glossary.title_text | safe}}
+                    </div>
+                    <div class="h3-theme-bold mb-1 infofirst-sub-title">
+                        {{instance.glossary.sub_title_text | safe}}
+                    </div>
+                    <div class="infofirst-message">
+                        {{instance.glossary.message_text | safe}}
+                    </div>
+                   
+                    <div class="info-layout-action d-flex btn-flex">
+                        {% for index, value in instance.button_data.items %}
+                            {% if value.button_text and value.id_button_internallink or value.button_link or value.button_phone_link %}
+                                {% if value.id_button_internallink and value.link_choice_field == 'Internal link' %}
+                                <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.id_button_internallink}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                    {{value.button_text}}
+                                </a>
+                                {% elif value.button_link and value.link_choice_field == 'External link' %}
+                                <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.button_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                    {{value.button_text}}
+                                </a>
+                                {% elif value.button_phone_link and value.link_choice_field == 'Phone link'%}
+                                <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="tel:{{value.button_phone_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                    {{value.button_text}}
+                                </a>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                   
+                </div>
+            </div>
+        {% else %}
+            
+        {% endif %}
+    </div>
+</div>
+</div>
+{% endif %}
+</div>
+
+<!-- for mobile view section for images -->
+<div class="d-block d-md-none"> 
+{% if instance.glossary.media_type == 'Image' and instance.glossary.quantity_of_image == 'QTY2' %}
+<div class="info-preview-section py-5 infofirst-{{instance.id}}">
+    <div class="info-layout-wrap no-hover">
+        <div class="info-layout-wrap-inner">
+            <div class="info-layout-box container">
+                <div class="row">
+                    <!-- Focus on order-->
+                    <div class="col-12 col-sm-4 order-1 d-flex justify-content-center flex-column">
+                        <div class="info-layout-content-img">
+                            <img src="{% if instance.image_left %}{{instance.image_left.url}}{% else %}{% static 'images/default-placeholder-image.webp' %}{% endif %}" alt="{{instance.glossary.alt_name_image_left}}" class="info_placeholder img-fluid infosecond-img" loading="lazy">
+                        </div>
+                    </div>
+                    <!-- Focus on order-->
+                    <div class=" col-12 col-sm-4 order-2 d-flex align-items-center">
+                        <div class="info-layout-content">
+                            <div class="info-layout-content-inner">
+                                <div class="h2-theme-bold pb-3 infofirst-title">
+                                    {{instance.glossary.title_text|safe}}
+                                </div>
+                                <div class="info-layout-sub-title infosecond-sub-title infofirst-message">
+                                    {{instance.glossary.message_text|safe}}
+                                </div>
+
+                               
+                                <div class="info-layout-action d-flex btn-flex btn-flex">
+                                    {% for index, value in instance.button_data.items %}
+                                            {% if value.button_text and value.id_button_internallink or value.button_link or value.button_phone_link %}
+                                                {% if value.id_button_internallink and value.link_choice_field == 'Internal link' %}
+                                                <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.id_button_internallink}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                                    {{value.button_text}}
+                                                </a>
+                                                {% elif value.button_link and value.link_choice_field == 'External link' %}
+                                                <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.button_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                                    {{value.button_text}}
+                                                </a>
+                                                {% elif value.button_phone_link and value.link_choice_field == 'Phone link'%}
+                                                <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="tel:{{value.button_phone_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                                    {{value.button_text}}
+                                                </a>
+                                                {% endif %}
+                                            {% endif %}
+                                    {% endfor %}
+                                </div>
+                               
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Focus on order-->
+                    <div class="col-12 col-sm-4 order-3 d-flex justify-content-center flex-column">
+                        <div class="info-layout-content-img">
+                            <img src="{% if instance.image_right %}{{instance.image_right.url}}{% else %}{% static 'images/default-placeholder-image.webp' %}{% endif %}" alt="{{instance.glossary.alt_name_image_right}}" class="info_placeholder img-fluid infosecond-img" loading="lazy">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% elif instance.glossary.media_type == 'Image' and instance.glossary.layout in layout_type1 and instance.glossary.quantity_of_image == 'QTY1' %}
+<div class="info-preview-section py-3 infofirst-{{instance.id}}">
+    <div class="info-layout-wrap no-hover">
+        <div class="info-layout-wrap-inner">
+            <div class="info-layout-box container">
+                <div class="row">
+                    {% if instance.glossary.media_type == 'Image' and instance.glossary.layout in layout_type1 %}
+
+                        <div class="col-12 col-md-6 col-lg-8 d-flex  align-items-center {% if instance.glossary.layout == "LAYOUT1" or instance.glossary.layout == "LAYOUT3" %}order-1 order-md-2{% else %}order-1 order-md-1{% endif %}">
+                            <div class="info-layout-content">
+                                <div class="info-layout-content-inner">
+                                    <div class="h2-theme-bold infofirst-title">
+                                        {{instance.glossary.title_text | safe}}
+                                    </div>
+                                    <div class="h3-theme-bold infofirst-sub-title">
+                                        {{instance.glossary.sub_title_text | safe}}
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4 {% if instance.glossary.layout == "LAYOUT1" or instance.glossary.layout == "LAYOUT3" %}order-1 order-md-1{% else %}order-1 order-md-2{% endif %} d-flex align-items-center">
+                            
+                                <div class="info-layout-content-img">
+                                    <img src="{% if instance.image %}{{instance.image.url}}{% else %}{% static 'images/default-placeholder-image.webp' %}{% endif %}" alt="{{instance.glossary.alt_name_image}}" class="info_placeholder img-fluid infofirst-img">
+                                </div>
+                          
+                        </div>
+                        
+                        <div class="col-12 col-md-6 col-lg-8 align-items-center d-flex {% if instance.glossary.layout == "LAYOUT1" or instance.glossary.layout == "LAYOUT3" %}order-2 order-md-2{% else %}order-2 order-md-1{% endif %}">
+                            <div class="info-layout-content">
+                                <div class="info-layout-content-inner">
+                                    
+                                    <div class="infofirst-message">
+                                        {{instance.glossary.message_text | safe}}
+                                    </div>
+                                    
+                                    
+                                    <div class="info-layout-action d-flex btn-flex">
+                                        {% for index, value in instance.button_data.items %}
+                                            {% if value.button_text and value.id_button_internallink or value.button_link or value.button_phone_link %}
+                                                {% if value.id_button_internallink and value.link_choice_field == 'Internal link' %}
+                                                <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.id_button_internallink}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                                    {{value.button_text}}
+                                                </a>
+                                                {% elif value.button_link and value.link_choice_field == 'External link' %}
+                                                <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.button_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                                    {{value.button_text}}
+                                                </a>
+                                                {% elif value.button_phone_link and value.link_choice_field == 'Phone link'%}
+                                                <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="tel:{{value.button_phone_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                                    {{value.button_text}}
+                                                </a>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                                             
+                                </div>
+                            </div>
+                        </div>
+
+                    {% elif instance.glossary.media_type == 'Image' and instance.glossary.layout in layout_type2 %}
+                        
+                        <div class="col-12 col-sm-6 {% if instance.glossary.layout == "LAYOUT5" %}order-2{% elif instance.glossary.layout == "LAYOUT7" %}order-1{% endif %}">
+                            
+                                <img src="{% if instance.image %}{{instance.image.url}}{% else %}{% static 'images/default-placeholder-image.webp' %}{% endif %}" alt="{{instance.glossary.alt_name_image}}" class="img-fluid info-block-first-img-l5" loading="lazy">
+                            
+                        </div>
+                        <div class="col-12 col-sm-6 d-flex align-items-center justify-content-center {% if instance.glossary.layout == "LAYOUT5" %}order-1{% elif instance.glossary.layout == "LAYOUT7" %}order-2{% endif %}">
+                            <div class="info-block-first-content-l5 mx-2 py-5">
+                                <div class="h2-theme-bold mb-3 infofirst-title">
+                                    {{instance.glossary.title_text | safe}}
+                                </div>
+                                <div class="h3-theme-bold mb-3 infofirst-sub-title">
+                                    {{instance.glossary.sub_title_text | safe}}
+                                </div>
+                                <div class="infofirst-message">
+                                    {{instance.glossary.message_text | safe}}
+                                </div>
+                                
+                                <div class="info-layout-action d-flex btn-flex">
+                                    {% for index, value in instance.button_data.items %}
+                                        {% if value.button_text and value.id_button_internallink or value.button_link or value.button_phone_link %}
+                                            {% if value.id_button_internallink and value.link_choice_field == 'Internal link' %}
+                                            <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.id_button_internallink}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                                {{value.button_text}}
+                                            </a>
+                                            {% elif value.button_link and value.link_choice_field == 'External link' %}
+                                            <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.button_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                                {{value.button_text}}
+                                            </a>
+                                            {% elif value.button_phone_link and value.link_choice_field == 'Phone link'%}
+                                            <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="tel:{{value.button_phone_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                                {{value.button_text}}
+                                            </a>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                               
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- half image and half text and button area -->
+{% elif instance.glossary.media_type == 'Image' and instance.glossary.layout in layout_type2 and instance.glossary.quantity_of_image == 'QTY1' %}
+
+<div class="container-fluid p-0 infofirst-{{ instance.id }}">
+    <div class="row">
+        <div class="col-12 col-md-6 {% if instance.glossary.layout == 'LAYOUT5' %}order-2{% elif instance.glossary.layout == 'LAYOUT7' %}order-1{% endif %}">
+            
+                <img src="{% if instance.image %}{{instance.image.url}}{% else %}{% static 'images/default-placeholder-image.webp' %}{% endif %}" alt="{{instance.glossary.alt_name_image}}" class="img-fluid info-block-first-img-l5" loading="lazy">
+           
+        </div>
+        <div class="col-12 col-md-6 d-flex align-items-center justify-content-center {% if instance.glossary.layout == "LAYOUT5" %}order-1{% elif instance.glossary.layout == "LAYOUT7" %}order-2{% endif %}">
+            <div class="info-block-first-content-l5 mx-3 py-3 container">
+                <div class="h2-theme-bold mb-3 infofirst-title">
+                    {{instance.glossary.title_text | safe}}
+                </div>
+                <div class="h3-theme-bold mb-3 infofirst-sub-title">
+                    {{instance.glossary.sub_title_text | safe}}
+                </div>
+                <div class="infofirst-message">
+                    {{instance.glossary.message_text | safe}}
+                </div>
+               
+                <div class="info-layout-action d-flex btn-flex">
+                    {% for index, value in instance.button_data.items %}
+                        {% if value.button_text and value.id_button_internallink or value.button_link or value.button_phone_link %}
+                            {% if value.id_button_internallink and value.link_choice_field == 'Internal link' %}
+                            <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.id_button_internallink}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                {{value.button_text}}
+                            </a>
+                            {% elif value.button_link and value.link_choice_field == 'External link' %}
+                            <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.button_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                {{value.button_text}}
+                            </a>
+                            {% elif value.button_phone_link and value.link_choice_field == 'Phone link'%}
+                            <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="tel:{{value.button_phone_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                {{value.button_text}}
+                            </a>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+{% elif instance.glossary.media_type == 'Image' and instance.glossary.layout in layout_type3 and instance.glossary.quantity_of_image == 'QTY1' %}
+<div class="layout-img" width="600" height="400">
+<div class="container-fluid p-0 infofirst-g5-{{ instance.id }}">
+    <div class="row text-section">
+        {% if instance.glossary.layout != "LAYOUT10" and instance.glossary.layout != "LAYOUT11" %}
+        <div class="col-12 col-sm-6 {% if instance.glossary.layout == "LAYOUT8" %}order-2{% elif instance.glossary.layout == "LAYOUT9" %}order-1{% endif %}">
+        </div>
+        <div class="col-12 col-sm-6 d-flex align-items-center justify-content-center {% if instance.glossary.layout == "LAYOUT8" %}order-1{% elif instance.glossary.layout == "LAYOUT9" %}order-2 flex-bscs{% endif %}">
+            <div class="info-block-first-content-l5 mx-2 py-5">
+                <div class="h2-theme-bold mb-3 infofirst-title">
+                    {{instance.glossary.title_text | safe}}
+                </div>
+                <div class="h3-theme-bold mb-3 infofirst-sub-title">
+                    {{instance.glossary.sub_title_text | safe}}
+                </div>
+                <div class="infofirst-message">
+                    {{instance.glossary.message_text | safe}}
+                </div>
+                
+                <div class="info-layout-action d-flex btn-flex">
+                    {% for index, value in instance.button_data.items %}
+                        {% if value.button_text and value.id_button_internallink or value.button_link or value.button_phone_link %}
+                            {% if value.id_button_internallink and value.link_choice_field == 'Internal link' %}
+                            <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.id_button_internallink}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                {{value.button_text}}
+                            </a>
+                            {% elif value.button_link and value.link_choice_field == 'External link' %}
+                            <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.button_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                {{value.button_text}}
+                            </a>
+                            {% elif value.button_phone_link and value.link_choice_field == 'Phone link'%}
+                            <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="tel:{{value.button_phone_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                {{value.button_text}}
+                            </a>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            
+            </div>
+        </div>
+        {% elif instance.glossary.layout == "LAYOUT10" and instance.glossary.layout != "LAYOUT11" %}
+            <div class="col col-12 text-center align-self-center py-4 pt-md-auto hero-text-col">
+                <div class="info-block-first-content-l5 mx-2 py-5">
+                    <div class="h2-theme-bold mb-1 infofirst-title">
+                        {{instance.glossary.title_text | safe}}
+                    </div>
+                    <div class="h3-theme-bold mb-1 infofirst-sub-title">
+                        {{instance.glossary.sub_title_text | safe}}
+                    </div>
+                    {{instance.glossary.message_text | safe}}
+                  
+                    <div class="info-layout-action">
+                        {% for index, value in instance.button_data.items %}
+                            {% if value.button_text and value.id_button_internallink or value.button_link or value.button_phone_link %}
+                                {% if value.id_button_internallink and value.link_choice_field == 'Internal link' %}
+                                <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.id_button_internallink}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                    {{value.button_text}}
+                                </a>
+                                {% elif value.button_link and value.link_choice_field == 'External link' %}
+                                <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.button_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                    {{value.button_text}}
+                                </a>
+                                {% elif value.button_phone_link and value.link_choice_field == 'Phone link'%}
+                                <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="tel:{{value.button_phone_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                    {{value.button_text}}
+                                </a>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                  
+                </div>
+            </div>
+        {% else %}
+            
+        {% endif %}
+    </div>
+</div>
+</div>
+
+{% endif %}
+</div>
+
+
+
+
+<!-- half video and half text and button area -->
+{% if instance.glossary.media_type == 'Video' and instance.glossary.layout_video in video_layout_type %}
+<div class="info-preview-section py-3 infofirst-{{instance.id}}">
+    <div class="info-layout-wrap no-hover">
+        <div class="info-layout-wrap-inner">
+            <div class="info-layout-box container area-change">
+                <div class="row">
+
+                        <div class="col-12 col-md-6 col-lg-6 {% if instance.glossary.layout_video == 'LAYOUT13' %}order-1{% elif instance.glossary.layout_video == 'LAYOUT14' %}order-2{% endif %} d-flex align-items-center">
+                            {% if instance.glossary.video_type == 'upload' and instance.video %}
+                            <div class="info-layout-content-vid">
+                                <video controls autoplay muted style="width:100%;" preload="metadata" class="">
+                                    <source src='{{ instance.video.url }}' type="video/{{ instance.get_video_extension }}">
+                                </video>
+                            </div>
+                            {% elif instance.glossary.video_type == 'link' and instance.glossary.video_link %}
+                            <div class="info-layout-content-vid" style="position: relative;
+                            width: 100%;
+                            padding-bottom: 56.25%; ">
+                                <iframe  style="position: absolute;
+                                width: 100%;
+                                height: 100%;
+                                top: 0;
+                                left: 0;"  src="{{ instance.glossary.video_link}}">
+                                </iframe>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-12 col-md-6 col-lg-6 align-items-center d-flex {% if instance.glossary.layout_video == 'LAYOUT13' %}order-2 {% elif instance.glossary.layout_video == 'LAYOUT14' %} order-1{% endif %}">
+                            <div class="info-layout-content">
+                                <div class="info-layout-content-inner">
+                                    
+                                    <div class="h2-theme-bold mb-3 infofirst-title">
+                                        {{instance.glossary.title_text|safe}}
+                                    </div>
+                                    <div class="h3-theme-bold mb-3 infofirst-sub-title">
+                                        {{instance.glossary.sub_title_text|safe}}
+                                    </div>
+                                    
+                                    <div class="infofirst-message">
+                                        {{instance.glossary.message_text | safe}}
+                                    </div>
+                                    
+                                    
+                                    <div class="info-layout-action d-flex btn-flex">
+                                        {% for index, value in instance.button_data.items %}
+                                            {% if value.button_text or value.id_button_internallink or value.button_link or value.button_phone_link %}
+                                                {% if value.id_button_internallink and value.link_choice_field == 'Internal link' %}
+                                                <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.id_button_internallink}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                                    {{value.button_text}}
+                                                </a>
+                                                {% elif value.button_link and value.link_choice_field == 'External link' %}
+                                                <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.button_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                                    {{value.button_text}}
+                                                </a>
+                                                {% elif value.button_phone_link and value.link_choice_field == 'Phone link'%}
+                                                <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="tel:{{value.button_phone_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                                    {{value.button_text}}
+                                                </a>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                                         
+                                </div>
+                            </div>
+                        </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<!-- full video and text center -->
+{% if instance.glossary.media_type == 'Video'%}
+
+    {% if instance.video and instance.glossary.video_type == 'upload' %}
+        <div class="video-container">
+        {% comment %} <video controls autoplay muted style="width:100%;" preload="metadata" class="">
+            <source src='{{ instance.video.url }}' type="video/{{ instance.get_video_extension }}">
+        </video> {% endcomment %}
+        <iframe src="{{ instance.video.url }}" frameborder="0" allowfullscreen></iframe>
+    <!--     
+        <iframe src="{{instance.video.url}}" frameborder="0"  ></iframe> -->
+    {% elif instance.glossary.video_type == 'link' %}
+        <div class="video-container">
+        <iframe src="{{instance.glossary.video_link}}" frameborder="0" allowfullscreen></iframe>
+    {% endif %}
+    {% if instance.glossary.layout_video != "LAYOUT16" %}
+    <div class="centered-text">
+        <div class="info-layout-content-inner">
+                                        
+            <div class="h2-theme-bold mb-3 infofirst-title">
+                {{instance.glossary.title_text|safe}}
+            </div>
+            <div class="h3-theme-bold mb-3 infofirst-sub-title">
+                {{instance.glossary.sub_title_text|safe}}
+            </div>
+            
+            <div class="infofirst-message">
+                {{instance.glossary.message_text | safe}}
+            </div>
+            
+            
+            <div class="info-layout-action d-flex btn-flex" style="justify-content: center;">
+                {% for index, value in instance.button_data.items %}
+                    {% if value.button_text and value.id_button_internallink or value.button_link or value.button_phone_link %}
+                        {% if value.id_button_internallink and value.link_choice_field == 'Internal link' %}
+                        <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.id_button_internallink}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                            {{value.button_text}}
+                        </a>
+                        {% elif value.button_link and value.link_choice_field == 'External link' %}
+                        <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.button_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                            {{value.button_text}}
+                        </a>
+                        {% elif value.button_phone_link and value.link_choice_field == 'Phone link'%}
+                        <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="tel:{{value.button_phone_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                            {{value.button_text}}
+                        </a>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+                                    
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endif %}
+
+
+
+<!-- if media type is None (desktop view)-->
+<div class="d-none d-md-block">
+    {% if instance.glossary.media_type == 'None'%}
+
+        <div class="layout-img1" width="600" height="400">
+            <div class="container-fluid p-0 infofirst-g5-{{ instance.id }}">
+                <div class="row text-section">
+                    <div class="col col-12 text-center align-self-center py-4 pt-md-auto hero-text-col">
+                        <div class="info-block-first-content-l5 mx-2 py-5">
+                            <div class="h2-theme-bold mb-1 infofirst-title">
+                                {{instance.glossary.title_text | safe}}
+                            </div>
+                            <div class="h3-theme-bold mb-1 infofirst-sub-title">
+                                {{instance.glossary.sub_title_text | safe}}
+                            </div>
+                            <div class="infofirst-message">
+                                {{instance.glossary.message_text | safe}}
+                            </div>
+                            
+                            <div class="info-layout-action d-flex" style="justify-content: center;">
+                                {% for index, value in instance.button_data.items %}
+                                    {% if value.button_text and value.id_button_internallink or value.button_link or value.button_phone_link %}
+                                        {% if value.id_button_internallink and value.link_choice_field == 'Internal link' %}
+                                        <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.id_button_internallink}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                            {{value.button_text}}
+                                        </a>
+                                        {% elif value.button_link and value.link_choice_field == 'External link' %}
+                                        <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.button_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                            {{value.button_text}}
+                                        </a>
+                                        {% elif value.button_phone_link and value.link_choice_field == 'Phone link'%}
+                                        <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="tel:{{value.button_phone_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                            {{value.button_text}}
+                                        </a>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                          
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+    {% endif %}
+</div>
+
+<!-- if media type is None  (mobile view)-->
+<div class="d-block d-md-none">
+    {% if instance.glossary.media_type == 'None'%}
+
+        <div class="layout-img1" width="600" height="400">
+            <div class="container-fluid p-0 infofirst-g5-{{ instance.id }}">
+                <div class="row text-section">
+                    <div class="col col-12 text-center align-self-center py-4 pt-md-auto hero-text-col">
+                        <div class="info-block-first-content-l5 mx-2 py-5">
+                            <div class="h2-theme-bold mb-1 infofirst-title">
+                                {{instance.glossary.title_text | safe}}
+                            </div>
+                            <div class="h3-theme-bold mb-1 infofirst-sub-title">
+                                {{instance.glossary.sub_title_text | safe}}
+                            </div>
+                            <div class="infofirst-message">
+                                {{instance.glossary.message_text | safe}}
+                            </div>
+                           
+                            <div class="info-layout-action d-flex btn-flex" style="justify-content: center;">
+                                {% for index, value in instance.button_data.items %}
+                                    {% if value.button_text and value.id_button_internallink or value.button_link or value.button_phone_link %}
+                                        {% if value.id_button_internallink and value.link_choice_field == 'Internal link' %}
+                                        <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.id_button_internallink}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                            {{value.button_text}}
+                                        </a>
+                                        {% elif value.button_link and value.link_choice_field == 'External link' %}
+                                        <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{{value.button_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                            {{value.button_text}}
+                                        </a>
+                                        {% elif value.button_phone_link and value.link_choice_field == 'Phone link'%}
+                                        <a style = "white-space:nowrap" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="tel:{{value.button_phone_link}}" target="{{ value.id_button_target }}" area-label = "{{value.button_text}}">
+                                            {{value.button_text}}
+                                        </a>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+    {% endif %}
+</div>

@@ -1,0 +1,131 @@
+{% load global_theme_config_tags %}
+{% global_theme_object as global_theme_config %}
+
+{% autoescape off %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        {{status_code}} | {{message}}
+    </title>
+    
+    {% if global_theme_config.selected_favicon.image %}
+        <link rel="icon" type="image/x-icon" href="{{global_theme_config.selected_favicon.image.url}}">
+    {% endif %}
+    
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: "Fira Code", monospace;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #FFFFFF;
+        }
+
+        .container {
+            text-align: center;
+            margin: auto;
+            padding: 4em;
+            
+
+            h1 {
+                margin-top: 1rem;
+                font-size: 35px;
+                text-align: center;
+
+                span {
+                font-size: 60px;
+                }
+            }
+            p {
+                margin-top: 1rem;
+            }
+
+            p.info {
+                margin-top: 4em;
+                font-size: 12px;
+
+                a {
+                text-decoration: none;
+                color: rgb(84, 84, 206);
+                }
+            }
+
+        }
+
+        .pb-2{
+            margin-bottom: 10px;
+        }
+
+        .pb-3{
+            margin-bottom: 16px;
+        }
+
+        .d-block{
+            display: block;
+        }
+
+        .btn-outer{
+            display: flex;
+            justify-content: center;
+        }
+
+        .button {
+            display: flex;
+            overflow: hidden;
+
+            margin: 10px;
+            padding: 12px 12px;
+
+            cursor: pointer;
+            user-select: none;
+            text-align: center;
+            white-space: nowrap;
+            text-decoration: none !important;
+            text-transform: capitalize;
+            border: 0 none;
+            font-weight: 500;
+            line-height: 1.3;
+            appearance: none;
+            justify-content: center;
+            align-items: center;
+            flex: 0 0 160px;
+            box-shadow: 2px 5px 10px #e4e4e4;
+        }
+
+        .button.-dark {
+            color: #FFFFFF;
+            background: #161616;
+        }
+
+    </style>
+
+    <link rel="stylesheet" href='{{global_theme_config.get_themecss_file}}'>
+
+</head>
+    <body>
+        <div class="container">
+            {% if global_theme_config.selected_logo.image %}
+                <img class="img-fluid" alt="Site Logo" src="{{global_theme_config.selected_logo.image.url}}" style="max-height:90px !important;"/>
+            {% endif %}
+            <h1 class="pb-2">
+                <span>{{status_code}}</span> 
+                <br />
+                {{message}}
+            </h1>
+            <p class="pb-3">We are currently trying to fix the problem.</p>
+            <div class="btn-outer">
+                <a href="/" class='theme-primary-btn center'>Let's Go back to Home</a>
+            </div>
+        </div>
+    </body>
+</html>
+
+{% endautoescape %}

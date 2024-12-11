@@ -1,0 +1,192 @@
+{% load sekizai_tags %}
+<div id="subscribe_form_outer_{{instance.id}}">
+    {% if success_message %}
+        <p class="fw-bolder fs-6 label mt-3 mb-0 text-success " id="colletion_form_success_msg">
+            {{ success_message }}
+        </p>
+    {% endif %}
+    <form class="theme-form" id="subscribe_form_{{instance.id}}" method="post" action="{% url 'pinogy_common_ajax:subscribe_us_form' %}">
+        {% csrf_token %}
+        <div class="general-error-msg"></div>
+        {{ form.captcha }}
+        {% if form.captcha.errors %}
+            <div class="text-danger pt-1">
+            {% for error in form.captcha.errors %}
+                {{error}}<br/>
+            {% endfor %}
+            </div>
+        {% endif %}
+
+        {{ form.email_me_more }}
+        {% if form.email_me_more.errors %}
+            <div class="text-danger pt-1">
+            {% for error in form.email_me_more.errors %}
+                {{error}}<br/>
+            {% endfor %}
+            </div>
+        {% endif %}
+
+        {{ form.sms_okay }}
+        {% if form.sms_okay.errors %}
+            <div class="text-danger pt-1">
+            {% for error in form.sms_okay.errors %}
+                {{error}}<br/>
+            {% endfor %}
+            </div>
+        {% endif %}
+        <input type="hidden" name="form" value="{{ form_type }}" maxlength="17" id="id_form">
+        {% if location_id %}
+        <input type="hidden" name="location_id" value="{{ location_id }}" maxlength="55" id="id_location_id">
+        {% endif %}
+        <input type="hidden" name="message" value="Request for upcoming litters in their inbox" maxlength="55" id="id_message_id">
+
+        {% comment %} Form Specific Field {% endcomment %}
+        {% if breed %}
+            <input type="hidden" name="breed_name" value="{{ breed.name }}" maxlength="55" id="id_breed_name">
+        {% elif breed_pet_type_slug %}
+            <input type="hidden" name="breed_pet_type_slug" value="{{ breed_pet_type_slug }}" maxlength="55" id="id_breed_pet_type_slug">
+        {% elif pet_type_slug %}
+            <input type="hidden" name="pet_type_slug" value="{{ pet_type_slug }}" maxlength="55" id="id_pet_type_slug">
+        {% elif pet_id %}
+            <input type="hidden" name="pet_id" value="{{ pet_id }}" maxlength="55" id="id_pet_id">
+        {% endif %}
+        <div class="row">
+            <div class="col-12 col-md-6">
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                    <div class="text-danger pt-1">
+                    {% for error in form.first_name.errors %}
+                        {{error}}<br/>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-12 col-md-6">
+                {{ form.last_name }}
+                {% if form.last_name.errors %}
+                    <div class="text-danger pt-1">
+                    {% for error in form.last_name.errors %}
+                        {{error}}<br/>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            {% if marketing_list == "Email" %}
+            <div class="col-12 col-md-12">
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="text-danger pt-1">
+                    {% for error in form.email.errors %}
+                        {{error}}<br/>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            {%elif marketing_list == "SMS"%}
+            <div class="col-12 col-md-12">
+                {{ form.phone }}
+                {% if form.phone.errors %}
+                    <div class="text-danger pt-1">
+                    {% for error in form.phone.errors %}
+                        {{error}}<br/>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            <div class="col-12 col-md-6">
+            </div>
+            <div class="col-12 col-md-6">
+                <button type="submit" class="theme-primary-btn text-nowrap subscribe-btn {{marketing_btn_style}}" id = "subscribe-btn" onclick="submit_subscribe_form(event,{{instance.id}})">
+                    {{marketing_button_text}}
+                </button>
+            </div>
+        </div>
+
+    </form>
+</div>
+{% addtoblock 'js' %}
+<script>
+    function submit_subscribe_form(event,id){
+        //$("#subscribe_form").submit(event => {
+
+            const formOuter = $("#subscribe_form_outer_"+id);
+            event.preventDefault();
+            // Check if the captcha field is empty or the value attribute is not present
+            const captchaField = $('input.django-recaptcha-hidden-field');
+            
+            const captchaValue = captchaField.val();
+            
+            if (!captchaValue || captchaField.attr('value') === undefined) {
+                showErrorMessage(formOuter, "No Captcha found. Please refresh.");
+                return false;
+            }
+            const form = document.getElementById("subscribe_form_"+id);
+            var formData = new FormData(form);
+            let d = formData.entries()
+
+            let url = $("#subscribe_form_"+id).attr('action')
+            fetch(url, {
+                method: "POST",
+                body:formData,
+            })
+                .then(response => {
+                    if(response.status === 201)
+                        window.location.href = '/thank-you/'
+                    else if(response.status === 400){
+                        showErrorMessage(formOuter, "Something went wrong. Please try again.");
+                    }
+                    else
+                        return response.text()
+                })
+                .then(data => {
+                    $("#subscribe_form_outer_"+id).html(data)
+                })
+            
+            //return false;
+        //})
+    }
+
+    function showErrorMessage(formOuter, errorMsg){
+        // Adding error message in `general-error-msg`
+        const errorMessage = `<div class="alert alert-danger mt-3 mb-0" role="alert"><strong>${errorMsg}</strong></div>`
+        formOuter.find('.general-error-msg').html(errorMessage);
+
+        setTimeout(function() {
+            formOuter.find('.general-error-msg').empty();
+        }, 5000);
+    } 
+    
+    function check_type_of_marketing(mark_list){
+        let marketing_list = `{{marketing_list}}`;
+        if (marketing_list == "SMS"){
+            $('#id_phone').prop('required',true)
+        }
+        else if (marketing_list == "Email"){
+            $('#id_email').prop('required',true)
+        }
+    }
+    $(document).ready(function () {
+        let marketing_list = `{{marketing_list}}`;
+        if (marketing_list == "SMS"){
+            $('#id_phone').attr('required','required')
+        }
+        else if (marketing_list == "Email"){
+            $('#id_email').attr('required','required')
+        }
+    })
+    $(document).ready(function() {
+        function validatenumber(event) {
+            let digits = (event.which) ? event.which : event.keyCode;
+            if (digits != 46 && digits > 31 && (digits < 48 || digits > 57))
+                return false;
+            return true;
+        }
+    
+        $(document).on('keypress', 'input[name = "phone"]', function(event) {
+            return validatenumber(event);
+        });
+    });
+    
+</script>
+{% endaddtoblock %}

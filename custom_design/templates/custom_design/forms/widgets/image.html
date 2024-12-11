@@ -1,0 +1,453 @@
+{% extends "custom_design/forms/widgets/base-widget.html" %}
+{% load static global_theme_config_tags %}
+
+
+{% block widget_section %}
+  <style>
+            {% if global_theme_config.primary_color and global_theme_config.secondary_color %}
+                :root {
+                    --primary-element: {{global_theme_config.primary_color}};
+                    --secondary-element: {{global_theme_config.secondary_color}};
+                }
+            {% endif %}
+
+            .dev_colorpicker_preview .clr-field {
+                opacity: 0;
+                cursor: pointer;
+            }
+
+            .banner-layout-wrap-inner img{
+                {% comment %} width: 300px; {% endcomment %}
+                height: 120px;
+            }
+            #first-btn-section .rectangle,
+            #second-btn-section .rectangle,
+            .banner-layout-action .rectangle {
+                border-radius: 0px;
+            }
+
+            #first-btn-section .rounded,
+            #second-btn-section .rounded,
+            .banner-layout-action .rounded {
+                border-radius: 12px;
+            }
+
+            #first-btn-section .pill,
+            #second-btn-section .pill,
+            .banner-layout-action .pill {
+                border-radius: 100px;
+            }
+
+            .buck-absolute{
+                position:absolute;
+            }
+
+            /* Django admin style override */
+            ul > li {
+                list-style-type: none;
+            }
+            #marker{
+                position: absolute; 
+                width: 20px; 
+                height: 20px; 
+                background-color: rgba(65, 65, 65, 0.5); 
+                border-radius: 50%; 
+                border: 1px solid white; 
+                display: none;
+            }
+        </style>
+
+{% global_theme_object as global_theme_config %}
+
+<div class="box-theme-tab-wrap admin-form admin-form ">
+    <div class="box-theme-title">
+        Image
+    </div>
+    <div class="box-theme-form-item">
+        <div class="form-upload">
+            <p>Upload your .JPG, .PNG, .SVG, .WEBP or .GIF files here or drag the image</p>
+            <button class="btn-theme btn-shape-1 btn-style-1 btn-color-1" style="background:#12BBD2;">Upload Image</button>
+            <div class="area">
+                <input type="file" name="{{adminform.form.image.name}}" id="{{adminform.form.image.name}}" />
+            </div>
+        </div>
+    </div>
+    {% if adminform.form.image.errors %}
+        {% for error in adminform.form.image.errors  %}
+            <div class="alert alert-danger error-block" role="alert">
+                {{error}}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-6">
+                <div class="box-theme-sub-title">
+                    Preview
+                </div>
+                <div class="box-theme-preview-list" >
+                    <ul id="background-img-preview-section">
+                        {% if adminform.form.image.value%}
+                            <li class="banner-image-preview-list active">
+                                <img id="banner-img" src="{{adminform.form.instance.image.url}}" onclick="showCoords(event)" style="cursor:crosshair;" alt="">
+                                <div id="marker"></div>
+                                <button onClick="deleteImage()" type="button">
+                                    <img src="{% static 'images/ic-delete.svg' %}" alt="">
+                                </button>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            <div class="col-6 d-none">
+                <div class="box-theme-sub-title pb-4">
+                    Image Focus - Mark Coordinates
+                    <button class="btn btn-sm btn-info text-white float-end" onClick="clearCoords()">Clear</button>
+                </div>
+                <div class="alert alert-info">
+                    <div id="d1">X : 0, Y : 0</div>
+                    <div id="d2">X% : 0, Y% : 0</div>
+                    <input type="hidden" name="{{adminform.form.x_perc.name}}" id="{{adminform.form.x_perc.name}}" value="{{adminform.form.x_perc.value}}" class="" onChange="" style="">
+                    <input type="hidden" name="{{adminform.form.y_perc.name}}" id="{{adminform.form.y_perc.name}}" value="{{adminform.form.y_perc.value}}" class="" onChange="" style="">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+        
+   
+    function bgImageFile(uploadFile) {
+        var me = this,
+            files = uploadFile.files;
+            var preview = $('#background-img-preview-section')
+            preview.empty()
+            $.each(files, function (i, file) {
+                var img_src = URL.createObjectURL(file);
+                preview.append(`
+                    <li class="banner-image-preview-list"><img id="banner-img" src="${img_src}" onclick="showCoords(event)" style="cursor:crosshair;" alt=""><div id="marker"></div><button onClick="deleteImage()" type="button"><img src="{% static 'images/ic-delete.svg' %}" alt=""></button></li>
+                `)
+                $("#text-preview-img .banner-layout-box").css('background-image', 'url(' + $("#background-img-preview-section img").attr('src') + ')');
+                $('#text-preview-img .banner-layout-box .banner-layout-content-img').hide()
+            });
+        clearCoords();
+
+
+
+    }
+
+    var upload3 = document.getElementById('{{adminform.form.mobimage.name}}');
+  
+    if (upload3) {
+        upload3.addEventListener('dragenter', function (e) {
+            upload3.parentNode.className = 'area dragging';
+        }, false);
+
+        upload3.addEventListener('dragleave', function (e) {
+            upload3.parentNode.className = 'area';
+           }, false);
+
+        upload3.addEventListener('dragdrop', function (e) {
+            mobbgImageFile(upload3);
+         }, false);
+
+        upload3.addEventListener('change', function (e) {
+            mobbgImageFile(upload3);
+        }, false);
+    }
+
+  
+
+    
+    // ============================ title - subtitle =================================
+
+    function SetBgImage(bgImgURL=null){
+        
+        var selectedLayout = document.querySelector('input[id="layout_group"]:checked').value
+
+        if (selectedLayout == "TEXT 1 BUTTON LEFT"){
+            var layoutHTML = $(".txt-1-btn-left").html()
+            var layoutClass = "title-left"
+            $(".title-text").show()
+            $(".subtitle-text").show()
+            $("#preview_button_1").show()
+            $("#preview_button_2").hide()
+        }else if (selectedLayout == "TEXT 1 BUTTON RIGHT"){
+            var layoutHTML = $(".txt-1-btn-right").html()
+            var layoutClass = "title-right"
+            $(".title-text").show()
+            $(".subtitle-text").show()
+            $("#preview_button_1").show()
+            $("#preview_button_2").hide()
+        }else if (selectedLayout == "TEXT 2 BUTTONS LEFT"){
+            var layoutHTML = $(".txt-2-btn-left").html()
+            var layoutClass = "title-left"
+            $(".title-text").show()
+            $(".subtitle-text").show()
+            $("#preview_button_1").show()
+            $("#preview_button_2").show()
+        }else if (selectedLayout == "TEXT 2 BUTTONS RIGHT"){
+            var layoutHTML = $(".txt-2-btn-right").html()
+            var layoutClass = "title-right"
+            $(".title-text").show()
+            $(".subtitle-text").show()
+            $("#preview_button_1").show()
+            $("#preview_button_2").show()
+        }else if (selectedLayout == "TEXT 1 BUTTON CENTER"){
+            var layoutHTML = $(".txt-1-btn-center").html()
+            var layoutClass = "title-center"
+            $(".title-text").show()
+            $(".subtitle-text").show()
+            $("#preview_button_1").show()
+            $("#preview_button_2").hide()
+        }else if (selectedLayout == "TEXT 2 BUTTONS CENTER"){
+            var layoutHTML = $(".txt-2-btn-center").html()
+            var layoutClass = "title-center"
+            $(".title-text").show()
+            $(".subtitle-text").show()
+            $("#preview_button_1").show()
+            $("#preview_button_2").show()
+        }else{
+            var layoutHTML = $(".img-only").html()
+            var layoutClass = ""
+            $(".title-text").hide()
+            $(".subtitle-text").hide()
+            $("#preview_button_1").hide()
+            $("#preview_button_2").hide()
+        }
+
+        $("#text-preview-img .banner-layout-box").css('background-image', 'url(' + $("#background-img-preview-section img").attr('src') + ')');
+        //$("#text-preview-img .banner-layout-box").css('background-image', 'url(' + $("#background-mobimg-preview-section img").attr('src') + ')');
+        $('#text-preview-img .banner-layout-box').removeClass("title-left");
+        $('#text-preview-img .banner-layout-box').removeClass("title-right");
+        //$('#text-preview-img .banner-layout-box').removeClass("title-center");
+        $('#text-preview-img .banner-layout-box').addClass(layoutClass);
+
+    }
+    {% comment %} SetBgImage() {% endcomment %}
+
+    // ========================= Buttons =======================================
+    var style1ButtonColors = {
+        "F1" : ["btn-color-1"],
+        "F2" : ["btn-color-2"],
+        "F3" : ["btn-color-3"],
+        "F4" : ["btn-color-4"],
+    }
+
+    var style2ButtonColors = {
+        "O1" : ["btn-style-2", "btn-color-1"],
+        "O2" : ["btn-style-2", "btn-color-2"],
+        "O3" : ["btn-style-2", "btn-color-3"],
+        "O4" : ["btn-style-2", "btn-color-4"],
+    }
+
+
+    var upload2 = document.getElementById('{{adminform.form.image.name}}');
+
+    function bannerImageSet(uploadFile) {
+        var me = this,
+            file = uploadFile.files[0];
+    }
+
+    if (upload2) {
+        upload2.addEventListener('dragenter', function (e) {
+            upload2.parentNode.className = 'area dragging';
+        }, false);
+
+        upload2.addEventListener('dragleave', function (e) {
+            upload2.parentNode.className = 'area';
+        }, false);
+
+        upload2.addEventListener('dragdrop', function (e) {
+            bannerImageSet(upload2);
+        }, false);
+
+        upload2.addEventListener('change', function (e) {
+            bannerImageSet(upload2);
+        }, false);
+    }
+
+    var upload3 = document.getElementById('{{adminform.form.mobimage.name}}');
+
+    function bannermobImageSet(uploadFile) {
+        var me = this,
+            file = uploadFile.files;
+    }
+
+    if (upload3) {
+        upload3.addEventListener('dragenter', function (e) {
+            upload3.parentNode.className = 'area dragging';
+        }, false);
+
+        upload3.addEventListener('dragleave', function (e) {
+            upload3.parentNode.className = 'area';
+        }, false);
+
+        upload3.addEventListener('dragdrop', function (e) {
+            bannermobImageSet(upload3);
+        }, false);
+
+        upload3.addEventListener('change', function (e) {
+            bannermobImageSet(upload3);
+        }, false);
+    }
+
+
+    // select the layout when click on layout image
+    function SelectBannerLayout(layoutId){
+        $("#"+layoutId).click()
+    }
+
+    $("input[id='layout_group']").change(function() {
+        SetLayoutOptionView()
+        {% comment %} SetBgImage() {% endcomment %}
+    });
+
+    function SetLayoutOptionView(){
+        var selectedLayout = document.querySelector('input[id="layout_group"]:checked').value
+        if (jQuery.inArray(selectedLayout, ['TEXT 2 BUTTONS LEFT', 'TEXT 2 BUTTONS RIGHT', 'TEXT 2 BUTTONS CENTER']) > -1){
+            $(".button-layout").show()
+            $(".second-button-layout").show()
+            $(".banner-text-layout").show()
+        } else if (selectedLayout == 'IMAGE ONLY') {
+            $(".button-layout").hide()
+            $(".second-button-layout").hide()
+            $(".banner-text-layout").hide()
+        } else {
+            $(".banner-text-layout").show()
+            $(".button-layout").show()
+            $(".second-button-layout").hide()
+        }
+    }
+
+    var first_button_fill_color = "{{adminform.form.first_button_fill_color.value}}";
+    var form_id = "{{adminform.form.instance.id}}";
+    if (form_id != "None"){
+        var fillColor = "{{adminform.form.first_button_fill_color.value}}";
+        var fontColor = "{{adminform.form.first_button_font_color.value}}";
+        var borderColor = "{{adminform.form.first_button_outline_color.value}}";
+
+    }
+
+    function selectButtonColor(btn, colorPattern){
+        $("#" + btn).val(colorPattern);
+        setButtonColor()
+        if(btn=="first_button_color_pattern"){
+            $(".first-btn-custom-color").hide()
+            $("#{{adminform.form.first_button_fill_color.name}}").val("");
+            $("#{{adminform.form.first_button_font_color.name}}").val("");
+            $("#{{adminform.form.first_button_outline_color.name}}").val("");
+        } else {
+            $(".second-btn-custom-color").hide()
+            $("#{{adminform.form.second_button_fill_color.name}}").val("");
+            $("#{{adminform.form.second_button_font_color.name}}").val("");
+            $("#{{adminform.form.second_button_outline_color.name}}").val("");
+        }
+    }
+
+    function toggleCustomColorSection(btn){
+        $("." + btn).toggle()
+    }
+
+    function setButtonColor(){
+        var primary_button_color_pattern = "{{global_theme_config.primary_button_color_pattern}}";
+        var secondary_button_color_pattern = "{{global_theme_config.secondary_button_color_pattern}}";
+
+
+        if($("#first_button_color_pattern").val() != "None") {
+            primary_button_color_pattern = $("#first_button_color_pattern").val();
+        }
+        if($("#second_button_color_pattern").val() != "None") {
+            secondary_button_color_pattern = $("#second_button_color_pattern").val();
+        }
+
+
+        if(($("#first_button_color_pattern").val() != "None" && $("#first_button_color_pattern").val() != "")  || form_id == "None"){
+            if(jQuery.inArray(primary_button_color_pattern, ['F1', 'F2', 'F3', 'F4']) > -1){
+                var arrayLength = style1ButtonColors[primary_button_color_pattern].length;
+                $("#first-btn-section .style-tab .btn-style-1").removeClass("btn-color-1 btn-color-2 btn-color-3 btn-color-4");
+                $("#first-btn-section .style-tab .btn-style-1").css({"background-color": "", "color": "", "border-color": ""});
+                for (var i = 0; i < arrayLength; i++) {
+                    $("#first-btn-section .style-tab .btn-style-1").addClass(style1ButtonColors[primary_button_color_pattern][i]);
+                }
+            } else if (jQuery.inArray(primary_button_color_pattern, ['O1', 'O2', 'O3', 'O4']) > -1){
+                var arrayLength = style2ButtonColors[primary_button_color_pattern].length;
+                $("#first-btn-section .style-tab .btn-style-2").removeClass("btn-color-1 btn-color-2 btn-color-3 btn-color-4");
+                $("#first-btn-section .style-tab .btn-style-2").css({"background-color": "", "color": "", "border-color": ""});
+                for (var i = 0; i < arrayLength; i++) {
+                    $("#first-btn-section .style-tab .btn-style-2").addClass(style2ButtonColors[primary_button_color_pattern][i]);
+                }
+            }
+        } else {
+            if($("#{{adminform.form.first_button_style.name}}").val() == 'fill'){
+                $("#first-btn-section .style-tab .btn-style-1").css({
+                    "background-color": "{{adminform.form.first_button_fill_color.value}}",
+                    "color": "{{adminform.form.first_button_font_color.value}}",
+                    "border-color": "{{adminform.form.first_button_outline_color.value}}",
+                });
+            } else if($("#{{adminform.form.first_button_style.name}}").val() == 'outline'){
+                $("#first-btn-section .style-tab .btn-style-2").css({
+                    "background-color": "{{adminform.form.first_button_fill_color.value}}",
+                    "color": "{{adminform.form.first_button_font_color.value}}",
+                    "border-color": "{{adminform.form.first_button_outline_color.value}}",
+                });
+            }
+        }
+
+        if(($("#second_button_color_pattern").val() != "None" && $("#second_button_color_pattern").val() != "") || form_id == "None"){
+            if(jQuery.inArray(secondary_button_color_pattern, ['F1', 'F2', 'F3', 'F4']) > -1){
+                var arrayLength = style1ButtonColors[secondary_button_color_pattern].length;
+                $("#second-btn-section .style-tab .btn-style-1").removeClass("btn-color-1 btn-color-2 btn-color-3 btn-color-4");
+                $("#second-btn-section .style-tab .btn-style-1").css({ "background-color": "", "color": "", "border-color": "" });
+                for (var i = 0; i < arrayLength; i++) {
+                    $("#second-btn-section .style-tab .btn-style-1").addClass(style1ButtonColors[secondary_button_color_pattern][i]);
+                }
+            } else if (jQuery.inArray(secondary_button_color_pattern, ['O1', 'O2', 'O3', 'O4']) > -1){
+                var arrayLength = style2ButtonColors[secondary_button_color_pattern].length;
+                $("#second-btn-section .style-tab .btn-style-2").removeClass("btn-color-1 btn-color-2 btn-color-3 btn-color-4");
+                $("#second-btn-section .style-tab .btn-style-2").css({ "background-color": "", "color": "", "border-color": "" });
+                for (var i = 0; i < arrayLength; i++) {
+                    $("#second-btn-section .style-tab .btn-style-2").addClass(style2ButtonColors[secondary_button_color_pattern][i]);
+                }
+            }
+        } else {
+            if($("#{{adminform.form.second_button_style.name}}").val() == 'fill'){
+                $("#second-btn-section .style-tab .btn-style-1").css({
+                    "background-color": "{{adminform.form.second_button_fill_color.value}}",
+                    "color": "{{adminform.form.second_button_font_color.value}}",
+                    "border-color": "{{adminform.form.second_button_outline_color.value}}",
+                });
+            } else if($("#{{adminform.form.second_button_style.name}}").val() == 'outline'){
+                $("#second-btn-section .style-tab .btn-style-2").css({
+                    "background-color": "{{adminform.form.second_button_fill_color.value}}",
+                    "color": "{{adminform.form.second_button_font_color.value}}",
+                    "border-color": "{{adminform.form.second_button_outline_color.value}}",
+                });
+            }
+        }
+    }
+
+    function InitView(){
+        console.log("called init view")
+
+        $("#first-btn-section button").addClass('{{global_theme_config.primary_button_shape}}');
+        $("#second-btn-section button").addClass('{{global_theme_config.primary_button_shape}}');
+        $(".banner-layout-action button").addClass('{{global_theme_config.primary_button_shape}}');
+
+        var selectedLayout = '{{adminform.form.layout.value}}';
+        $("input[name='layout'][value='" + selectedLayout + "']").prop('checked', true);
+        SetLayoutOptionView()
+        setButtonColor()
+        hideShowButtonColorSection("btn1", "{{adminform.form.first_button_style.value}}")
+        hideShowButtonColorSection("btn2", "{{adminform.form.second_button_style.value}}")
+    }
+    InitView()
+
+    {% comment %} $("input[id='layout_group']").change(function() {
+
+    }); {% endcomment %}
+
+    // ==========================================================================
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock %}  

@@ -1,0 +1,115 @@
+{% load sekizai_tags cms_tags %}
+{% addtoblock 'css' %}
+    <style>
+        #card-slider .slick-prev{
+            border-radius: 10px;
+            width:auto;
+            height:auto;
+            position:absolute;
+            left:-10px;
+            top:50%;
+            -ms-transform: translateY(-50%);
+            -webkit-transform: translateY(-50%);
+            transform: translateY(-50%);
+            z-index:44;
+        }
+        #card-slider .slick-next{
+            border-radius: 10px;
+            width:auto;
+            height:auto;
+            position:absolute;
+            right:-10px;
+            top:50%;
+            -ms-transform: translateY(-50%);
+            -webkit-transform: translateY(-50%);
+            transform: translateY(-50%);
+            z-index:43;
+        }
+        
+        #card-slider  .slick-next:before{
+            content: '›' !important;
+        }
+        #card-slider .slick-prev::before {
+            content: '‹'!important;
+        }
+
+        @media (max-width: 768px) {
+            .carousel-btns button {
+                width: 100%;
+            }
+        }
+        #card-slider .slick-prev:before,
+        #card-slider .slick-next:before {
+            color: var(--global-primary-color) !important; 
+            font-size: 2rem !important;
+            font-family: 'FontAwesome';
+            opacity:1 !important;
+        }
+        #card-slider .slick-dots li button:before {
+            background: #black;
+            border-color: #black;
+            opacity:1 !important;
+        }
+        #card-slider .slick-dots li.slick-active button:before {
+            background: var(--global-primary-color);
+            border-color: #black;
+            opacity:1 !important;
+        }
+        #card-slider .slick-dots li button:after {
+            background: var(--global-primary-color);
+        }
+        #card-slider .slick-dots li.slick-active button:after {
+            background:  var(--global-primary-color);
+            border-color: #black;
+        }    
+    </style>
+{% endaddtoblock %}
+
+<div id="card-slider" {% if instance.css_class %} class='{{ instance.css_class }}' {% endif %} style="background: url({{ instance.card_background.url }}) no-repeat; background-size: 100% 100%;">
+    <div class="slider-hero c_{{  instance.cmsplugin_ptr_id }} d-none">
+        {% for plugin in instance.child_plugin_instances %}
+        {% render_plugin plugin %}
+        {% endfor %}  
+    </div>
+</div>
+{% addtoblock 'js' %}
+<script>
+    (function($) {
+        $(document).ready(function() {
+
+            $('.slider-hero').slick({
+                infinite: true,
+                arrows:true,
+                speed: 100,
+                slidesToShow: {{ instance.items }},
+                slidesToScroll: {{ instance.slides_to_scroll }},
+                responsive: [
+                    {
+                    breakpoint: 1024,
+                    settings: {
+                        slidesToShow: {{ instance.items_desktop }},
+                        slidesToScroll: {{ instance.slides_to_scroll }},
+                    }
+                    },
+                    {
+                    breakpoint: 600,
+                    settings: {
+                        slidesToShow: {{ instance.items_tablet }},
+                        slidesToScroll: {{ instance.slides_to_scroll }},
+                    }
+                    },
+                    {
+                    breakpoint: 480,
+                    settings: {
+                        slidesToShow: {{ instance.items_mobile }},
+                        slidesToScroll: {{ instance.slides_to_scroll }},
+                    }
+                    } 
+                ]
+            });
+            $('.slider-hero').removeClass('d-none'); 
+
+    });
+})( jQuery );
+</script>
+{% endaddtoblock %}

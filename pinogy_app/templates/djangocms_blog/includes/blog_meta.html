@@ -1,0 +1,51 @@
+{% load i18n easy_thumbnails_tags cms_tags %}
+
+<div class="post-detail">
+    <span class="post-detail__info">
+        {% if post.author %}
+        <a href="{% url 'djangocms_blog:posts-author' post.author.get_username %}" class="">
+            {% trans "by" %}
+            {% if post.author.get_full_name %}
+                {{ post.author.get_full_name }}
+            {% else %}
+                {{ post.author }}
+            {% endif %}
+        </a>
+    </span>
+    {% endif %}
+    <span class="text-uppercase post-detail__info">
+        {{ post.date_published|date:"d b" }}
+    </span>
+    {% if post.date_featured %}
+    <span class="text-uppercase post-detail__info">
+        {{ post.date_featured|date:"d b" }}
+    </span>
+    {% endif %}
+</div>
+
+<div class="post-detail tags">
+    {% if post.categories.exists %}
+        {% for category in post.categories.all %}
+            {% if category.slug %}
+                <div class='category_{{ forloop.counter }} post-detail__tags-item {% if category.count|divisibleby:"2" == True %} post-detail__tags-item--blue {% else %} post-detail__tags-item--lagoon {% endif %}'
+                >
+                    <a class="post-detail__link" href="{% url 'djangocms_blog:posts-category' category=category.slug %}" class='blog-categories-{{ category.count }}"'>
+                        <span class="font-weight-bold">#</span> {{ category.name }}
+                    </a>
+                    <!-- {% if not forloop.last %}, {% endif %} -->
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    {% if post.tags.exists %}
+        {% for tag in post.tags.all %}
+            <div class='tag_{{ forloop.counter }} post-detail__tags-item {% if tag.count|divisibleby:"2" == True %} post-detail__tags-item--blue {% else %} post-detail__tags-item--lagoon {% endif %}'>
+                <a class="post-detail__link" href="{% url 'djangocms_blog:posts-tagged' tag=tag.slug %}" class="blog-tag blog-tag-{{ tag.count }}">
+                    <span class="font-weight-bold" >#</span> {{ tag.name }}
+                </a>
+                <!-- {% if not forloop.last %}, {% endif %} -->
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>

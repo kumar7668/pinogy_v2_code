@@ -1,0 +1,805 @@
+{% extends 'admin/base_change_form.html' %}
+
+{% load cms_tags menu_tags sekizai_tags static admin_modify %}
+{% load global_theme_config_tags %}
+
+{% block content %}
+    {% global_theme_object as global_theme_config %}
+
+    {% addtoblock 'css' %}
+        <link rel="stylesheet" href='{{global_theme_config.get_themecss_file}}'>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/custom-info.css' %}">
+        <style>
+            {% if global_theme_config.primary_color and global_theme_config.secondary_color %}
+                :root {
+                    --primary-element: {{global_theme_config.primary_color}};
+                    --secondary-element: {{global_theme_config.secondary_color}};
+                }
+            {% endif %}
+
+            .dev_colorpicker_preview .clr-field {
+                opacity: 0;
+                cursor: pointer;
+            }
+
+            .banner-layout-wrap-inner img{
+                {% comment %} width: 300px; {% endcomment %}
+                height: 120px;
+            }
+            #first-btn-section .rectangle,
+            #second-btn-section .rectangle {
+                border-radius: 0px;
+            }
+
+            #first-btn-section .rounded,
+            #second-btn-section .rounded {
+                border-radius: 12px;
+            }
+
+            #first-btn-section .pill,
+            #second-btn-section .pill {
+                border-radius: 100px;
+            }
+
+            .buck-absolute {
+                position: absolute;
+            }
+
+            /* Django admin style override */
+            ul > li {
+                list-style-type: none;
+            }
+
+            {% if global_theme_config.primary_button_shape %}
+            .infosecond-preview .infosecond-btn.pill{
+                border-radius: 100px;
+            }
+            .infosecond-preview .infosecond-btn.rounded{
+                border-radius: 12px;
+            }
+            .infosecond-preview .infosecond-btn.rectangle{
+                border-radius: 0;
+            }
+            {% endif %}
+            .infosecond-preview .infosecond-img-left,
+            .infosecond-preview .infosecond-img-right{
+                max-width: 378px;
+                max-height: 540px;
+            }
+            .btnhide{
+                display: none;
+            }
+            .btnshow{
+                display: block;
+            }
+            .clsbuttontype{
+                font-size: 18px;
+                padding-bottom: 20px;
+                color: var(--primary);
+            }
+        </style>
+    {% endaddtoblock %}
+
+    <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}{% if form_url %}action="{{ form_url }}" {% endif %}method="post" id="{{ opts.model_name }}_form" novalidate>
+        {% csrf_token %}
+        {{adminform.form.errors}}
+        <div class="box-theme">
+            <div class="box-theme-title">
+                Image
+            </div>
+            <div class="box-theme-sub-title">
+                On the left side
+            </div>
+            <div class="box-theme-form-item">
+                <div class="form-upload">
+                    <p>Upload your .JPG, .PNG, .SVG, .WEBP or .GIF files here or drag the image</p>
+                    <button class="btn-theme btn-shape-1 btn-style-1 btn-color-1" style="background:#12BBD2;">Upload Image</button>
+                    <div class="area">
+                        <input type="file" name="{{adminform.form.image_left.name}}" id="{{adminform.form.image_left.name}}" />
+                    </div>
+                </div>
+                {% comment %} <ul class="list-inline list-unstyled">
+                    <li> <label class="checkcontainer">Auto resize image
+                            <input type="checkbox" checked="checked">
+                            Image
+                            <span class="checkmark"></span>
+                        </label></li>
+                    <li><a href="#">Set Focus Point</a></li>
+                </ul> {% endcomment %}
+                {% if adminform.form.image_left.errors %}
+                    {% for error in adminform.form.image_left.errors  %}
+                        <div class="alert alert-danger error-block" role="alert">
+                            {{error}}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="box-theme-sub-title">
+                Preview
+            </div>
+            <div class="box-theme-preview-list" >
+                <ul id="left-img-preview-section">
+                    {% if adminform.form.image_left.value%}
+                    <li class="banner-image-preview-list infosecond-img-left active">
+                        <img src="{{adminform.form.instance.image_left.url}}" alt="">
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="box-theme-sub-title">
+                On the right side
+            </div>
+            <div class="box-theme-form-item">
+                <div class="form-upload">
+                    <p>Upload your .JPG, .PNG, .SVG, .WEBP or .GIF files here or drag the image</p>
+                    <button class="btn-theme btn-shape-1 btn-style-1 btn-color-1" style="background:#12BBD2;">Upload Image</button>
+                    <div class="area">
+                        <input type="file" name="{{adminform.form.image_right.name}}" id="{{adminform.form.image_right.name}}" />
+                    </div>
+                </div>
+                {% comment %} <ul class="list-inline list-unstyled">
+                    <li> <label class="checkcontainer">Auto resize image
+                            <input type="checkbox" checked="checked">
+                            Image
+                            <span class="checkmark"></span>
+                        </label></li>
+                    <li><a href="#">Set Focus Point</a></li>
+                </ul> {% endcomment %}
+                {% if adminform.form.image_right.errors %}
+                    {% for error in adminform.form.image_right.errors  %}
+                        <div class="alert alert-danger error-block" role="alert">
+                            {{error}}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="box-theme-sub-title">
+                Preview
+            </div>
+            <div class="box-theme-preview-list" >
+                <ul id="right-img-preview-section">
+                    {% if adminform.form.image_right.value%}
+                    <li class="banner-image-preview-list infosecond-img-right active">
+                        <img src="{{adminform.form.instance.image_right.url}}" alt="">
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="box-theme-form-devider">
+            </div>
+            <div class="box-theme-title banner-text-layout">
+                Text
+            </div>
+            <div class="banner-edit-section banner-text-layout">
+                <div>
+                    <div class="box-theme-sub-title">
+                        Title
+                    </div>
+                    <div class="box-theme-form-item">
+                        <div class="box-theme-form-item-inline">
+                            <div class="box-theme-form-item-inline-input">
+                                <input name="{{adminform.form.title_text.name}}" id="{{adminform.form.title_text.name}}" type="text" value="{% if adminform.form.title_text.value %}{{adminform.form.title_text.value}}{% endif %}" placeholder="Enter title" class="form-input">
+                            </div>
+                            <div class="dev_colorpicker">
+                                <div class="form-color-picker-box dev_colorpicker_preview title-color-display" style="background: {{adminform.form.title_text_color.value}};">
+                                    <img src="{% static 'images/ic-buck.svg' %}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-theme-tab-wrap">
+                        <div class="box-theme-tab">
+                            <ul class="theme-tab">
+                                <li class="active" data-target="headline_color">Font Color</li>
+                            </ul>
+                        </div>
+                        <div class="box-theme-form-item theme-tab-content" id="headline_color">
+                            <input type="hidden" name="{{adminform.form.title_text_color.name}}" id="{{adminform.form.title_text_color.name}}" value="{{adminform.form.title_text_color.value}}" class="" onChange="" style="">
+                            <ul class="theme-color-tab">
+                                <li onclick="setTitleColor('#000000ff')" class="{% if adminform.form.title_text_color.value == '#000000ff' %}active{% endif %} tab-color tab-black"></li>
+                                <li onclick="setTitleColor('#ffffffff')" class="{% if adminform.form.title_text_color.value == '#ffffffff' %}active{% endif %} tab-color tab-white"></li>
+                                <li onclick="setTitleColor('{{global_theme_config.primary_color}}')" class="{% if adminform.form.title_text_color.value == global_theme_config.primary_color %}active{% endif %} tab-color tab-color-1"></li>
+                                <li onclick="setTitleColor('{{global_theme_config.secondary_color}}')" class="{% if adminform.form.title_text_color.value == global_theme_config.secondary_color %}active{% endif %} tab-color tab-color-2"></li>
+                                <li class="tab-color tab-custom dev_colorpicker"> Custom
+                                    <div class="dev_colorpicker_preview tab-custom-pre title-color-display1" style="">
+                                        <input type="text" class="color-selector coloris instance1" onChange="setTitleColor(this.value)" style="max-width: 50px; cursor: pointer;">
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        {% if adminform.form.title_text.errors %}
+                            {% for error in adminform.form.title_text.errors  %}
+                                <div class="alert alert-danger error-block" role="alert">
+                                    {{error}}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        {% if adminform.form.title_text_color.errors %}
+                            {% for error in adminform.form.title_text_color.errors  %}
+                                <div class="alert alert-danger error-block" role="alert">
+                                    {{error}}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div class="box-theme-sub-title">
+                        Subtitle
+                    </div>
+                    <div class="box-theme-form-item">
+                        <div class="box-theme-form-item-inline">
+                            <div class="box-theme-form-item-inline-input">
+                                <input name="{{adminform.form.sub_title_text.name}}" id="{{adminform.form.sub_title_text.name}}" type="text" value="{% if adminform.form.sub_title_text.value %}{{adminform.form.sub_title_text.value}}{% endif %}" placeholder="Enter subtitle (Optional)" class="form-input">
+                            </div>
+                            <div class="dev_colorpicker">
+                                <div class="form-color-picker-box dev_colorpicker_preview subtitle-color-display" style="background: {{adminform.form.sub_title_text_color.value}};">
+                                    <img src="{% static 'images/ic-buck.svg' %}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-theme-tab-wrap">
+                        <div class="box-theme-tab">
+                            <ul class="theme-tab">
+                                <li class="active" data-target="headline_color">Font Color</li>
+                            </ul>
+                        </div>
+                        <div class="box-theme-form-item theme-tab-content" id="headline_color">
+                            <input type="hidden" name="{{adminform.form.sub_title_text_color.name}}" id="{{adminform.form.sub_title_text_color.name}}" value="{{adminform.form.sub_title_text_color.value}}" class="" onChange="" style="">
+                            <ul class="theme-color-tab">
+                                <li onclick="setSubTitleColor('#000000ff')" class="{% if adminform.form.sub_title_text_color.value == '#000000ff' %}active{% endif %} tab-color tab-black"></li>
+                                <li onclick="setSubTitleColor('#ffffffff')" class="{% if adminform.form.sub_title_text_color.value == '#ffffffff' %}active{% endif %} tab-color tab-white"></li>
+                                <li onclick="setSubTitleColor('{{global_theme_config.primary_color}}')" class="{% if adminform.form.sub_title_text_color.value == global_theme_config.primary_color %}active{% endif %} tab-color tab-color-1"></li>
+                                <li onclick="setSubTitleColor('{{global_theme_config.secondary_color}}')" class="{% if adminform.form.sub_title_text_color.value == global_theme_config.secondary_color %}active{% endif %} tab-color tab-color-2"></li>
+                                <li class="tab-color tab-custom dev_colorpicker">Custom
+                                    <div class="dev_colorpicker_preview tab-custom-pre subtitle-color-display1" style="">
+                                        <input type="text" value="{{adminform.form.sub_title_text_color.value}}" class="color-selector coloris instance1" onChange="setSubTitleColor(this.value)" style="max-width: 50px; cursor: pointer;">
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        {% if adminform.form.sub_title_text_color.errors %}
+                            {% for error in adminform.form.sub_title_text_color.errors  %}
+                                <div class="alert alert-danger error-block" role="alert">
+                                    {{error}}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        {% if adminform.form.sub_title_text_color.errors %}
+                            {% for error in adminform.form.sub_title_text_color.errors  %}
+                                <div class="alert alert-danger error-block" role="alert">
+                                    {{error}}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div class="box-theme-sub-title">
+                        Message
+                    </div>
+                    <div class="box-theme-form-item">
+                        <div class="box-theme-form-item-inline">
+                            <div class="box-theme-form-item-inline-input">
+                                <input name="{{adminform.form.message_text.name}}" id="{{adminform.form.message_text.name}}" type="text" value="{% if adminform.form.message_text.value %}{{adminform.form.message_text.value}}{% endif %}" placeholder="Enter message" class="form-input">
+                            </div>
+                            <div class="dev_colorpicker">
+                                <div class="form-color-picker-box dev_colorpicker_preview message-color-display" style="background: {{adminform.form.message_text_color.value}};">
+                                    <img src="{% static 'images/ic-buck.svg' %}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-theme-tab-wrap">
+                        <div class="box-theme-tab">
+                            <ul class="theme-tab">
+                                <li class="active" data-target="headline_color">Font Color</li>
+                            </ul>
+                        </div>
+                        <div class="box-theme-form-item theme-tab-content" id="headline_color">
+                            <input type="hidden" name="{{adminform.form.message_text_color.name}}" id="{{adminform.form.message_text_color.name}}" value="{{adminform.form.message_text_color.value}}" class="" onChange="" style="">
+                            <ul class="theme-color-tab">
+                                <li onclick="setMsgFontColor('#000000ff')" class="{% if adminform.form.message_text_color.value == '#000000ff' %}active{% endif %} tab-color tab-black"></li>
+                                <li onclick="setMsgFontColor('#ffffffff')" class="{% if adminform.form.message_text_color.value == '#ffffffff' %}active{% endif %} tab-color tab-white"></li>
+                                <li onclick="setMsgFontColor('{{global_theme_config.primary_color}}')" class="{% if adminform.form.message_text_color.value == global_theme_config.primary_color %}active{% endif %} tab-color tab-color-1"></li>
+                                <li onclick="setMsgFontColor('{{global_theme_config.secondary_color}}')" class="{% if adminform.form.message_text_color.value == global_theme_config.secondary_color %}active{% endif %} tab-color tab-color-2"></li>
+                                <li class="tab-color tab-custom dev_colorpicker">Custom
+                                    <div class="dev_colorpicker_preview tab-custom-pre subtitle-color-display1" style="">
+                                        <input type="text" value="{{adminform.form.message_text_color.value}}" class="color-selector coloris instance1" onChange="setMsgFontColor(this.value)" style="max-width: 50px; cursor: pointer;">
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        {% if adminform.form.message_text.errors %}
+                            {% for error in adminform.form.message_text.errors  %}
+                                <div class="alert alert-danger error-block" role="alert">
+                                    {{error}}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        {% if adminform.form.message_text_color.errors %}
+                            {% for error in adminform.form.message_text_color.errors  %}
+                                <div class="alert alert-danger error-block" role="alert">
+                                    {{error}}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="banner-layout-wrap no-hover">
+                        <div class="banner-layout-wrap-inner">
+                            <img src="{% static 'images/widget_image/infoblocksecond/view1.png' %}" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-theme-form-devider button-layout">
+            </div>
+            <!-- <div class="box-theme-title button-layout">
+                Button
+            </div> -->
+            <div class="clsbuttontype">
+                <input type="radio" value="True" id="layout_group1" name="{{adminform.form.isbutton.name}}" {% if adminform.form.isbutton.value == 'True' %} checked {% endif %}  onchange="onHandleButtonActionChange(event)">
+                Show Button              
+                <input type="radio" value="False" id="layout_group1" name="{{adminform.form.isbutton.name}}" {% if adminform.form.isbutton.value == 'False' %} checked {% endif %} onchange="onHandleButtonActionChange(event)">
+                Hide Button 
+            </div>
+            <div class="banner-edit-section button-layout {% if adminform.form.isbutton.value == 'False' %} btnhide {% endif %}{% if adminform.form.isbutton.value == 'True' %} btnshow {% endif %}" id="btnaction">
+                <div>
+                    <div class="box-theme-sub-title" id="headline_color">
+                        Button
+                    </div>
+                    <div class="box-theme-form-item">
+                        <div class="box-theme-form-item-inline">
+                            <div class="box-theme-form-item-inline-input">
+                                <input name="{{adminform.form.button_text.name}}" id="{{adminform.form.button_text.name}}" type="text" value="{% if adminform.form.button_text.value %}{{adminform.form.button_text.value}}{% endif %}" placeholder="Button's text" class="form-input mb-2">
+                                <input name="{{adminform.form.button_link.name}}" type="text" value="{% if adminform.form.button_link.value %}{{adminform.form.button_link.value}}{% endif %}" placeholder="Button's link" class="form-input">
+                                <div class="mt-2">{{adminform.form.button_internallink}}</div>
+                            </div>
+                        </div>
+                        {% if adminform.form.button_text.errors %}
+                            {% for error in adminform.form.button_text.errors  %}
+                                <div class="alert alert-danger error-block" role="alert">
+                                    {{error}}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        {% if adminform.form.button_link.errors %}
+                            {% for error in adminform.form.button_link.errors  %}
+                                <div class="alert alert-danger error-block" role="alert">
+                                    {{error}}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        {% if adminform.form.button_internallink.errors %}
+                            {% for error in adminform.form.button_internallink.errors  %}
+                                <div class="alert alert-danger error-block" role="alert">
+                                    {{error}}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div class="box-theme-tab-wrap" id="first-btn-section">
+                        <div class="box-theme-tab">
+                            <ul class="theme-tab">
+                                <li class="active" data-target="btn_style_1">Style</li>
+                                {% comment %} TODO: Need To Remove It {% endcomment %}
+                                {% comment %} <li class="" data-target="btn_color_1">Color</li> {% endcomment %}
+                            </ul>
+                        </div>
+                        <div class="box-theme-form-item theme-tab-content style-tab" id="btn_style_1">
+                            <ul class="theme-button-tab ">
+                                <input type="hidden" value="{{adminform.form.button_style.value}}" name="{{adminform.form.button_style.name}}" id="{{adminform.form.button_style.name}}">
+                                <li onclick="setFirstBtnStyle('fill')" class="{% if adminform.form.button_style.value == 'fill' %}active{% endif %}">
+                                    <button class="theme-primary-btn">Button</button>
+                                </li>
+                                <li onclick="setFirstBtnStyle('outline')" class="{% if adminform.form.button_style.value == 'outline' %}active{% endif %}">
+                                    <button class="theme-secondary-btn">Button</button>
+                                </li>
+                            </ul>
+                        </div>
+                        {% comment %} TODO: Need To Remove It {% endcomment %}
+                        {% comment %} <div class="box-theme-form-item theme-tab-content color-tab" id="btn_color_1" style="display: none;">
+                            <ul class="theme-button-tab first-button-tab">
+                                <li id="btn-oolor-1" onclick="selectBtnColorPreview(this.id)" class="btn1-style1-li btn1-style1-li1"><button  class="btn-theme btn-shape-1 btn-style-1 btn-color-1 F1">Button</button> </li>
+                                <li id="btn-color-2" onclick="selectBtnColorPreview(this.id)" class="btn1-style1-li btn1-style1-li2"><button class="btn-theme btn-shape-1 btn-style-1 btn-color-2 F2">Button</button></li>
+                                <li id="btn-color-3" onclick="selectBtnColorPreview(this.id)" class="btn1-style1-li btn1-style1-li3"><button class="btn-theme btn-shape-1 btn-style-1 btn-color-3 F3">Button</button></li>
+                                <li id="btn-color-4" onclick="selectBtnColorPreview(this.id)" class="btn1-style1-li btn1-style1-li4"><button class="btn-theme btn-shape-1 btn-style-1 btn-color-4 F4">Button</button></li>
+
+                                <li id="btn-color-5" onclick="selectBtnColorPreview(this.id)" class="btn2-style2-li btn2-style2-li1"><button class="btn-theme btn-shape-1 btn-style-2 btn-color-1 O1">Button</button></li>
+                                <li id="btn-color-6" onclick="selectBtnColorPreview(this.id)" class="btn2-style2-li btn2-style2-li2"><button class="btn-theme btn-shape-1 btn-style-2 btn-color-2 O2">Button</button></li>
+                                <li id="btn-color-7" onclick="selectBtnColorPreview(this.id)" class="btn2-style2-li btn2-style2-li3"><button class="btn-theme btn-shape-1 btn-style-2 btn-color-3 O3">Button</button></li>
+                                <li id="btn-color-8" onclick="selectBtnColorPreview(this.id)" class="btn2-style2-li btn2-style2-li4"><button class="btn-theme btn-shape-1 btn-style-2 btn-color-4 O4">Button</button></li>
+                            </ul>
+                            <div class="box-theme-sub-title text-theme cursor-pointer" onclick="$(this).next().toggle();">
+                                Custom
+                            </div>
+                            <div class="row" style="display:none;">
+                                <div class="col-12 col-sm-4">
+                                    <div class="form-item-inline">
+                                        <div class="box-theme-form-item-inline">
+                                            <div class="box-theme-form-item-inline-input">
+                                                <input type="text" placeholder="Outline Color" class="form-input" disabled>
+                                            </div>
+                                            <div class="dev_colorpicker">
+                                                <div class="form-color-picker-box dev_colorpicker_preview {{adminform.form.button_outline_color.name}}" style="background: {% if adminform.form.button_outline_color.value %}{{adminform.form.button_outline_color.value}};{% else %}#12BBD2;{% endif %}">
+                                                    <img class="buck-absolute" src="{% static 'images/ic-buck.svg' %}">
+                                                    <input type="text" name="{{adminform.form.button_outline_color.name}}" id="{{adminform.form.button_outline_color.name}}" value="{{adminform.form.button_outline_color.value}}" class="color-selector coloris instance1" onChange="btnColorPreview(this.value,'{{adminform.form.button_outline_color.name}}')" style="max-width: 50px; cursor: pointer;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-4">
+                                    <div class="form-item-inline">
+                                        <div class="box-theme-form-item-inline">
+                                            <div class="box-theme-form-item-inline-input">
+                                                <input type="text" placeholder="Fill Color" class="form-input" disabled>
+                                            </div>
+                                            <div class="dev_colorpicker">
+                                                <div class="form-color-picker-box dev_colorpicker_preview {{adminform.form.button_fill_color.name}}"
+                                                    style="background: {% if adminform.form.button_fill_color.value %}{{adminform.form.button_fill_color.value}};{% else %}#12BBD2;{% endif %}">
+                                                    <img class="buck-absolute" src="{% static 'images/ic-buck.svg' %}">
+                                                    <input type="text" name="{{adminform.form.button_fill_color.name}}" id="{{adminform.form.button_fill_color.name}}" value="{{adminform.form.button_fill_color.value}}" class="color-selector coloris instance1" onChange="btnColorPreview(this.value,'{{adminform.form.button_fill_color.name}}')" style="max-width: 50px; cursor: pointer;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-4">
+                                    <div class="form-item-inline">
+                                        <div class="box-theme-form-item-inline">
+                                            <div class="box-theme-form-item-inline-input">
+                                                <input type="text" placeholder="Font Color" class="form-input" disabled>
+                                            </div>
+                                            <div class="dev_colorpicker">
+                                                <div class="form-color-picker-box dev_colorpicker_preview {{adminform.form.button_font_color.name}}"
+                                                    style="background: {% if adminform.form.button_font_color.value %}{{adminform.form.button_font_color.value}};{% else %}#12BBD2;{% endif %}">
+                                                    <img class="buck-absolute" src="{% static 'images/ic-buck.svg' %}">
+                                                    <input type="text" name="{{adminform.form.button_font_color.name}}" id="{{adminform.form.button_font_color.name}}" value="{{adminform.form.button_font_color.value}}" class="color-selector coloris instance1" onChange="btnColorPreview(this.value,'{{adminform.form.button_font_color.name}}')" style="max-width: 50px; cursor: pointer;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> {% endcomment %}
+                    </div>
+                    {% if adminform.form.button_style.errors %}
+                        {% for error in adminform.form.button_style.errors  %}
+                            <div class="alert alert-danger error-block" role="alert">
+                                {{error}}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    {% if adminform.form.button_outline_color.errors %}
+                        {% for error in adminform.form.button_outline_color.errors  %}
+                            <div class="alert alert-danger error-block" role="alert">
+                                {{error}}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    {% if adminform.form.button_fill_color.errors %}
+                        {% for error in adminform.form.button_fill_color.errors  %}
+                            <div class="alert alert-danger error-block" role="alert">
+                                {{error}}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    {% if adminform.form.button_font_color.errors %}
+                        {% for error in adminform.form.button_font_color.errors  %}
+                            <div class="alert alert-danger error-block" role="alert">
+                                {{error}}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="box-theme-form-devider">
+            </div>
+            <div class="box-theme-title">
+                Preview
+            </div>
+            <div class="info-preview-section infosecond-preview">
+                <div class="info-layout-wrap no-hover">
+                    <div class="info-layout-wrap-inner">
+                        <div class="info-layout-box container">
+                            <div class="row">
+                                <!-- Focus on order-->
+                                <div class="col-12 col-sm-4 order-1">
+                                    <div class="info-layout-content-img">
+                                        <img src="{% if adminform.form.image_left.value %}{{adminform.form.instance.image_left.url}}{% endif %}" alt="info-img" class="info_placeholder img-fluid infosecond-img-left">
+                                    </div>
+                                </div>
+                                <!-- Focus on order-->
+                                <div class=" col-12 col-sm-4 order-2 d-flex align-items-center">
+                                    <div class="info-layout-content">
+                                        <div class="info-layout-content-inner">
+                                            <div class="info-layout-title infosecond-title">
+                                                {% if adminform.form.title_text.value %}{{adminform.form.title_text.value}}{% else %}Header text{% endif %}
+                                            </div>
+                                            <div class="info-layout-sub-title infosecond-sub-title2">
+                                                {{instance.glossary.sub_title_text}}
+                                            </div>
+                                            <div class="info-layout-sub-title infosecond-sub-title">
+                                                {% if adminform.form.message_text.value %}{{adminform.form.message_text.value}}{% else %}Message text...{% endif %}
+                                            </div>
+                                            <div class="info-layout-action {% if adminform.form.isbutton.value == 'False' %} btnhide {% endif %}{% if adminform.form.isbutton.value == 'True' %} btnshow {% endif %}" id="btnpreview">
+                                                <a class="btn-theme btn-shape-1 btn-style-1 btn-color-1 infosecond-btn {% if global_theme_config.primary_button_shape %}{{global_theme_config.primary_button_shape}}{% endif %}" href="" style="text-decoration: none;border: 1px solid;pointer-events: none;">
+                                                    {% if adminform.form.button_text.value %}{{adminform.form.button_text.value}}{% else %}Button{% endif %}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Focus on order-->
+                                <div class="col-12 col-sm-4 order-3">
+                                    <div class="info-layout-content-img">
+                                        <img src="{% if adminform.form.image_right.value %}{{adminform.form.instance.image_right.url}}{% endif %}" alt="info-img" class="info_placeholder img-fluid infosecond-img-right">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+    </form>
+
+    {% addtoblock 'js' %}
+
+    <script type="text/javascript">
+        // function to set perticular button color and pattern
+        function selectBtnColorPreview(id){
+            let child = document.getElementById(id).firstChild;
+            let css_obj = getComputedStyle(child);
+
+            let btn_outline  = css_obj.borderColor;
+            let btn_bg_color = css_obj.backgroundColor;
+            let btn_font_color = css_obj.color;
+
+            $("#button_outline_color").val(btn_outline)
+            $("#button_fill_color").val(btn_bg_color)
+            $("#button_font_color").val(btn_font_color)        
+            setInfoBlockSecondPreview()
+        }
+        function setTitleColor(color){
+            $('.title-color-display').css({"background":color});
+            $("#{{adminform.form.title_text_color.name}}").val(color);
+            setInfoBlockSecondPreview()
+        }
+        function setSubTitleColor(color){
+            $('.subtitle-color-display').css({"background":color});
+            $("#{{adminform.form.sub_title_text_color.name}}").val(color);
+            setInfoBlockSecondPreview()
+        }
+        function setMsgFontColor(color){
+            $('.message-color-display').css({"background":color});
+            $("#{{adminform.form.message_text_color.name}}").val(color);
+            setInfoBlockSecondPreview()
+        }
+        function setFirstBtnStyle(style){
+            $("#{{adminform.form.button_style.name}}").val(style);
+            setInfoBlockSecondPreview()
+        }
+        function btnColorPreview(color,preview){
+            $('.'+preview).css({"background":color});
+            setInfoBlockSecondPreview()
+        }
+
+        // ==========================================================================
+
+        Coloris({
+            el: '.coloris'
+        });
+        Coloris.setInstance('.instance1', {
+            theme: 'default',
+            format: 'hex',
+            forceAlpha: true,
+        })
+
+        // ==========================================================================
+
+        $(document).ready(function () {
+            $(".theme-tab li").on("click", function () {
+                var target_box = $(this).data("target");
+                $(this).siblings().removeClass("active");
+                $(this).addClass("active");
+                $(this).parents(".box-theme-tab-wrap").find(".box-theme-form-item").hide();
+                $("#" + target_box).show();
+            })
+            $(".theme-button-tab li").on("click", function () {
+                $(this).siblings().removeClass("active");
+                $(this).addClass("active");
+            })
+            $(".theme-color-tab li").on("click", function () {
+                $(this).siblings().removeClass("active");
+                $(this).addClass("active");
+            })
+        })
+
+        // ==========================================================================
+
+        var upload2 = document.getElementById('{{adminform.form.image_left.name}}');
+
+        if (upload2) {
+            upload2.addEventListener('dragenter', function (e) {
+                upload2.parentNode.className = 'area dragging';
+            }, false);
+
+            upload2.addEventListener('dragleave', function (e) {
+                upload2.parentNode.className = 'area';
+            }, false);
+
+            upload2.addEventListener('dragdrop', function (e) {
+                leftImageUpload(upload2);
+            }, false);
+
+            upload2.addEventListener('change', function (e) {
+                leftImageUpload(upload2);
+            }, false);
+        }
+
+        function leftImageUpload(uploadFile) {
+            var me = this,
+                files = uploadFile.files;
+                var preview = $('#left-img-preview-section')
+                preview.empty()
+                $.each(files, function (i, file) {
+                    var img_src = URL.createObjectURL(file);
+                    preview.append(`
+                        <li class="banner-image-preview-list infosecond-img-left"><img src="${img_src}" alt=""></li>
+                    `)
+                    setInfoBlockSecondPreview()
+                });
+        }
+
+        // ==========================================================================
+
+        var upload1 = document.getElementById('{{adminform.form.image_right.name}}');
+
+        if (upload1) {
+            upload1.addEventListener('dragenter', function (e) {
+                upload1.parentNode.className = 'area dragging';
+            }, false);
+
+            upload1.addEventListener('dragleave', function (e) {
+                upload1.parentNode.className = 'area';
+            }, false);
+
+            upload1.addEventListener('dragdrop', function (e) {
+                rightImageUpload(upload1);
+            }, false);
+
+            upload1.addEventListener('change', function (e) {
+                rightImageUpload(upload1);
+            }, false);
+        }
+
+        function rightImageUpload(uploadFile) {
+            var me = this,
+                files = uploadFile.files;
+                var preview = $('#right-img-preview-section')
+                preview.empty()
+                $.each(files, function (i, file) {
+                    var img_src = URL.createObjectURL(file);
+                    preview.append(`
+                        <li class="banner-image-preview-list infosecond-img-right"><img src="${img_src}" alt=""></li>
+                    `)
+                    setInfoBlockSecondPreview()
+                });
+        }
+        setInfoBlockSecondPreview()
+        //========================= Set Preview ====================================
+        function setInfoBlockSecondPreview(){
+            // Set image
+            $(".infosecond-img-left").attr("src",$(".banner-image-preview-list.infosecond-img-left img").attr('src'));
+            $(".infosecond-img-right").attr("src",$(".banner-image-preview-list.infosecond-img-right img").attr('src'));
+
+            // Text preview
+            var title_text = $("#{{adminform.form.title_text.name}}").val()
+            var title_color = $("#{{adminform.form.title_text_color.name}}").val()
+            var sub_title_text = $("#{{adminform.form.sub_title_text.name}}").val()
+            var sub_title_color = $("#{{adminform.form.sub_title_text_color.name}}").val()
+            var message_text = $("#{{adminform.form.message_text.name}}").val()
+            var message_color = $("#{{adminform.form.message_text_color.name}}").val()
+
+            if(title_text != ''){
+                $('.infosecond-title').text(title_text);
+                $('.infosecond-title').css('color', title_color);
+            }
+            if(sub_title_text != ''){
+                $('.infosecond-sub-title2').text(sub_title_text);
+                $('.infosecond-sub-title2').css('color', sub_title_color);
+            }
+            if(message_text != ''){
+                $('.infosecond-sub-title').text(message_text);
+                $('.infosecond-sub-title').css('color', message_color);
+            }
+
+            // Button preview
+            var btn_text = $("#{{adminform.form.button_text.name}}").val();
+            if(btn_text != ''){
+                $('.infosecond-preview .infosecond-btn').text(btn_text)
+
+                var btn_border_color = $("#{{adminform.form.button_outline_color.name}}").val()
+                var btn_bg_color = $("#{{adminform.form.button_fill_color.name}}").val()
+                var btn_text_color = $("#{{adminform.form.button_font_color.name}}").val()
+
+                var btn_style = $("#{{adminform.form.button_style.name}}").val();
+                if(btn_style == 'fill'){
+                    $('.infosecond-preview .infosecond-btn').css({'color':btn_text_color,'border-color':btn_border_color,'background':btn_bg_color,});
+                }else{
+                    $('.infosecond-preview .infosecond-btn').css({'color':btn_text_color,'border-color':btn_border_color,'background':'#fff',});
+                }
+            }
+
+        }
+
+        $("#{{adminform.form.title_text.name}}, #{{adminform.form.sub_title_text.name}}, #{{adminform.form.message_text.name}}, #{{adminform.form.title_text_color.name}}, #{{adminform.form.sub_title_text_color.name}}, #{{adminform.form.message_text_color.name}}, #{{adminform.form.button_text.name}}").keyup(function(){
+            setInfoBlockSecondPreview()
+        });
+
+        // ========================= Buttons =======================================
+        var style1ButtonColors = {
+            "F1" : ["btn-color-1"],
+            "F2" : ["btn-color-2"],
+            "F3" : ["btn-color-3"],
+            "F4" : ["btn-color-4"],
+        }
+
+        var style2ButtonColors = {
+            "O1" : ["btn-style-2", "btn-color-1"],
+            "O2" : ["btn-style-2", "btn-color-2"],
+            "O3" : ["btn-style-2", "btn-color-3"],
+            "O4" : ["btn-style-2", "btn-color-4"],
+        }
+
+        // select the layout when click on layout image
+        function SelectInfoBlockFirstLayout(layoutId){
+            $("#"+layoutId).click()
+        }
+
+        function InitView(){
+            var primary_button_color_pattern = "{{global_theme_config.primary_button_color_pattern}}";
+            var secondary_button_color_pattern = "{{global_theme_config.secondary_button_color_pattern}}";
+
+            if(jQuery.inArray(primary_button_color_pattern, ['F1', 'F2', 'F3', 'F4']) > -1){
+                var arrayLength = style1ButtonColors[primary_button_color_pattern].length;
+                for (var i = 0; i < arrayLength; i++) {
+                    $("#first-btn-section .style-tab .btn-style-1").addClass(style1ButtonColors[primary_button_color_pattern][i]);
+                }
+            } else if (jQuery.inArray(primary_button_color_pattern, ['O1', 'O2', 'O3', 'O4']) > -1){
+                var arrayLength = style2ButtonColors[primary_button_color_pattern].length;
+                for (var i = 0; i < arrayLength; i++) {
+                    $("#first-btn-section .style-tab .btn-style-2").addClass(style2ButtonColors[primary_button_color_pattern][i]);
+                }
+            }
+
+            $("#first-btn-section button").addClass('{{global_theme_config.primary_button_shape}}');
+
+            var selectedLayout = '{{adminform.form.layout.value}}';
+            $("input[name='layout'][value='" + selectedLayout + "']").prop('checked', true);
+        }
+
+        InitView()
+        function onHandleButtonActionChange(event){
+            var element = document.getElementById("btnaction");
+            var elementPreview=document.getElementById("btnpreview");
+            if(event && event.target.value=="False"){
+                element.classList.remove('btnshow');
+                element.classList.add("btnhide");
+
+                elementPreview.classList.remove('btnshow');
+                elementPreview.classList.add("btnhide");
+            }else{
+                element.classList.remove('btnhide');
+                element.classList.add("btnshow");
+                
+                elementPreview.classList.remove('btnhide');
+                elementPreview.classList.add("btnshow");
+            }
+        };
+
+    </script>
+    {% endaddtoblock %}
+{% endblock content %}

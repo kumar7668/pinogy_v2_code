@@ -1,0 +1,689 @@
+{% comment %} #TODO: Create external css files for pet type pages {% endcomment %}
+{% load sekizai_tags utils_tags thumbnail %}
+{% addtoblock 'css' %}
+<style>
+   .pet-type-title{
+      font-style: normal;
+      font-weight: 700;
+      line-height: 110%;
+      text-transform: capitalize;
+      color: {{ instance.glossary.title_color }};
+   }
+
+   .pet-list-sub-title{
+      color: {{ instance.glossary.sub_title_color }};
+   }
+
+   .breed-img{
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+   }
+
+   h3.breed-list-name{
+      font-style: normal;
+      font-weight: 700;
+      font-size: 24px;
+      line-height: 115%;
+   }
+   
+   .clsSchedule{
+      font-family: 'Open Sans';
+      font-style: normal;
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 140%;
+      color: var(--global-secondary-color); 
+   }
+   .clsbirthdate{
+      font-style: normal;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 140%;
+      color: var(--global-primary-color); 
+      font-family: var(--general-font); 
+   }
+   .card-img-top{
+      object-fit: cover;
+   }
+   .btnmale{
+      background-color: #15a0cf !important;
+      border-color: #15a0cf !important;
+      color:#000
+   }
+   .btnfemale{
+      background: #FFC6FF;
+      color: #000;
+      border: 0px solid ;
+   }
+   .clsinfo.female{
+      color: #FF66FF;
+   }
+   .clsinfo.male{
+      color:#0099cc !important
+   }
+   .card{
+      font-size:18px !important;
+      cursor: pointer;
+      width:100% !important;
+   }
+   a{
+      text-decoration: none;
+   }
+   .pet-image-slider-item-text
+   {
+      padding: 4px 12px;
+      gap: 4px;
+      position: absolute;
+      right: 12px;
+      bottom: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(2px);
+      border-radius: var(--border-radius);
+      color: var(--global-primary-color); 
+      font-family: var(--general-font);
+      font-weight : 600;
+   }
+   .card{
+      width: fit-content;
+      position: relative;
+      height: 100%;
+   }
+
+   .pet-info-section{
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 12px;
+      justify-content: space-between;
+   }
+
+   .pet-info-top-section{
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+   }
+
+   .petinfo-name{
+      color: var(--global-primary-color); 
+      font-weight: 600;
+      font-size: 18px;
+      line-height: 140%;
+      font-family: var(--general-font); 
+   }
+   .pet-img{
+      aspect-ratio : 1;
+   }
+   .pet-list-badge-image{
+      height: 65px;
+      width: 65px;
+      padding: 0px;
+   }
+   .pet-list-card-btn{
+      padding: 8px;
+      font-size: 14px;
+   }
+
+   .pet-price{
+      padding: 4px 12px;
+      gap: 4px;
+      position: absolute;
+      right: 0px;
+      background: var(--global-secondary-color);
+      backdrop-filter: blur(2px);
+      color: white ;
+      font-family: var(--general-font); 
+      height : 44px;
+      border-radius : 0 calc(var(--border-radius) - 3px) 0 var(--border-radius);
+   }
+   .pet-list-discount{
+      display: block;
+      text-align: right;
+      font-family: var(--general-font); 
+      font-size: 15px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 120%;
+      height : 12px;
+   }
+   .pet-list-price{
+      display: block;
+      text-align: right;
+      font-family: var(--general-font);
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 120%;
+   }
+   .text-decoration-line-through{
+      font-size:10px;
+   }
+
+   @media screen 
+   and (min-device-width: 990px) 
+   and (max-device-width: 1200px)  { 
+      .col-set{
+         width:50%
+      }
+   }
+   .dropdown-menu.show {
+      border : 1px solid var(--global-primary-color);
+   }
+   .dropdown-menu.show ul li a > span{
+      color : var(--global-primary-color);
+      font-family : var(--general-font);
+   }
+   #filter_form .filter-option-inner-inner{
+      font-family : var(--general-font);
+   }
+   .pet-font-size{
+      font-size : 14px;
+   }
+   #moreInfo span{
+      font-size : 14px;
+   }
+
+   #askaboutme span{
+      font-size : 14px;
+   }
+
+   .row.pet-list-outer > div{
+      margin-bottom : 40px;
+   }
+   .grid-section.btnaction{
+      display : grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(133px, 1fr));
+   }
+   .grid-section.btnaction > *{
+      cursor: pointer;
+   }
+   .grid-section.btnaction > *:last-child:nth-child(odd){
+      grid-column: span 2;
+
+   }
+   .grid-section.btnaction div{
+      padding : 6px;
+   }
+   button.theme-btn-small{
+      padding-left : 0px;
+      padding-right : 0px;
+
+   }
+   .pet-status{
+      font-weight : 600;
+      border-radius: var(--border-radius);
+   }
+   @media (max-width : 375px){
+      height : 375px;
+   }
+   .custom-a-tag {
+      color: var(--global-primary-color);
+      text-decoration: none;
+   }
+   .pb-12 {
+      padding-bottom : 12px;
+   }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
+{% endaddtoblock %}
+
+<div class="container py-5 px-0">
+   {% comment %} Page Meta data {% endcomment %}
+   <div id="page_meta_data" data-page="{{page}}" data-next-page="{{next_page_available}}" class="d-none"></div>
+
+   {% comment %} Title Section {% endcomment %}
+   <div class="container px-0">
+      <div class="row m-auto">
+         <div class="col-12">
+            {% if instance.glossary.title %}
+               <h1 class="h1-theme-bold" style = "color : {{instance.glossary.title_color}}">{{ instance.glossary.title }}</h1>
+            {% elif selected_pet_type_slug %}
+               <h1 class="h1-theme-bold text-uppercase">Available {{ selected_pet_type_slug }} <span class="d-none"> {{selected_breed_data.slug}} </span></h1>
+            {% endif %}
+            {% if instance.glossary.sub_title %} 
+               <p class="semi-bold mb-0 pet-list-sub-title">{{ instance.glossary.sub_title | safe }}</p>
+            {% endif %}
+         </div>
+      </div>
+   </div>
+
+   
+   {% comment %} Pet Filter {% endcomment %}  
+   {% if pet_list and filters.filters %}
+   <div class="container accordion py-4 pb-md-0 px-md-0 filter-accodian" id="filter-accordian">
+      <div class="accordion-item filter-accodian-item">
+         <h3 class="accordion-header d-block d-md-none" id="filter-accordian-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#filter-accordian-body" aria-expanded="true" aria-controls="filter-accordian-body">
+               <i class="fa-solid fa-filter pe-2"></i> Filter
+            </button>
+         </h3>
+         <div id="filter-accordian-body" class="accordion-collapse collapse show" aria-label="filter-accordian-heading" data-bs-parent="#filter-accordian">
+            <div class="accordion-body px-0 pt-0">
+               <form id='filter_form'>
+                  <div class="row m-auto" id='inner_filters'>
+                     {% for filter in filters.filters %}
+                        {% if filter.param in  instance.glossary.pet_filter %}
+                        <div class="col-12 col-sm-6 col-md-3 p-2" id='{{filter.param}}_outer'>
+                           <select multiple data-width="100%" class="selectpicker filter-dropdown" name='{{filter.param}}' id='{{filter.param}}' title="Select {{filter.name}}">
+                              {% for filter_option in filters.filter_values|get_value_from_dict:filter.param %}
+                                 <option value='{{filter_option}}'>{{filter_option}}</option>
+                              {% endfor %}
+                           </select>
+                        </div>
+                        {% endif%}
+                     {% endfor %}
+                  </div>
+               </form>   
+            </div>
+         </div>
+      </div>
+   </div>
+   {% endif %}
+
+   <div class="text-center p-3 filter-loading" style="display: none;"><i class="fa fa-circle-o-notch fa-spin" style='font-size:60px;'></i></div>
+
+   {% if pet_list %}
+      <div class="container px-2 pet-list-container" id="pet-list-container">
+         <div class="row pet-list-outer">
+            {% for petsType in pet_list %}
+               <div class=" col-lg-4 col-md-12 col-sm-12 col-xs-6 col-set" style="">
+                  <div class="card card-shape">
+                     <div style="position: relative;">
+                        <a  href="{% url 'pinogy_pet:pet_detail' petsType.ptype_slug petsType.pbrd_slug petsType.pet_id %}" >
+                           <span class="pet-image-slider-item-text">{{petsType.loc_receipt_name}}</span>
+                           <span class="pet-status"> {{petsType.sub_pstatus_name}}</span>
+                           {% if pet_setting.sale_price_list or pet_setting.normal_price_list %}
+                           {% if petsType.actual_price%}   
+                              <span class="pet-price">
+                                 
+                                    <span class="pet-list-discount text-decoration-line-through">{% if petsType.disabled_price %}${{ petsType.disabled_price }}{% endif %}</span>
+                                 
+                                 <span class="pet-list-price">${{ petsType.actual_price }}</span>
+                              </span>
+                           {% endif %}
+                           {% endif %}
+                           {% if petsType.pet_images.placeholder %}
+                              <img src={{ petsType.pet_images.file_image.url}} class="card-img-top pet-img image-shape" loading="lazy"
+                                 alt={% if petsType.pet_images.file_image.instance.alt %}{{petsType.pet_images.file_image.instance.alt}}{% else %}"default-image-alt-text"{% endif %} />
+                           {% else %}
+                              {% thumbnail petsType.pet_images.file_image 400x400 as pet_picture %}
+                              <img src={{ pet_picture.url }} class="card-img-top pet-img image-shape" loading="lazy"
+                                 alt={% if petsType.pet_images.file_image.instance.alt %}{{petsType.pet_images.file_image.instance.alt}}{% else %}"default-image-alt-text"{% endif %} />
+                           {% endif %}
+                        </a>
+                     </div>
+                     <div class="card-body pet-info-section">
+                        <div class="pet-info-top-section">
+                           <div class="petinfo-name row">
+                              <div class="col-12 clsinfo theme-primary" style="text-align: center;">
+                                 {% if pet_setting.sex.visible %}
+                                 <span>
+                                    {% if petsType.is_male %}
+                                       <span class="pet-tbl-sex male">
+                                          <i class="fa fa-mars" aria-hidden="true" style="color:#5398D8"></i>
+                                       </span>
+                                    {% else %}
+                                       <span class="pet-tbl-sex female">
+                                          <i class="fa fa-venus" aria-hidden="true" style="color: #FF66FF;"></i>
+                                       </span>
+                                    {% endif %}
+                                 </span>
+                                 {% endif %}
+                                 <span> {% if pet_setting.petname.visible and petsType.pet_name %} • {{ petsType.pet_name}} {%endif%}</span>
+                                 <span>
+                                    {% if petsType.pbrd_display_name %} •  {% if pet_setting.petname.visible and petsType.pet_name  %} {%endif%} {{petsType.pbrd_display_name}} {%endif%}
+                                 </span>
+                              </div>
+                           </div>
+                           {% if pet_setting.petid.visible and petsType.pet_id  %}
+                              <div class = "clsbirthdate" style = "text-align:center;">
+                                 Pet ID: {{petsType.pet_id}}
+                              </div>
+                           {% endif %}
+                           {% if pet_setting.birthdate.visible %}
+                              <div class="row justify-content-center">
+                                 <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 clsbirthdate" style="text-align: center;">
+                                    <i class="fa fa-birthday-cake" aria-hidden="true"></i> 
+                                    {{ petsType.pet_age}}
+                                 </div>
+                                 {% comment %} <button type="button" class="btn btn-primary btn-yellow pet-card-play-date-schedule-button" data-bs-toggle="modal" data-bs-target="#schedule_a_play_date{{petsType.pet_id}}" data-target=".pet-card-play-date-popup_pet-{{ pet.pet_id }}" disabled>
+                                 Schedule a Play Date
+                                 </button> {% endcomment %}
+                              </div>
+                           {% endif %}
+
+                           {% if pet_setting.breedername.visible_verification or pet_setting.breedercitystate.visible_verification or pet_setting.usda.visible_verification %}
+                              <div class="row">
+                                 <div id='btndivvalidate' class="btnclsvalidate">
+                                    <div class="col-12">
+                                       <div class="btn-info btn-block d-block theme-secondary-btn supporting-validation"
+                                             data-bs-toggle="modal" data-bs-target="#fieldvalidate{{ petsType.pet_id }}"
+                                             data-target=".fieldvalidate-{{ pet.pet_id }}" data-bs-whatever="@mdo"
+                                             style="cursor:pointer;">
+                                             <label style="font-size:16px;cursor: pointer;">Click to see Breeder Name, USDA #, City, & State</label>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           {% endif %}
+
+                           <div id='divvalidate' class="clsvalidate {% if pet_setting.breedername.visible_verification or pet_setting.breedercitystate.visible_verification or pet_setting.usda.visible_verification %}d-none{% endif %}">
+                              <div class="row">
+                                 {% if pet_setting.usda.visible or pet_setting.usda.visible_verification %}
+                                   {% if petsType.pbreeder_usda_num %}
+                                       <div class = "clsbirthdate pb-12" style = "text-align:center;">
+                                          USDA: <a href="https://aphis.my.site.com/PublicSearchTool/s/inspection-reports" class="custom-a-tag" target="_blank">{{ petsType.pbreeder_usda_num }}</a>
+                                       </div>
+                                    {% endif %}
+                                 {% endif %}
+
+                                 {% if petsType.pbreeder_name %}
+                                    {% if pet_setting.breedername.visible or pet_setting.breedername.visible_verification %}
+                                       <div class="clsbirthdate pb-12" style = "text-align:center;">
+                                          <span class=""> Breeder: {{petsType.pbreeder_name}} </span>
+                                       </div>
+                                    {% endif %}
+                                 {%endif%}
+
+                                 {% if petsType.pbreeder_ent_addr_city %}
+                                    {% if pet_setting.breedercitystate.visible or pet_setting.breedercitystate.visible_verification %}
+                                       <div class="clsbirthdate" style = "text-align:center;">
+                                          <span class=""> Breeder City, State: {{petsType.pbreeder_ent_addr_city}}, {{petsType.pbreeder_ent_addr_iso_code}}</span>
+                                       </div>
+                                    {% endif %}
+                                 {%endif%}
+                              </div>
+                           </div>
+                        </div>
+                        {%if petsType.pet_badges_data %}
+                        <div class="row justify-content-evenly">
+                           {% for badge in petsType.pet_badges_data%}
+                           <img src={{ badge.image_url }}
+                              class="pet-list-badge-image" alt="{{ badge.alt }}">
+                           {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class = "grid-section btnaction">
+                           {% for index, value in instance.button_data.items %}
+      
+                              {% if value.button_selector == 'ask_about_me' %}
+                                    <a type="button" id = "askaboutme" 
+                                       role = "button"
+                                       onclick="askAboutMe({
+                                       pet_id: {{ petsType.pet_id }},
+                                       pet_gender: '{{ petsType.pet_gender }}',
+                                       location_id: {{ petsType.pet_loc_entity_id }},
+                                       location_name: '{{ petsType.loc_receipt_name }}',
+                                       breed: '{{ petsType.pbrd_display_name }}',
+                                       breed_slug: '{{ petsType.pbrd_slug }}',
+                                       pet_type_slug: '{{ petsType.ptype_slug }}',
+                                       pet_image_link: '{% if petsType.pet_images.placeholder %}{{ petsType.pet_images.file_image.url }}{% else %}{{ pet_picture.url }}{% endif %}',
+                                       phone_number: '{{ petsType.phone_number }}'
+                                    })"
+                                    class="w-100 {% if value.button_style == 'outline' %} theme-secondary-btn {% else %} theme-primary-btn {% endif %} theme-btn-small">
+                                    
+                                    <span>{{value.button_text}}</span>
+                                 </a>
+                              {% elif value.button_selector == 'more_info' %}
+                                    <a id="moreInfo"
+                                       href="{% url 'pinogy_pet:pet_detail' petsType.ptype_slug petsType.pbrd_slug petsType.pet_id %}" 
+                                       class="d-block action-button {% if value.button_style == 'outline' %} theme-secondary-btn {% else %} theme-primary-btn {% endif %} theme-btn-small">
+                                          <span>{{value.button_text}}</span>
+                                    </a>
+                              {% elif value.button_selector == 'call_now' and pet_setting.storephone.visible and petsType.phone_number%}
+                                    <a id="phonecallclick" href="tel:{{ petsType.phone_number }}" class="d-block action-button {% if value.button_style == 'outline' %} theme-secondary-btn {% else %} theme-primary-btn {% endif %} theme-btn-small">
+                                       {% if pet_setting.storephone.visible and petsType.phone_number and value.call_text_type == 'call_phone_no' %}<span>{{ petsType.phone_number }}</span> {% else %}<span>{{value.button_text}}</span>{% endif %}
+                                    </a>
+                              {% elif value.button_selector == 'schedule_a_playdate' and petsType.show_play_date %}
+                                    <button type="button" 
+                                          id="scheduleplaydate"
+                                          class="w-100 {% if value.button_style == 'outline' %} theme-secondary-btn {% else %} theme-primary-btn {% endif %} theme-btn-small" 
+                                          data-bs-toggle="modal" data-bs-target="#schedule_a_play_date{{petsType.pet_id}}" data-target=".pet-card-play-date-popup_pet-{{ pet.pet_id }}"
+                                          data-bs-whatever="@mdo">
+                                          {{value.button_text}}</button>
+                              {% elif value.button_selector == 'link' %}
+                                    <a  href="{{ value.link_url }}" class="d-block action-button {% if value.button_style == 'outline' %} theme-secondary-btn {% else %} theme-primary-btn {% endif %} theme-btn-small">
+                                       <span>{{ value.button_text }}</span> 
+                                    </a>
+                              {% endif %}
+                           {% endfor %}
+                        </div>
+
+                     </div>
+                  </div>
+                  <div class="modal fade" id="schedule_a_play_date{{petsType.pet_id}}" tabindex="1" aria-label="schedule_a_play_date{{petsType.pet_id}}" aria-hidden="true">
+                     <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                           <div class="modal-body">
+                              {% include 'plugins/includes/schedule_a_Playdate.html' with form=schedulePlaydate_form form_type='ask_me_about' pet=petsType  current_pet_box_visits_schedule=petsType.current_pet_box_visits_schedule shopwindow_enable=petsType.shopwindow_enable %}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+               {% comment %} AdCard Section {% endcomment %}
+               {% if petsType.ad_card and petsType.is_video %}
+                  <div class="col-lg-4 col-md-12 col-sm-12 col-xs-6 col-set pet-list-pet-card" style="">
+                     <div class="card card-shape" style = "height: 100%;">
+                        <iframe src="{{petsType.ad_card_img}}" frameborder="0" style = "height : 100%;"></iframe>
+                     </div>
+                  </div>
+               {% elif petsType.ad_card %}
+                  <div class="col-lg-4 col-md-12 col-sm-12 col-xs-6 col-set pet-list-pet-card" style="">
+                     <div class="card card-shape" style = "height: 100%; justify-content : center;">
+                        {% if petsType.ad_card_link %} 
+                           <a href='{{petsType.ad_card_link}}' target="_blank">
+                              <img src={{ petsType.ad_card_img }} class="img-fluid image-shape" loading="lazy" style = "">
+                           </a>
+                        {% else %}
+                           <img src={{ petsType.ad_card_img }} class="image-shape" loading="lazy" style = "">  
+                        {% endif %}
+                     </div>
+                  </div>
+               {% endif %}
+
+               {% comment %} Including ask_about_me form {% endcomment %}
+               {% include 'pinogy_pets/forms/ask_about_me.html' with form=pet_collection_form form_type='pet' pet=petsType shopwindow_enable=petsType.shopwindow_enable %}
+
+               <!-- Modal for Field Validation -->
+               <div class="modal fade" id="fieldvalidate{{ petsType.pet_id }}" tabindex="-1" aria-label="fieldvalidateModel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg">
+                     <div class="modal-content">
+                        <div class="modal-body">
+                              {% include 'plugins/includes/supporting_validation.html' with unique_id=petsType.pet_id form=CustomerVerificationForm formotp=CustomerOTPVerificationForm form_type='consumeValidation' location_id=petsType.pet_loc_entity_id location_name=petsType.loc_receipt_name pet_id=petsType.pet_id pet_gender=petsType.pet_gender breed_name=petsType.pbrd_display_name breed_slug=petsType.pbrd_slug %}
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+               <!-- Modal for OTP Validation -->
+               <div class="modal fade" id="optvalidation" tabindex="-1" aria-label="otpvalidationModel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg">
+                     <div class="modal-content">
+                        <div class="modal-body">
+                              <div class="consumer_validation_form">
+                                 {% include 'plugins/includes/otp_verification.html' with unique_id=petsType.pet_id form=CustomerVerificationForm formotp=CustomerOTPVerificationForm form_type='consumeValidation' location_id=petsType.pet_loc_entity_id location_name=petsType.loc_receipt_name pet_id=petsType.pet_id pet_gender=petsType.pet_gender breed_name=petsType.pbrd_display_name breed_slug=petsType.pbrd_slug %}
+                              </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            {% endfor %}
+         </div>
+      </div>
+   {% else %}
+      <div class="container pet-list-container">
+         <h3 class="pet-type-list-name pt-3">View other <a href="{% url 'pinogy_pet:pet_type_home' %}">pets</a> or let us know which {{selected_breed_data.display_name}} {{ selected_pet_type_slug }} you are looking for and we will be in touch as soon as we have your match.</h3>
+         <div class="row">
+            <div class="col-12 col-lg-6">
+               {% include 'plugins/includes/general_collection_form.html' with unique_id="pet_list_collection_form" form=collection_form form_type='pet_list_collection_form' location_id=store_id pet_type_slug=selected_pet_type_slug shopwindow_enable=is_enable %}
+            </div>
+         </div>
+      </div>
+   {% endif %}
+   <div class="text-center p-3 pt-5 pet-loading" style="display: none;"><i class="fa fa-circle-o-notch fa-spin" style='font-size:60px;'></i></div>
+
+</div>
+
+
+{% addtoblock 'js' %}
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
+   {% comment %} TODO: Move to seprate file to use for another template in future {% endcomment %}
+   <script>
+
+      $('.selectpicker').selectpicker();
+
+      function getFilterFormData() {
+
+         let data = {};
+         const form = document.getElementById("filter_form")
+
+         if (!form){
+            return data
+         }
+
+         const myFormData = new FormData(form);
+         myFormData.forEach((value, key) => {
+            if (key in data){
+               data[key].push(value)
+            }else{
+               data[key] = [value]
+            }
+         });
+
+         return data;
+
+      }
+
+      // wait for given time before running function
+      const debounce = (func, wait) => {
+         let timeout;
+       
+         return function executedFunction(...args) {
+           const later = () => {
+             clearTimeout(timeout);
+             func(...args);
+           };
+       
+           clearTimeout(timeout);
+           timeout = setTimeout(later, wait);
+         };
+      };
+
+      // Submit form when filter values changed
+      $("#filter_form").change(debounce(function(event) {
+         $("#filter_form").submit()
+      }, 1500))
+
+      // Submit filter form
+      $("#filter_form").submit(event => {
+         event.preventDefault();
+
+         var data = getFilterFormData();
+
+         $.ajax({
+            type: "POST",
+            url: '/admin/cms/page/plugin/pet_list_plugin/filters/{{instance.id}}/?pet_type_slug={{selected_pet_type_slug}}&breed_slug={{selected_breed_data.slug}}&location_id={{selected_location_data.id}}',
+            data: JSON.stringify(data),
+            success: function (response) {
+               $('.pet-list-container').replaceWith($(response).find('.pet-list-container'));
+               $('#page_meta_data').replaceWith($(response).find('#page_meta_data'));
+               isLoading = false;
+            },
+            error: function(xhr,errorMsg,err){
+               $('.pet-list-container').replaceWith(
+                  '<div class="container pet-list-container text-danger">' +
+                  'Oops. The server encountered an error. Please try again</div>'
+               );
+               $('.filter-loading').hide();
+            },
+            beforeSend: function () {
+               $('.filter-loading').show();
+            },
+            complete: function () {
+               $('.filter-loading').hide();
+            }
+         });
+         
+         return false
+      });
+   </script>
+
+   {% comment %} Render other pets {% endcomment %}
+   <script type="text/javascript">
+
+      var isLoading = false;
+
+      function isNextPage(){
+         return $('#page_meta_data').data('next-page') === "True" ? true : false
+      }
+
+      function getPetByPage(){
+         var page = $('#page_meta_data').data('page');
+         var data = getFilterFormData();
+
+         $.ajax({
+            type: "POST",
+            url: `/admin/cms/page/plugin/pet_list_plugin/ajax/page/{{instance.id}}/?page=${page}&pet_type_slug={{selected_pet_type_slug}}&breed_slug={{selected_breed_data.slug}}&location_id={{selected_location_data.id}}`,
+            data: JSON.stringify(data),
+            success: function (response) {
+               $('.pet-list-outer').append($(response).find('.pet-list-outer').children());
+               $('#page_meta_data').replaceWith($(response).find('#page_meta_data'));
+               isLoading = false;
+            },
+            error: function(xhr,errorMsg,err){
+               $('.pet-list-container').append(
+                  '<div class="container pet-list-container text-danger">' +
+                  'Oops. The server encountered an error. Please try again</div>'
+               );
+               $('.pet-loading').hide();
+            },
+            beforeSend: function () {
+               $('.pet-loading').show();
+            },
+            complete: function () {
+               $('.pet-loading').hide();//test
+            }
+         });
+      }
+
+      $( document ).ready(function() {
+
+         $(window).on('scroll', function() {
+            var windowHeight = $(window).height();
+            var documentHeight = $(document).height();
+            var scrollPosition = $(window).scrollTop();
+        
+            // Load more pets when the user has scrolled past half of the page
+            if (scrollPosition > (documentHeight - windowHeight) / 2 && isNextPage() && !isLoading) {
+              isLoading = true;
+
+              // Fetch pets using ajax
+              getPetByPage();
+            }
+         });
+
+      });
+
+   </script>
+
+   {% comment %} Other JS {% endcomment %}
+   <script type="text/javascript">
+
+      $(window).on('resize', function() {
+         if ($(window).width() > 767 ) {
+            $('#filter-accordian-header button').removeClass('collapsed');
+            $('#filter-accordian-header button').attr('aria-expanded', "true");
+            $('#filter-accordian-body').addClass('show');
+         }else{
+            $('#filter-accordian-header button').addClass('collapsed');
+            $('#filter-accordian-header button').attr('aria-expanded', "false");
+            $('#filter-accordian-body').removeClass('show');
+         }
+      });
+
+   </script>
+
+{% endaddtoblock %}

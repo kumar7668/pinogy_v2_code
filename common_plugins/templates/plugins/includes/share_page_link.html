@@ -1,0 +1,43 @@
+{% load sekizai_tags %}
+
+{% addtoblock 'css' %}
+<style>
+    .ml-56{
+        margin-left: 58px !important;
+    }
+</style>    
+{% endaddtoblock %}
+
+<div class="dropdown share-icon-section">
+    {% comment %} <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+    </button> {% endcomment %}
+    <button class = "theme-secondary-btn share-title dropdown-toggle mb-0 d-flex" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+        Share <svg class="align-self-center" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 1024 1024"><path fill="currentColor" d="M752 664c-28.5 0-54.8 10-75.4 26.7L469.4 540.8a160.68 160.68 0 0 0 0-57.6l207.2-149.9C697.2 350 723.5 360 752 360c66.2 0 120-53.8 120-120s-53.8-120-120-120s-120 53.8-120 120c0 11.6 1.6 22.7 4.7 33.3L439.9 415.8C410.7 377.1 364.3 352 312 352c-88.4 0-160 71.6-160 160s71.6 160 160 160c52.3 0 98.7-25.1 127.9-63.8l196.8 142.5c-3.1 10.6-4.7 21.8-4.7 33.3c0 66.2 53.8 120 120 120s120-53.8 120-120s-53.8-120-120-120zm0-476c28.7 0 52 23.3 52 52s-23.3 52-52 52s-52-23.3-52-52s23.3-52 52-52zM312 600c-48.5 0-88-39.5-88-88s39.5-88 88-88s88 39.5 88 88s-39.5 88-88 88zm440 236c-28.7 0-52-23.3-52-52s23.3-52 52-52s52 23.3 52 52s-23.3 52-52 52z"/></svg>
+    </button>
+    <ul class="dropdown-menu share-icon-btn-outers ml-56" aria-label="dropdownMenuButton1">
+      <li><a class="dropdown-item" role="button" aria-label="Facebook icon" href="javascript:;" onclick='shareOnFb()' area-label = "share on facebook"><i class="fa-brands fa-facebook"></i></a></li>
+      <li><a class="dropdown-item" role="button" aria-label="Twitter icon" href="javascript:;" onclick='shareOnTwitter()' area-label = "share on twitter"><i class="fa-brands fa-twitter"></i></a></li>
+    </ul>
+</div>
+
+{% addtoblock 'js' %}
+<script type="text/javascript">
+    function randomFixedInteger(length) {
+        return Math.floor(Math.pow(10, length-1) + Math.random() * (Math.pow(10, length) - Math.pow(10, length-1) - 1));
+    }
+
+    function shareOnFb(){
+        page_url = window.location.href + `?id=${randomFixedInteger(10)}`
+        var url = 'https://facebook.com/sharer.php?display=popup&u=' + `${page_url}`;
+        options = 'toolbar=0,status=0,resizable=1,width=626,height=436';
+        window.open(url,'sharer',options);
+    }
+    
+    function shareOnTwitter(){
+        page_url = window.location.href + `?id=${randomFixedInteger(10)}`
+        var url = 'https://twitter.com/intent/tweet?url=' + `${page_url}`;
+        options = 'toolbar=0,status=0,resizable=1,width=626,height=436';
+        window.open(url,'sharer',options);
+    }
+</script>
+{% endaddtoblock %}

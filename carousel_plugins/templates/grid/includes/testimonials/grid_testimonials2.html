@@ -1,0 +1,93 @@
+
+
+{% load sekizai_tags static %}  <!-- Load Sekizai tags -->
+
+<!-- Add custom CSS to the "css" block -->
+{% addtoblock "css" %}
+<style>
+    
+    .grid-item-{{instance.id}}  {
+        position : relative;
+        text-align: center;
+        display :none;
+      }
+
+    .grid-item-{{instance.id}} .card_tc_vertical_img {
+        width: 280px !important;
+        object-fit: cover !important;
+        border: 10px solid #FFFFFF !important;
+        box-shadow: 1px 2px 18px 0px #505E9459;
+        height: 220px;
+        aspect-ratio : 1;
+    }
+    .carousel-item-box-{{instance.id}}{
+        display: flex;
+        gap: 15px;
+        flex-flow: column; 
+        align-items: center;
+    }
+
+    .carousel-item-box-{{instance.id}} .carousel-item-box-desc-title{
+        color: var(--global-primary-color);
+        font-weight: 700;
+        font-size: 24px;
+        line-height: 115%;
+        font-family: var(--general-font);
+        border-radius: 0px 12px 12px 0px;
+    }
+    .carousel-item-box-{{instance.id}} .carousel-item-box-desc-desc{
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 140%;
+        color: var(--global-primary-color);
+        opacity: 0.9;
+        margin: 10px 0;
+        font-family: var(--general-font);
+    }
+    .carousel-item-box-{{instance.id}} .carousel-item-box-desc-auth{
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 140%;
+        color: var(--global-primary-color);
+        opacity: 0.9;
+        font-family: var(--general-font);
+    }
+    @media (max-width : 993px){
+        .carousel-item-box-{{instance.id}}{
+            flex-flow : column;
+        }
+    }
+    @media (max-width : 1200px){
+        .grid-container {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+        }
+    }
+</style>
+{% endaddtoblock %}
+
+
+{% for item in testimonial_data %}
+        <div class = "grid-item-{{instance.id}}">
+            <div class="carousel-item-box-{{instance.id}} carousel-item-box-style-6">
+                {% if item.photo %}
+                    <div class="carousel-item-box-img d-flex justify-content-center">
+                        <img src="{{ item.photo.url }}" class="card_tc_vertical_img" alt="car_main_img" loading="lazy">
+                    </div>
+                {% endif %}
+                <div class="carousel-item-box-desc mx-4">
+                    <div class="carousel-item-box-desc-title">
+                        {% if 'TITLE' in instance.glossary.testimonial_info_display %}{{item.subject}}{% endif %}
+                    </div>
+                    <div class="carousel-item-box-desc-desc">
+                        {% if 'MESSAGE' in instance.glossary.testimonial_info_display %}
+                            {{item.body|truncatechars:100}}
+                            <a href="#" class="more_view" data-text="{{item.body}}">more</a>
+                        {% endif %}
+                    </div>
+                    <div class="carousel-item-box-desc-auth">
+                        {% if 'AUTHOR' in instance.glossary.testimonial_info_display %}- {{item.display_name}}{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}

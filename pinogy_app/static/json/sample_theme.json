@@ -1,0 +1,13 @@
+{
+    "primary_color": "#04f700ff",
+    "secondary_color": "#1a279cff",
+    "heading_font":"'Poppins', sans-serif",
+    "heading_font_color": "#04f700ff",
+    "general_font":"'Poppins', sans-serif",
+    "general_font_color": "#1a279cff",
+    "primary_button_shape":"rounded",
+    "primary_button_style":"fill",
+    "primary_button_color_pattern":"F1",
+    "secondary_button_style":"outline",
+    "secondary_button_color_pattern":"O1"
+}

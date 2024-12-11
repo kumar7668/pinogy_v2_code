@@ -1,0 +1,50 @@
+{% extends CMS_TEMPLATE %}
+{% load cms_tags menu_tags i18n sekizai_tags %}
+{% block title %}{{ selected_pet_data.pbrd_display_name }} For Sale | {{ selected_pet_data.loc_receipt_name }} {% endblock title %}
+{% block breadcrumb %}
+{% addtoblock 'css' %}
+ <style>
+    .custom-anchor-tag:hover,
+    .custom-anchor-tag:focus,
+    .custom-anchor-tag:active {
+        background-color: var(--global-secondary-color) !important;
+        color: white !important;
+    }
+
+    .underline-none {
+        text-decoration: none !important;
+    }
+ </style>
+{% endaddtoblock %}
+    <div class="container pt-5">
+        <div class="row avail-wrap">
+            <div class="col-12 col-md-8 d-none d-md-block">
+                {% show_breadcrumb 0 "pinogy_app/includes/breadcrumb.html" 0 %}
+            </div>
+            <div class="dropdown col-12 col-sm-12 col-md-4 d-flex justify-content-between justify-content-md-end" style = "position: relative;">
+                <a href="{% url 'pinogy_pet:pet_type' selected_pet_type_slug %}" class="underline-none">
+                    <button class="theme-primary-btn me-3 share-title">
+                        All {{ selected_pet_data.selected_plural_pet_type }}
+                    </button>
+                </a>
+
+                {% include 'plugins/includes/share_page_link.html' %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block meta %}
+    <meta property="url" content="{{ request.scheme }}://{{ request.get_host }}{{  request.path }}" />
+    <meta property="location" content="{{ selected_pet_data.loc_receipt_name }}" />
+    <meta property="type" content="article"/>
+    <meta name="description" content="{{ selected_pet_data.pbrd_display_name }} For Sale in {{ selected_pet_data.loc_receipt_name }} | Gender : {{ selected_pet_data.pet_gender }} | Age : {{ selected_pet_data.pet_age }} "/>
+    <meta name="keywords" content="{{ selected_pet_data.pbrd_display_name }},{{ selected_pet_data.loc_receipt_name }},{{ selected_pet_data.pet_gender }},{{ selected_pet_data.pet_age }}">
+{% endblock %}
+{% block canon %}
+    <link rel="canonical" href="{{ canonical_url }}">
+{% endblock %}
+{% block main %}
+    {% static_placeholder 'pet_header' %}
+    {% static_placeholder 'pet_body' %}
+    {% static_placeholder 'pet_footer' %}
+{% endblock %}

@@ -1,0 +1,1191 @@
+{% load cms_tags sekizai_tags %}
+{% load static %}
+<style>
+   .pet-card-section {
+      border: 1px solid rgba(255, 255, 255, 0.5);
+   }
+
+   .pet-name-titlee {
+      font-style: normal;
+      font-weight: 700;
+      line-height: 110%;
+      text-transform: capitalize;
+      text-decoration: none;
+   }
+
+   .pet-name-titlee:hover {
+      text-decoration: underline;
+   }
+
+   span.pet-collection-form-title {
+      font-family: var(--general-font);
+      font-weight: 400;
+      font-size: 18px;
+      line-height: 115%;
+      color: var(--global-primary-color);
+   }
+
+   .pet-collection-form-title {
+      font-family: var(--general-font);
+      font-style: normal;
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 115%;
+      color: var(--White, #FFF);
+   }
+
+   .breed-img {
+      height: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+   }
+
+   .badge-img {
+      width: 75px;
+      height: 75px;
+   }
+
+   .nav-pills .nav-link,
+   .nav-pills .show>.nav-link {
+      color: var(--global-primary-color);
+      background-color: #fff !important;
+   }
+
+   .nav-link.active {
+      color: #0d6efd !important;
+      background-color: #fff !important;
+      border-bottom: 3px solid var(--global-primary-color);
+      border-radius: 0px;
+   }
+
+   @media only screen and (max-width: 991px) {
+      .breed-avail-btn-fixed {
+         position: fixed;
+         bottom: 0;
+         left: 0;
+         width: 100%;
+         z-index: 1;
+      }
+   }
+
+   .spn_title {
+      font-style: normal;
+      font-weight: 400;
+      font-size: 20px;
+      line-height: 140%;
+      color: var(--global-primary-color);
+      font-family: var(--general-font);
+   }
+
+   .spn_value {
+      font-weight: 600;
+      font-size: 20px;
+      line-height: 160%;
+      color: var(--global-primary-color);
+      font-family: var(--general-font);
+   }
+
+   .tabcaption {
+      font-family: var(--general-font);
+      font-style: normal;
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 115%;
+      display: flex;
+      align-items: center;
+      text-align: center color:var(--global-primary-color)
+   }
+
+   .petcls {
+      font-style: normal;
+      font-weight: 800;
+      font-size: 30px;
+      line-height: 110%;
+      text-transform: uppercase;
+      color: var(--global-primary-color);
+   }
+
+   .discount {
+      text-decoration: line-through;
+      color: var(--global-primary-color);
+      text-align: right;
+      /* Primary3-SemiBold */
+      font-family: var(--general-font);
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: 140%;
+      /* 22.4px */
+      opacity: 0.6;
+   }
+
+   .price {
+      text-align: right;
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 125%;
+      color: var(--global-primary-color) !important;
+      font-family: var(--general-font);
+   }
+
+   #petDetail-PRseparater .container.cms-plugin,
+   #petDetail-PRseparater .container.cms-plugin #open-popup {
+      padding: 0;
+   }
+
+   .btn-info {
+      background: var(--global-primary-color) border:1px solid var(--global-primary-color)
+   }
+
+   .pet-traits-bar .progress-bar {
+      background-color: var(--global-secondary-color);
+   }
+
+   .pet-traits-bar .progress {
+      border-radius: 0;
+      margin-bottom: 5px;
+   }
+
+   .nav-link.tabcaption {
+      opacity: 0.6;
+   }
+
+   .tabcaption.active {
+      color: var(--global-primary-color) !important;
+      opacity: 1;
+   }
+
+   @media (min-width: 767px) {
+      .hidden-mobile {
+         display: none;
+      }
+   }
+
+   ul {
+      padding-left: 1rem;
+      padding-top: 1rem;
+   }
+
+   .clslist {
+      border: 1px solid #d5d5d5;
+      border-radius: 8px;
+   }
+
+   #carousel-thumbs {
+      padding: 0px !important;
+      height: 162px !important;
+   }
+
+   .nav-item :has(.active) {
+      border-bottom: 3px solid var(--global-primary-color)
+   }
+
+   .carousel-inner {
+      overflow: visible;
+      height: 100%;
+   }
+
+   .ml-1 {
+      margin-left: 1px;
+   }
+
+   .pet-main-slider .carousel-item {
+      width: 100% !important;
+      left: 0px !important;
+   }
+
+   .carousel-item {
+      height: 100% !important;
+   }
+
+   .pet-main-slider .slick-track {
+      width: 100% !important;
+   }
+
+   .poptitle {
+      color: var(--global-primary-color);
+      text-align: center;
+      font-size: 18px;
+      padding: 5px 0px 5px 0px;
+   }
+
+   .clsbreeder {
+      font-style: normal;
+      font-weight: 600;
+      font-size: 20px;
+      line-height: 115%;
+      display: flex;
+      align-items: center;
+      text-align: center color:var(--global-primary-color);
+      padding: 10px 5px 0px 10px;
+      opacity: .8;
+   }
+
+   .custom-a-tag {
+      color: var(--global-primary-color);
+      text-decoration: none;
+   }
+
+   .custom-a-tag:hover,
+   .custom-a-tag:focus,
+   .custom-a-tag:active {
+      color: var(--global-primary-color);
+      /* Change this to your desired hover/focus/active color */
+   }
+
+   .pet-nav-slider,
+   .pet-nav-slider .slick-list,
+   .pet-nav-slider .slick-track,
+   .image-shape {
+      height: 100% !important;
+   }
+
+   .notes {
+      color: var(--global-primary-color);
+      font-family: var(--general-font);
+   }
+
+   .image-ratio {
+      aspect-ratio: 1 !important;
+   }
+
+   .slick-prev:before,
+   .slick-next:before {
+      color: var(--global-primary-color);
+      font-size: 2rem !important;
+      font-family: 'FontAwesome';
+      opacity: 1 !important;
+   }
+
+   .slick-next:before {
+      content: '›' !important;
+   }
+
+   .slick-prev::before {
+      content: '‹' !important;
+   }
+
+   .pet-nav-slider .slick-slide{
+      display: flex !important;
+      justify-content: center;
+      opacity: 0.7;
+      padding: 5px;
+   }
+
+   .pet-nav-slider .slick-slide.slick-current{
+      opacity: 1;
+   }
+
+   .custom-general-font {
+      font-family: var(--general-font) !important;
+      font-size: 20px !important;
+   }
+
+   .video-container {
+      position: relative;
+      width: 100%;
+      max-height: 500px;
+      overflow: hidden;
+      aspect-ratio: 1;
+   }
+
+   .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+   }
+
+   .pet-status {
+      font-size: 18px;
+      font-weight: 600;
+      border-radius: var(--border-radius);
+   }
+
+   .promo-banner-image-container {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      height: 250px;
+   }
+
+   .promo-banner-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+   }
+
+   .pet-detail-sg {
+      display: flex;
+      align-items: flex-start;
+   }
+
+   .status-dender {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+   }
+
+   .sg-heading {
+      align-self: stretch;
+      color: var(--global-primary-color);
+      /* Primary1-Regular */
+      font-family: "Open Sans";
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 140%;
+      /* 28px */
+      opacity: 0.6;
+   }
+
+   .sg-text {
+      align-self: stretch;
+      color: var(--global-primary-color);
+      /* Primary1-Bold */
+      font-family: "Open Sans";
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 140%;
+      /* 28px */
+   }
+
+   .pet-form-div {
+      display: flex;
+      padding: 12px 20px;
+      align-items: center;
+      justify-content: space-between;
+      align-self: stretch;
+      background: var(--global-primary-color);
+   }
+
+   .pet-form-icon img{
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+   }
+
+   .fixed-bottom {
+      display: none;
+      /* Initially hide the fixed bottom div */
+      padding: 10px 16px;
+      justify-content: space-between;
+      align-items: center;
+      gap: 250px;
+      background:  var(--global-secondary-color);
+      backdrop-filter: blur(2px);
+      position: fixed;
+      bottom: -3px;
+      left: 0;
+      width: 100%;
+      opacity: 0.9;
+   }
+
+   .fixed-bottom-icon {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+   }
+
+   /* Media query for small screen mobile devices */
+   @media (max-width: 768px) {
+      .fixed-bottom {
+         display: flex;
+         opacity: 0.9;
+         /* Show the fixed bottom div on small screens */
+      }
+   }
+
+   .pet-detail-badges {
+      justify-content: space-between;
+   }
+
+   .breed-paw-icon {
+      display: flex !important;
+      gap: 15px;
+   }
+
+   .breed-form-icon img {
+      width: 32px;
+      height: 32px;
+   }
+
+   .pet-collection-form-outer {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 4px 4px 37px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(3px);
+      padding: 0px 15px 15px 15px;
+   }
+</style>
+
+{% if pet_data %}
+<div class="container pb-2 pt-4">
+   <div class="avail-wrap ">
+      <div class="row ">
+         <div class="col-12">
+            <a href="{% url 'pinogy_pet:breeds_pet_type' pet_data.ptype_slug pet_data.pbrd_slug %}"
+               class="pet-name-titlee">
+               <h1 class="pet-name-titlee">
+                  <strong>{{ pet_data.pbrd_display_name }}</strong>
+                  {% if pet_setting.storecitystate %}
+                  <strong>For Sale in {{ pet_data.loc_addr_city }}, {{ pet_data.loc_addr_region_full_name }}</strong>
+                  {% endif %}
+                  <span class="d-none"> {{ pet_data.pet_id }}</span>
+               </h1>
+            </a>
+         </div>
+      </div>
+      <div class="row pt-4">
+         <div class="col-12 col-lg-6 mb-4 custom-padding-lr">
+            <div class="container">
+               <div class="carousel-container position-relative row">
+                  <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                     <div class="carousel-inner pet-main-slider">
+                        {% for item in pet_data.pet_images %}
+                           <div class="carousel-item{% if forloop.first %} active{% endif %}"
+                              data-slide-number="{{item.order}}">
+                              <img src="{{item.image_url}}" class="d-block w-100 slide-img image-shape image-border"
+                                 alt="{{item.alt}}" data-type="image" data-toggle="lightbox"
+                                 data-gallery="example-gallery">
+                                 <div class="pet-status">{{pet_data.sub_pstatus_name}}</div>
+                           </div>
+                        {% endfor %}
+                        {% for item in pet_data.pet_videos %}
+                        <div class="carousel-item{% if forloop.first %} active{% endif %}"
+                           data-slide-number="{{item.order}}">
+                           <div class="video-container">
+                              {{ item | safe }}
+                           </div>
+                        </div>
+                        {% endfor %}
+                     </div>
+                  </div>
+                  <!-- Carousel Navigation -->
+                  <div id="carousel-thumbs" class="carousel slide" data-ride="carousel">
+                     <div class="carousel-inner">
+                        <div class="carousel-item active">
+                           <div class="pet-nav-slider row mx-0 mt-2">
+                              {% for item in pet_data.pet_images  %}
+                                 <div id="carousel-selector-{{item.order}}"
+                                    class="nav-slide"
+                                    data-slide-to="{{item.order}}">
+                                    <img src="{{item.image_url}}" class="image-ratio img-fluid image-shape image-border" alt="...">
+                                 </div>
+                              {% endfor %}
+                              {% for item in pet_data.pet_videos_thumbnail %}
+                                 <div id="carousel-selector-{{item.order}}"
+                                    class="nav-slide"
+                                    data-slide-to="{{item.order}}">
+                                    <img src="{{ item }}" class="image-ratio img-fluid image-shape image-border" alt="...">
+                                 </div>
+                              {% endfor %}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="col-12 col-lg-6 mb-4">
+            <!-- Top Button-->
+            {% if top_btn_data %}
+
+               {% if top_btn_data.button_selector == 'schedule_a_playdate' %}
+                  <!-- Logic for 'schedule_a_playdate' -->
+                  {% if current_pet_box_visits_schedule %}
+                     <div class="col-12 mb-4">
+                        <div class="{{ top_btn_data.button_color_pattern }} btn-block pet-card-play-date-schedule-button"
+                           id="scheduleplaydate"
+                           data-bs-toggle="modal" data-bs-target="#schedule_a_play_date{{petsType.pet_id}}"
+                           data-target=".pet-card-play-date-popup_pet-{{ pet.pet_id }}" data-bs-whatever="@mdo"
+                           style="cursor:pointer">
+                           {{ top_btn_data.button_text | default:"Schedule a Play Date" }}
+                        </div>
+                     </div>
+                  {% endif %}
+               {% elif top_btn_data.button_selector == 'ask_about_me' %}
+                  <!-- Logic for 'ask_about_me' -->
+                  <div
+                     class="col-12 mb-4">
+                     <a class="pet-detail2-footer-btn btn-info btn-block d-block {{ top_btn_data.button_color_pattern }}"
+                        href="{% url 'pinogy_breeds:breed_detail' pet_data.ptype_slug pet_data.pbrd_slug %}"
+                        style="width: 100%;text-align: center;">
+                        About {{ pet_data.pbrd_display_name }}
+                     </a>
+                  </div>
+               {% elif top_btn_data.button_selector == 'call_now' %}
+                  <!-- Logic for 'call_now' -->
+                  {% if pet_setting.storephone and pet_data.loc_contact_numbers %}
+                     <div class="col-12 mb-4">
+                        <a class="pet-detail2-footer-btn btn-info btn-block d-block {{ top_btn_data.button_color_pattern }}"
+                           id="phonecallclick"
+                           href="tel:{{ pet_data.phone_number }}" style="width: 100%;text-align: center;">
+                           {{ top_btn_data.button_text }}
+                        </a>
+                     </div>
+                  {% endif %}
+               {% elif top_btn_data.button_selector == 'link' %}
+                  <!-- Logic for 'link' -->
+                  <div class="col-12 mb-4">
+                     {% if top_btn_data.link_choice_field == 'Internal link' %}
+                     <a class="pet-detail2-footer-btn btn-info btn-block d-block {{ top_btn_data.button_color_pattern }}"
+                        href="{{ top_btn_data.button_internallink }}" style="width: 100%;text-align: center;"
+                        target="{{ top_btn_data.id_button_target }}">
+                        {{ top_btn_data.button_text }}
+                     </a>
+                     {% elif top_btn_data.link_choice_field == 'External link' %}
+                     <a class="pet-detail2-footer-btn btn-info btn-block d-block {{ top_btn_data.button_color_pattern }}"
+                        href="{{ top_btn_data.button_link }}" style="width: 100%;text-align: center;"
+                        target="{{ top_btn_data.id_button_target }}">
+                        {{ top_btn_data.button_text }}
+                     </a>
+                     {% endif %}
+                  </div>
+               {% endif %}
+            {% endif %}
+            {% if pet_data.sub_pstatus_name != "Sold" %}
+            {% if pet_setting.storephone and pet_data.loc_contact_numbers %}
+            <!-- Old Buttons Logic-->
+            {% comment %}
+            <div class="col-12">
+               <a class="pet-detail2-footer-btn btn-info btn-block d-block theme-secondary-btn"
+                  href="tel:{{ pet_data.phone_number }}" style="width: 100%;text-align: center;">
+                  Call Now
+               </a>
+            </div>
+            {% endcomment %}
+            {% endif %}
+            <div class="row">
+               <div class="col-12 mb-4">
+                  <div class="row">
+                     <div class="col-6">
+                        {% if pet_setting.petname and pet_data.pet_name %}
+                           <h2 class="petcls">
+                              {{pet_data.pet_name}}
+                           </h2>
+                        {% endif %}
+                     </div>
+                     {% if pet_setting.sale_price_detail or pet_setting.normal_price_detail %}
+                     <div class="col-6" style="text-align: right;">
+                        {% if pet_data.disabled_price  %}
+                        <span class="discount">${{ pet_data.disabled_price }}</span>
+                        <br />
+                        {% endif %}
+                        <span class="price">${{ pet_data.actual_price }}</span>
+                     </div>
+                     {% endif %}
+                  </div>
+               </div>
+               {% comment %} Pet Status and Gender Section {% endcomment %}
+               <div class="col-12 pet-detail-sg mb-4">
+                  <div class="col-6">
+                     {% if pet_data.sub_pstatus_name %}
+                     <div class="status-gender">
+                        <div class="sg-heading">Availability</div>
+                        <div class="sg-text">{{ pet_data.sub_pstatus_name }}</div>
+                     </div>
+                     {% endif %}
+                  </div>
+                  <div class="col-6">
+                     {% if pet_setting.sex %}
+                     <div class="status-gender">
+                        <div class="sg-heading">Sex</div>
+                        <div class="sg-text">{{ pet_data.pet_gender }}</div>
+                     </div>
+                     {% endif %}
+                  </div>
+               </div>
+            </div>
+            {% if pet_data.pet_badges_data %}
+            <div class="row pet-detail-badges mb-4">
+               {% for badge in pet_data.pet_badges_data %}
+               <img src="{{ badge.image_url }}" class="img-fluid" alt="{{ badge.alt }}"
+                  style="height: 100%;width: 119px" />
+               {% endfor %}
+            </div>
+            {% endif %}
+            {% comment %} {% if instance.glossary.display_take_me_home %}
+            {% if pet_setting.sale_price_detail or pet_setting.normal_price_detail %}
+            <div class="row py-3">
+               <div class="col-12">
+                  <a href="{% url 'pinogy_pet:adopt_me' pet_data.ptype_slug pet_data.pbrd_slug pet_data.pet_id %}"
+                     class="d-block theme-primary-btn">
+                     Take Me Home
+                  </a>
+               </div>
+            </div>
+            {% endif %}
+            {% endif %} {% endcomment %}
+            <!-- Old Buttons Logic-->
+            {% comment %}
+            <div class="row" style="margin-top:40px;">
+               <div
+                  class=" {% if current_pet_box_visits_schedule and instance.glossary.schedule_playdate == 'true' %} col-12 col-lg-6 col-xl-6 {% else %}col-12{% endif%}">
+                  <a class="pet-detail2-footer-btn btn-info btn-block d-block theme-secondary-btn"
+                     href="tel:+1{{ pet_data.phone_number }}" style="width: 100%;text-align: center;">
+                     <i class="fa fa-phone d-none d-sm-inline pr-2"></i> &nbsp; Call Us</a>
+                  <a class="pet-detail2-footer-btn btn-info btn-block d-block theme-secondary-btn"
+                     href="{% url 'pinogy_breeds:breed_detail' pet_data.ptype_slug pet_data.pbrd_slug %}"
+                     style="width: 100%;text-align: center;">
+                     About {{ pet_data.pbrd_display_name }}s
+                  </a>
+               </div>
+               <div class="col-12 col-lg-6 col-xl-6 mt-3 mt-lg-0 mt-xl-0">
+                  {% if current_pet_box_visits_schedule and instance.glossary.schedule_playdate == 'true' %}
+                  <div class="theme-primary-btn btn-block  pet-card-play-date-schedule-button" data-bs-toggle="modal"
+                     data-bs-target="#schedule_a_play_date{{petsType.pet_id}}"
+                     data-target=".pet-card-play-date-popup_pet-{{ pet.pet_id }}" data-bs-whatever="@mdo"
+                     style="cursor:pointer">
+                     {{ instance.glossary.schedule_play_date_button_text|default:"Schedule a Play Date" }}
+                  </div>
+                  {% endif %}
+               </div>
+               <div class="col-12 mt-3">
+                  {% if instance.glossary.custom_button_text %}
+                  <a class="btn-info btn-block d-block theme-secondary-btn" href="{{ custom_btn_link }}"
+                     target="{{ instance.glossary.custom_button_target }}" style="width: 100%;text-align: center;">
+                     {{ instance.glossary.custom_button_text }}
+                  </a>
+                  {% endif %}
+               </div>
+            </div>
+            {% endcomment %}
+            {% endif %}
+            <!-- New Buttons -->
+            <div class="row">
+               {% for index, value in btn_data.items %}
+               {% if value.button_selector == 'schedule_a_playdate' %}
+                  <!-- Logic for 'schedule_a_playdate' -->
+                  {% if current_pet_box_visits_schedule %}
+                     <div class="{% if value.button_width == 'true' %} col-12 {% else %} col-12 col-lg-6 col-xl-6 {% endif %} mb-3">
+                        <div class="{{ value.button_color_pattern }} btn-block pet-card-play-date-schedule-button"
+                           id="scheduleplaydate"
+                           data-bs-toggle="modal" data-bs-target="#schedule_a_play_date{{petsType.pet_id}}"
+                           data-target=".pet-card-play-date-popup_pet-{{ pet.pet_id }}" data-bs-whatever="@mdo"
+                           style="cursor:pointer">
+                           {{ value.button_text | default:"Schedule a Play Date" }}
+                        </div>
+                     </div>
+                  {% endif %}
+               {% elif value.button_selector == 'ask_about_me' %}
+                  <!-- Logic for 'ask_about_me' -->
+                  <div class="{% if value.button_width == 'true' %} col-12 {% else %} col-12 col-lg-6 col-xl-6 {% endif %} mb-3">
+                     <a class="pet-detail2-footer-btn btn-info btn-block d-block {{ value.button_color_pattern }}"
+                        href="{% url 'pinogy_breeds:breed_detail' pet_data.ptype_slug pet_data.pbrd_slug %}"
+                        style="width: 100%;text-align: center;">
+                        About {{ pet_data.pbrd_display_name }}
+                     </a>
+                  </div>
+               {% elif value.button_selector == 'call_now' %}
+                  <!-- Logic for 'call_now' -->
+                  {% if pet_setting.storephone and pet_data.loc_contact_numbers %}
+                     <div class="{% if value.button_width == 'true' %} col-12 {% else %} col-12 col-lg-6 col-xl-6 {% endif %} mb-3">
+                        <a class="pet-detail2-footer-btn btn-info btn-block d-block {{ value.button_color_pattern }}"
+                           id="phonecallclick"
+                           href="tel:{{ pet_data.phone_number }}" 
+                           style="width: 100%;text-align: center;">
+                           {{ value.button_text }}
+                        </a>
+                     </div>
+                  {% endif %}
+               {% elif value.button_selector == 'link' %}
+                  <!-- Logic for 'link' -->
+                  <div class="{% if value.button_width == 'true' %} col-12 {% else %} col-12 col-lg-6 col-xl-6 {% endif %} mb-3">
+                     {% if value.link_choice_field == 'Internal link' %}
+                     <a class="pet-detail2-footer-btn btn-info btn-block d-block {{ value.button_color_pattern }}"
+                        href="{{ value.button_internallink }}" style="width: 100%;text-align: center;"
+                        target="{{ value.id_button_target }}">
+                        {{ value.button_text }}
+                     </a>
+                     {% elif value.link_choice_field == 'External link' %}
+                     <a class="pet-detail2-footer-btn btn-info btn-block d-block {{ value.button_color_pattern }}"
+                        href="{{ value.button_link }}" style="width: 100%;text-align: center;"
+                        target="{{ value.id_button_target }}">
+                        {{ value.button_text }}
+                     </a>
+                     {% endif %}
+                  </div>
+               {% endif %}
+               {% endfor %}
+            </div>
+            <!-- Promo Banner Section -->
+            {% if instance.glossary.promotion_banner == 'true' %}
+            <div class="row">
+               <div class="col-12 mb-3">
+                  {% if instance.promob_image %}
+                  <div class="promo-banner-image-container">
+                     <img src="{{ instance.promob_image.url }}" class="img-fluid card-img-top card-img-bottom w-100 h-100"
+                        alt="{{ instance.glossary.alt_name_promob_image }}"
+                        {% if instance.glossary.button_type == 'schedule_a_playdate' and current_pet_box_visits_schedule %}
+                        data-bs-toggle="modal" data-bs-target="#schedule_a_play_date{{petsType.pet_id}}"
+                        data-target=".pet-card-play-date-popup_pet-{{ pet.pet_id }}" data-bs-whatever="@mdo"
+                        style="cursor:pointer" {% elif instance.glossary.button_type == 'take_me_home' %}
+                        onclick="showAdoptMePopup()" style="cursor:pointer"
+                        {% elif instance.glossary.button_type == 'ask_about_me' %}
+                        onclick="window.location.href='{% url 'pinogy_breeds:breed_detail' pet_data.ptype_slug pet_data.pbrd_slug %}'"
+                        style="cursor:pointer"
+                        {% elif instance.glossary.button_type == 'call_now' and pet_setting.storephone and pet_data.loc_contact_numbers %}
+                        onclick="window.location.href='tel:{{ pet_data.phone_number }}'" style="cursor:pointer"
+                        {% elif instance.glossary.button_type == 'make_an_offer' %}
+                        onclick="document.getElementById('general_collection_form_outer_{{ pet_data.pet_id }}').scrollIntoView({ behavior: 'smooth' });"
+                        style="cursor:pointer" {% elif instance.glossary.button_type == 'other' %}
+                        {% if instance.glossary.btn_type_link_choice == 'Internal link' %}
+                        onclick="window.location.href='{{ instance.glossary.btn_type_internal_link.link_path }}'"
+                        style="cursor:pointer" {% elif instance.glossary.btn_type_link_choice == 'External link' %}
+                        onclick="window.location.href='{{ instance.glossary.btn_type_external_link }}'"
+                        style="cursor:pointer" {% endif %} {% endif %} />
+                  </div>
+                  {% endif %}
+               </div>
+            </div>
+            {% endif %}
+            {% if pet_data.sub_pstatus_name == "Sold" %}
+            <div class="row card pet-card-section m-0">
+               <div class="col-12 p-0">
+                   <div class="pet-form-div card-img-top">
+                     <div class="pet-collection-form-title">Adopted! Let's Help You Find Your Next Pet</div>
+                     <div class="breed-paw-icon">
+                       <div class="pet-form-icon"><img src="{% static 'images/breed_detail/paw1.png'%}" alt="pet left paw"></div>
+                       <div class="pet-form-icon"><img src="{% static 'images/breed_detail/paw2.png' %}" alt="pet right paw"></div>
+                     </div>
+                   </div>
+                   <div class="pet-collection-form-outer card-img-bottom">
+                     <div class="pet-collection-form-title mt-2" style="color:var(--global-primary-color); font-size: 18px; line-height: 140%;">We're sorry, but {{pet_data.pet_name}} has been adopted. BUT don't worry,
+                        we can still help you find your next fur baby! Let us know what we can do to help.</div>
+                     {% include 'plugins/includes/general_collection_form.html' with unique_id=pet_data.pet_id|stringformat:"s"|add:"_sold_pet" form=collection_form form_type='sold_pet' location_id=pet_data.pet_loc_entity_id location_name=pet_data.loc_receipt_name pet_id=pet_data.pet_id pet_gender=pet_data.pet_gender breed_name=pet_data.pbrd_display_name breed_slug=pet_data.pbrd_slug btn_style=instance.glossary.petform_button_style %}
+                   </div>
+               </div>
+            </div>
+            {%endif%}
+            {% if pet_data.isShowList %}
+            {% for plugin in instance.child_plugin_instances %}
+            {% render_plugin plugin %}
+            {% endfor %}
+            {%endif%}
+         </div>
+      </div>
+      {% comment %}
+      <div class="row " id="petDetail-PRseparater">
+         <nav class="navbar navbar-light navbar-expand-md d-flex flex-row align-content-around flex-wrap">
+            <div class="container px-2">
+               <ul class="nav navbar-nav d-flex flex-row" style="width: 100%;">
+                  <div class="col-12 col-lg-6 col-md-6 col-sm-12 p-1">
+                     <a class="pet-detail2-footer-btn btn-info btn-block d-block theme-secondary-btn"
+                        href="tel:+1{{ pet_data.phone_number }}" style="width: 100%;text-align: center;">
+                        <i class="fa fa-phone d-none d-sm-inline pr-2"></i> {{ pet_data.display_phone_number}}</a>
+                  </div>
+                  <div class=" col-12 col-lg-6 col-md-6 col-sm-12 p-1 hidden-mobile">
+                     <a class="pet-detail2-footer-btn btn-info btn-block d-block theme-secondary-btn"
+                        href="sms:+1{{ pet_data.phone_number }}" style="width: 100%;text-align: center;">
+                        <i class="fa-solid fa-comment-sms d-none d-sm-inline pr-2"></i> Text Message</a>
+                  </div>
+               </ul>
+            </div>
+            <script>
+               $(document).ready(function() {
+                  $('footer#footer > .row.bg-color-black').css("margin-bottom", "61px");
+               });
+            </script>
+         </nav>
+      </div>
+      {% endcomment %}
+      <div class="row">
+         <ul class="nav nav-pills mb-3 pet-detail-tabs" id="pills-tab" role="tablist"
+            style="border-bottom: 0.2px solid var(--global-primary-color);">
+            <li class="nav-item" role="presentation">
+               <button class="nav-link active tabcaption" id="pills-home-tab" data-bs-toggle="pill"
+                  data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home"
+                  aria-selected="true">About Me</button>
+            </li>
+            {% if pet_data.breed_detail.metrics or pet_data.breed_detail.notes %}
+            <li class="nav-item" role="presentation">
+               <button class="nav-link tabcaption" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile"
+                  type="button" role="tab" aria-controls="profile" aria-selected="false"> Breed Info</button>
+            </li>
+            {% endif %}
+         </ul>
+         <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="pills-home" role="tabpanel"aria-label="pills-home-tab">
+               <div class="row">
+                  <div class="col-12 col-lg-6 pb-4">
+                     <div class="row">
+                        {% if pet_setting.petid %}
+                        <div class="col-4">
+                           <span class="spn_title">
+                              ID
+                           </span>
+                        </div>
+                        <div class="col-8">
+                           <span class="spn_value">
+                              {{pet_data.pet_id}}
+                           </span>
+                        </div>
+                        {% endif %}
+                        {% if pet_setting.sex %}
+                        <div class="col-4">
+                           <span class="spn_title">
+                              Sex
+                           </span>
+                        </div>
+                        <div class="col-8">
+                           <span class="spn_value">
+                              {{pet_data.pet_gender}}
+                           </span>
+                        </div>
+                        {% endif %}
+                        {% if pet_setting.storecitystate and pet_data.loc_receipt_name %}
+                        <div class="col-4">
+                           <span class="spn_title">
+                              Store, City,State
+                           </span>
+                        </div>
+                        <div class="col-8">
+                           <span class="spn_value">
+                              <a href="https://www.google.com/maps?q={{ pet_data.selected_store.latitude }},{{ pet_data.selected_store.longitude }}"
+                                 class="custom-a-tag" target="_blank">
+                                 {{ pet_data.loc_receipt_name }}{% if pet_data.loc_addr_city %},
+                                 {{ pet_data.loc_addr_city }}{% endif %}{% if pet_data.loc_addr_iso_code %},
+                                 {{ pet_data.loc_addr_iso_code }} {% endif %}
+                              </a>
+                           </span>
+                        </div>
+                        {% endif %}
+                        {% if pet_setting.storephone and pet_data.loc_contact_numbers %}
+                        <div class="col-4">
+                           <span class="spn_title">
+                              Store Phone
+                           </span>
+                        </div>
+                        <div class="col-8">
+                           <span class="spn_value">
+                              <a id="phonecallclick" href="tel:{{ pet_data.phone_number }}" class="custom-a-tag" target="_blank">
+                                 {{ pet_data.display_phone_number }}
+                              </a>
+                           </span>
+                        </div>
+                        {% endif %}
+                        <div id='divvalidate'
+                           class="clsvalidate  {% if 'true' in instance.glossary.consumer_verification%} d-none  {% endif %}">
+                           <div class="row">
+                              {% if pet_setting.usda and pet_data.pbreeder_usda_num %}
+                              <div class="col-4">
+                                 <span class="spn_title">
+                                    USDA#
+                                 </span>
+                              </div>
+                              <div class="col-8">
+                                 <span class="spn_value">
+                                    {{ pet_data.pbreeder_usda_num }}
+                                 </span>
+                              </div>
+                              {% endif %}
+                              {% if pet_setting.breedername and pet_data.pbreeder_name %}
+                              <div class="col-4">
+                                 <span class="spn_title">
+                                    Breeder Name
+                                 </span>
+                              </div>
+                              <div class="col-8">
+                                 <span class="spn_value">
+                                    {{ pet_data.pbreeder_name }}
+                                 </span>
+                              </div>
+                              {% endif %}
+                              {% if pet_setting.breedercitystate and pet_data.pbreeder_ent_addr_city %}
+                              <div class="col-4">
+                                 <span class="spn_title">
+                                    Breeder City, State
+                                 </span>
+                              </div>
+                              <div class="col-8">
+                                 <span class="spn_value">
+                                    {{ pet_data.pbreeder_ent_addr_city }}{% if pet_data.pbreeder_ent_addr_iso_code %},
+                                    {{ pet_data.pbreeder_ent_addr_iso_code }}
+                                    {% endif %}
+                                 </span>
+                              </div>
+                              {% endif %}
+                           </div>
+                        </div>
+                        {% if pet_setting.birthdate %}
+                        <div class="col-4">
+                           <span class="spn_title">
+                              Age
+                           </span>
+                        </div>
+                        <div class="col-8">
+                           <span class="spn_value">
+                              {{pet_data.pet_age}}
+                           </span>
+                        </div>
+                        {% endif %}
+                        {% if pet_setting.breedercitystate and pet_data.pbreeder_ent_addr_city or  pet_setting.breedername and pet_data.pbreeder_name or pet_setting.usda and pet_data.pbreeder_usda_num%}
+                        <div
+                           class="row py-3 {% if 'true' in instance.glossary.consumer_verification%} {%else%}d-none  {% endif %}">
+                           <div id='btndivvalidate' class="btnclsvalidate">
+                              <div class="col-12">
+                                 <div class="btn-info btn-block d-block theme-secondary-btn supporting-validation"
+                                    data-bs-toggle="modal" data-bs-target="#fieldvalidate{{petsType.pet_id}}"
+                                    data-target=".fieldvalidate-{{ pet.pet_id }}" data-bs-whatever="@mdo"
+                                    style="cursor:pointer;">
+                                    <label style="font-size:16px;cursor: pointer;"> Click to see Breeder Name, USDA #, City, &
+                                       State</label>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        {%endif%}
+                        {% if pet_setting.birthdate %}
+                        <div class="col-4">
+                           <span class="spn_title">
+                              Birth Date
+                           </span>
+                        </div>
+                        <div class="col-8">
+                           <span class="spn_value">
+                              {{pet_data.plttr_birthdate}}
+                           </span>
+                        </div>
+                        {% endif %}
+                        {% if pet_setting.petmarketingtext %}
+                        <div class="col-12 col-lg-12 pt-3">
+                           <div class="notes">
+                              {% if  pet_data.pet_marketing_notes %}
+                              {{ pet_data.pet_marketing_notes|safe }}
+                              {%endif%}
+                           </div>
+                        </div>
+                        {% endif %}
+                     </div>
+                  </div>
+                  <div class="col-12 col-lg-6 p-0">
+                     <div class="pet-form-div card-img-top">
+                        <div class="pet-collection-form-title">{{ instance.glossary.message }}</div>
+                        <div class="breed-paw-icon">
+                          <div class="pet-form-icon"><img src="{% static 'images/breed_detail/paw1.png'%}" alt="pet left paw"></div>
+                          <div class="pet-form-icon"><img src="{% static 'images/breed_detail/paw2.png' %}" alt="pet right paw"></div>
+                        </div>
+                      </div>
+                      <div class="pet-collection-form-outer card-img-bottom">
+                        {% include 'plugins/includes/general_collection_form.html' with unique_id=pet_data.pet_id form=collection_form form_type='pet' location_id=pet_data.pet_loc_entity_id location_name=pet_data.loc_receipt_name pet_id=pet_data.pet_id pet_gender=pet_data.pet_gender breed_name=pet_data.pbrd_display_name breed_slug=pet_data.pbrd_slug btn_style=instance.glossary.petform_button_style %}
+                      </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      {% if pet_data.breed_detail.metrics %}
+      <div class="tab-content" id="pills-tabContent">
+         <div class="tab-pane fade" id="profile" role="tabpanel"aria-label="profile-tab">
+            <div class="container my-2">
+               <div class="mb-4">
+                  <h3 class="breed-traits-title custom-general-font">Breed Traits</h3>
+               </div>
+               <div class="row pet-traits-bar">
+                  {% for metric in pet_data.breed_detail.metrics %}
+                  <div class="col-sm-6 col-md-4 col-lg-2">
+                     <div class="progress pet-traits-bar" style="height: 20px;">
+                        <div class="progress-bar" role="progressbar" style="width: {% widthratio metric.value 1 10 %}%;"
+                           aria-valuenow="{% widthratio metric.value 1 10 %}" aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                     </div>
+                     <p class="progress-bar-text">{{ metric.name }}</p>
+                  </div>
+                  {% endfor %}
+               </div>
+            </div>
+         </div>
+      </div>
+      {% endif %}
+      <div class="modal fade" id="schedule_a_play_date{{petsType.pet_id}}" tabindex="1"
+         aria-label="schedule_a_play_date" aria-hidden="true">
+         <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+               <div class="modal-body">
+                  {% include 'plugins/includes/schedule_a_Playdate.html' with form=schedulePlaydate_form form_type='ask_me_about' pet=pet_data  current_pet_box_visits_schedule=current_pet_box_visits_schedule pet_detail="True" %}
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="modal fade" id="fieldvalidate{{petsType.pet_id}}" tabindex="1"aria-label="fieldvalidateModel"
+         aria-hidden="true">
+         <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+               <div class="modal-body">
+                  {% include 'plugins/includes/supporting_validation.html' with unique_id=pet_data.pet_id form=CustomerVerificationForm formotp=CustomerOTPVerificationForm form_type='consumeValidation' location_id=pet_data.pet_loc_entity_id location_name=pet_data.loc_receipt_name pet_id=pet_data.pet_id pet_gender=pet_data.pet_gender breed_name=pet_data.pbrd_display_name breed_slug=pet_data.pbrd_slug %}
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="modal fade" id="optvalidation" tabindex="1" aria-label="otpvalidationModel" aria-hidden="true">
+         <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+               <div class="modal-body">
+                  {% comment %}
+                  {% include 'plugins/includes/otp_verification.html' with unique_id=pet_data.pet_id form=CustomerVerificationForm form_type='consumeValidation' location_id=pet_data.pet_loc_entity_id location_name=pet_data.loc_receipt_name pet_id=pet_data.pet_id pet_gender=pet_data.pet_gender breed_name=pet_data.pbrd_display_name breed_slug=pet_data.pbrd_slug %}
+                  {% endcomment %}
+                  <div class="consumer_validation_form">
+                     {% include 'plugins/includes/otp_verification.html' with unique_id=pet_data.pet_id form=CustomerVerificationForm  formotp=CustomerOTPVerificationForm form_type='consumeValidation' location_id=pet_data.pet_loc_entity_id location_name=pet_data.loc_receipt_name pet_id=pet_data.pet_id pet_gender=pet_data.pet_gender breed_name=pet_data.pbrd_display_name breed_slug=pet_data.pbrd_slug %}
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <!-- Fixed bottom div -->
+   <div class="fixed-bottom">
+      {% if pet_setting.storephone and pet_data.loc_contact_numbers %}
+      <div class="fixed-bottom-icon">
+            <a href="tel:{{ pet_data.phone_number }}">
+               <svg xmlns="http://www.w3.org/2000/svg" width="29" height="28" viewBox="0 0 29 28" fill="none">
+                  <path
+                     d="M25.573 19.9155C25.5124 19.8549 25.3231 19.7184 25.0051 19.5062C24.6871 19.2939 24.316 19.0475 23.892 18.7671L22.6199 17.9256L21.4842 17.1751L20.8481 16.7771C20.7875 16.7316 20.7156 16.6937 20.6323 16.6634C20.549 16.6331 20.4657 16.6104 20.3824 16.5952C20.2992 16.58 20.2121 16.5725 20.1212 16.5725C20.0606 16.5725 20.0076 16.5762 19.9622 16.5838C19.9168 16.5914 19.8676 16.599 19.8146 16.6066C19.7616 16.6141 19.7048 16.6255 19.6442 16.6407C19.5836 16.6558 19.5268 16.671 19.4738 16.6862C19.4208 16.7013 19.3678 16.7203 19.3148 16.743C19.2618 16.7658 19.205 16.7885 19.1444 16.8112C19.0839 16.834 19.0309 16.8605 18.9854 16.8908C18.6977 17.0425 18.0087 17.4291 16.9183 18.0507C15.9945 17.3987 14.8436 16.3829 13.4655 15.0033C12.1026 13.6387 11.0955 12.494 10.4443 11.5692C11.0652 10.4624 11.4514 9.77258 11.6028 9.49968C11.9966 8.74161 12.0344 8.11242 11.7164 7.61209C11.5498 7.35435 11.016 6.54321 10.115 5.17869C9.21391 3.81417 8.7028 3.04852 8.58165 2.88175C8.32421 2.51787 7.93047 2.33594 7.40044 2.33594C7.26414 2.33594 7.13164 2.3511 7.00291 2.38142C6.87419 2.41174 6.74547 2.45344 6.61675 2.5065C6.48803 2.55957 6.36309 2.624 6.24194 2.69981C6.16622 2.76046 6.04128 2.859 5.86713 2.99546C5.69298 3.13191 5.41282 3.36312 5.02665 3.68909C4.64048 4.01506 4.29596 4.33345 3.99309 4.64425C3.69021 4.95506 3.41762 5.29619 3.17532 5.66765C2.93302 6.0391 2.81944 6.36128 2.83459 6.63418C2.84973 7.27096 2.96331 7.94185 3.17532 8.64685C3.38734 9.35186 3.67507 10.0531 4.03852 10.7505C4.40197 11.4479 4.80707 12.1378 5.25381 12.82C5.70055 13.5023 6.20408 14.1845 6.7644 14.8668C7.32472 15.5491 7.86232 16.1745 8.37721 16.743C8.8921 17.3116 9.43728 17.8839 10.0127 18.46C10.9062 19.3546 11.7997 20.1846 12.6932 20.9503C13.5867 21.7159 14.5597 22.4664 15.6122 23.2018C16.6646 23.9371 17.7323 24.5246 18.8151 24.9643C19.8978 25.4039 20.9163 25.6389 21.8703 25.6693H21.893C22.1505 25.6693 22.4609 25.548 22.8244 25.3054C23.1878 25.0628 23.5248 24.7861 23.8352 24.4753C24.1457 24.1645 24.4637 23.8234 24.7893 23.4519C25.1149 23.0805 25.3458 22.8038 25.4821 22.6218L25.7547 22.258C26.2242 21.5909 26.2923 20.9541 25.9591 20.3476C25.8531 20.1657 25.7244 20.0217 25.573 19.9155ZM24.5735 21.3938C24.1192 22.0305 23.6119 22.6332 23.0515 23.2018C22.4912 23.7703 22.0823 24.1077 21.8249 24.2138C20.462 24.138 18.8529 23.5201 16.9978 22.3603C15.1427 21.2005 13.1589 19.5592 11.0463 17.4367C8.93375 15.3141 7.29443 13.3241 6.12836 11.4669C4.96229 9.6096 4.34897 8.00629 4.28839 6.65692C4.37925 6.39918 4.70863 5.98983 5.27652 5.42885C5.84441 4.86788 6.44638 4.35998 7.08242 3.90514C7.11271 3.87482 7.14299 3.85207 7.17328 3.83691C7.20357 3.82175 7.23764 3.81038 7.2755 3.8028C7.31336 3.79522 7.35501 3.79143 7.40044 3.79143C7.41558 3.79143 7.43073 3.79901 7.44587 3.81417C8.3545 5.11805 9.35399 6.6266 10.4443 8.33984C10.4443 8.46113 10.3989 8.62032 10.308 8.81742C10.2778 8.8629 10.2399 8.93113 10.1945 9.0221C10.149 9.11307 10.0922 9.21919 10.0241 9.34049C9.95595 9.46178 9.87645 9.59823 9.78558 9.74984C9.69472 9.90146 9.60007 10.0682 9.50164 10.2502C9.4032 10.4321 9.29341 10.6292 9.17226 10.8415L8.71795 11.6374L9.24041 12.3879C9.95217 13.4037 11.0198 14.6242 12.4433 16.0494C13.8668 17.4746 15.0783 18.5359 16.0778 19.2333L16.8274 19.7791L17.6452 19.3242C18.0844 19.0665 18.4933 18.8277 18.8719 18.6079C19.2504 18.388 19.5155 18.2478 19.6669 18.1871C19.8335 18.081 19.9849 18.0279 20.1212 18.0279H20.1439C21.3706 18.8012 22.885 19.8094 24.6871 21.0526C24.7022 21.1588 24.6644 21.2725 24.5735 21.3938Z"
+                     fill="white" />
+                  <path
+                     d="M24.5735 21.3938C24.1192 22.0305 23.6119 22.6332 23.0515 23.2018C22.4912 23.7703 22.0823 24.1077 21.8249 24.2138C20.462 24.138 18.8529 23.5201 16.9978 22.3603C15.1427 21.2005 13.1589 19.5592 11.0463 17.4367C8.93375 15.3141 7.29443 13.3241 6.12836 11.4669C4.96229 9.6096 4.34897 8.00629 4.28839 6.65692C4.37925 6.39918 4.70863 5.98983 5.27652 5.42885C5.84441 4.86788 6.44638 4.35998 7.08242 3.90514C7.11271 3.87482 7.14299 3.85207 7.17328 3.83691C7.20357 3.82175 7.23764 3.81038 7.2755 3.8028C7.31336 3.79522 7.35501 3.79143 7.40044 3.79143C7.41558 3.79143 7.43073 3.79901 7.44587 3.81417C8.3545 5.11805 9.35399 6.6266 10.4443 8.33984C10.4443 8.46113 10.3989 8.62032 10.308 8.81742C10.2778 8.8629 10.2399 8.93113 10.1945 9.0221C10.149 9.11307 10.0922 9.21919 10.0241 9.34049C9.95595 9.46178 9.87645 9.59823 9.78558 9.74984C9.69472 9.90146 9.60007 10.0682 9.50164 10.2502C9.4032 10.4321 9.29341 10.6292 9.17226 10.8415L8.71795 11.6374L9.24041 12.3879C9.95217 13.4037 11.0198 14.6242 12.4433 16.0494C13.8668 17.4746 15.0783 18.5359 16.0778 19.2333L16.8274 19.7791L17.6452 19.3242C18.0844 19.0665 18.4933 18.8277 18.8719 18.6079C19.2504 18.388 19.5155 18.2478 19.6669 18.1871C19.8335 18.081 19.9849 18.0279 20.1212 18.0279H20.1439C21.3706 18.8012 22.885 19.8094 24.6871 21.0526C24.7022 21.1588 24.6644 21.2725 24.5735 21.3938Z"
+                     fill="white" />
+               </svg>
+            </a>
+      </div>
+      {% endif %}
+      <div class="fixed-bottom-icon">
+         <a href="mailto:example@example.com">
+            <svg xmlns="http://www.w3.org/2000/svg" width="29" height="28" viewBox="0 0 29 28" fill="none">
+               <path
+                  d="M22.625 5H5.375C4.61275 5.00082 3.88196 5.30681 3.34297 5.85083C2.80398 6.39485 2.50082 7.13246 2.5 7.90182V20.0982C2.50082 20.8675 2.80398 21.6052 3.34297 22.1492C3.88196 22.6932 4.61275 22.9992 5.375 23H22.625C23.3872 22.9992 24.118 22.6932 24.657 22.1492C25.196 21.6052 25.4992 20.8675 25.5 20.0982V7.90182C25.4992 7.13246 25.196 6.39485 24.657 5.85083C24.118 5.30681 23.3872 5.00082 22.625 5ZM21.897 9.79992L14.5042 15.6036C14.36 15.7167 14.1826 15.7781 14 15.7781C13.8174 15.7781 13.64 15.7167 13.4958 15.6036L6.10299 9.79992C6.01613 9.73371 5.94317 9.65074 5.88836 9.55583C5.83354 9.46092 5.79796 9.35596 5.78369 9.24705C5.76941 9.13814 5.77672 9.02745 5.80519 8.92142C5.83366 8.81538 5.88273 8.71612 5.94954 8.62939C6.01635 8.54266 6.09957 8.4702 6.19436 8.41621C6.28916 8.36223 6.39364 8.32779 6.50174 8.31492C6.60983 8.30204 6.71938 8.31097 6.82402 8.3412C6.92867 8.37143 7.02632 8.42234 7.11129 8.49099L14 13.8987L20.8887 8.49099C21.061 8.35969 21.2775 8.30211 21.4915 8.33069C21.7055 8.35927 21.8997 8.47171 22.0322 8.64371C22.1647 8.81571 22.2248 9.03343 22.1995 9.2498C22.1742 9.46616 22.0655 9.66378 21.897 9.79992Z"
+                  fill="white" />
+            </svg>
+         </a>
+      </div>
+   </div>
+</div>
+{% else %}
+<div>
+   <h1>Pet is not Present or wrong plugin is added</h1>
+</div>
+{%endif%}
+
+<style>
+   .carousel {
+      position: relative;
+   }
+
+   .carousel-item img {
+      object-fit: cover;
+   }
+
+   #carousel-thumbs {
+      background: rgba(255, 255, 255, .3);
+      bottom: 0;
+      left: 0;
+      padding: 0 50px;
+      right: 0;
+   }
+
+   #carousel-thumbs img {
+      cursor: pointer;
+   }
+
+   #carousel-thumbs img:hover {
+      border-color: rgba(255, 255, 255, .3);
+   }
+
+   #carousel-thumbs .selected img {
+      border-color: var(--global-primary-color);
+   }
+
+   .carousel-control-prev,
+   .carousel-control-next {
+      width: 50px;
+   }
+
+   @media all and (min-width: 576px) {
+      .carousel-container #carousel-thumbs {
+         position: absolute;
+      }
+   }
+
+   .carousel-container #carousel-thumbs {
+      position: initial;
+   }
+
+   @media (max-width: 576px) {
+      .carousel-container #carousel-thumbs {
+         padding-left: 1.5rem !important;
+         padding-right: 1.5rem !important;
+      }
+   }
+
+   #myCarousel {
+      padding: 0px 0px 0px 0px;
+   }
+</style>
+
+{% addtoblock "js"  %}
+<!-- Main Slider -->
+<script>
+   $(document).ready(function() {
+      // Initialize main slider
+      $('.pet-main-slider').slick({
+         slidesToShow: 1,
+         slidesToScroll: 1,
+         arrows: false,
+         fade: true,
+         variableWidth: true,
+         adaptiveHeight: true,
+         asNavFor: '.pet-nav-slider'
+      });
+
+      // Get the number of slides in the navigation slider
+      var slideCount = $('.pet-nav-slider .nav-slide').length;
+
+      // If no slides are found, set slideCount to 1
+      if (slideCount === 0) {
+         slideCount = 1;
+      }
+
+      // Initialize navigation slider
+      $('.pet-nav-slider').slick({
+         dots: false,
+         slidesToShow: slideCount > 2 ? 3 : 2,
+         slidesToScroll: 1,
+         asNavFor: '.pet-main-slider',
+         focusOnSelect: true,
+         centerMode: slideCount > 2,  // Enable centerMode only if there are more than 2 slides
+         adaptiveHeight: true,
+         arrows: slideCount > 2,  // Show arrows only if there are more than 2 slides
+         infinte: slideCount > 2, // Show infinite only if there are more than 2 slides
+         responsive: [
+            {
+               breakpoint: 1024,
+               settings: {
+                  slidesToShow: Math.min(slideCount, 3),
+                  slidesToScroll: 1
+               }
+            },
+            {
+               breakpoint: 600,
+               settings: {
+                  slidesToShow: Math.min(slideCount, 2),
+                  slidesToScroll: 1
+               }
+            },
+            {
+               breakpoint: 480,
+               settings: {
+                  arrows: true,
+                  slidesToShow: 1,
+                  slidesToScroll: 1
+               }
+            }
+         ]
+      });
+   });
+</script>
+{% endaddtoblock  %}

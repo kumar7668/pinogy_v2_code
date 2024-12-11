@@ -1,0 +1,569 @@
+{% load sekizai_tags %}
+
+{% addtoblock "css" %}
+    <style>
+        /* Override styles for valid form controls within a validated form */
+        .was-validated .form-control:valid {
+            border-color: var(--global-primary-color); /* Set the default border color for form-control */
+            box-shadow: none; /* Remove any box shadow */
+        }
+        .was-validated .form-control:valid:focus {
+            border-color: var(--global-primary-color); /* Set the desired border color on focus */
+            box-shadow: none; /* Remove any box shadow */
+        }
+        .was-validated .form-check-input:valid {
+            border-color: var(--global-primary-color); 
+        }
+        .was-validated .form-check-input:valid:checked {
+            background-color: white; 
+        }
+        .was-validated .form-check-input:valid:focus {
+            box-shadow: none; 
+        }
+        input:-webkit-autofill{
+            -webkit-text-fill-color: var(--global-primary-color) !important;
+        }
+        .focus-color:focus {
+            color: var(--global-primary-color)
+        }
+        .fs-17{
+            font-size: 17px !important;
+        }
+    </style>
+
+    <style>
+      .height-100{height:100vh}
+      
+      .inputs input{width:40px;height:40px}
+      input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button
+      {-webkit-appearance: none;-moz-appearance: none;appearance: none;margin: 0}
+      .card-2{background-color:#fff;padding:10px;width:350px;height:100px;bottom:-50px;left:20px;position:absolute;border-radius:5px}.card-2 .content{margin-top:50px}.card-2 .content a{color:red}.form-control:focus{box-shadow:none;border:2px solid red}.validate{border-radius:20px;height:40px;background-color:red;border:1px solid red;width:140px}
+    </style>
+{% endaddtoblock %}
+
+<div {% if unique_id %} id="consumer_validation_form_outer_{{unique_id}}" {% else %} id="consumer_validation_form_outer" {% endif %}>
+    {% if success_message %}
+        <p class="fw-bolder fs-6 label mt-3 mb-0 text-success " id="colletion_form_success_msg">
+            {{ success_message }}
+        </p>
+    {% endif %}
+
+    {% comment %} error message will be added dynamically.  {% endcomment %}
+    <div class="general-error-msg"></div>
+
+    {% if form_type == "contact" and display_close_button %}
+    <div class="row">
+        <div class="col-12">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="float: right; font-size: 15px">
+            </button>
+        </div>
+    </div>
+    {% endif %}
+   
+
+    <div class="consumer_validation_form">
+      <div class="row">
+        <div class="col-12">
+          <div class="poptitle fs-17">
+            Please fill out the form below to see this information. A verification code will be sent to your phone.
+        </div>
+      </div>
+      </div>
+    <form class="theme-form needs-validation" {% if unique_id %} id="consumer_validation_form_{{unique_id}}" {% else %} id="consumer_validation_form" {% endif %} method="post" action="{% url 'pinogy_common_ajax:customer_verification' %}" novalidate>
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                    <div class="text-danger pt-1">
+                    {% for error in form.first_name.errors %}
+                        {{error}}<br/>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+                <div class="invalid-feedback">Please fill out this field.</div>
+            </div>
+            <div class="col-12 col-lg-6">
+                {{ form.last_name }}
+                {% if form.last_name.errors %}
+                    <div class="text-danger pt-1">
+                    {% for error in form.last_name.errors %}
+                        {{error}}<br/>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+                <div class="invalid-feedback">Please fill out this field.</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="text-danger pt-1">
+                    {% for error in form.email.errors %}
+                        {{error}}<br/>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+                <div class="invalid-feedback">Please fill out this field.</div>
+            </div>
+            <div class="col-12 col-lg-6">
+                {{ form.phone }}
+                {% if form.phone.errors %}
+                    <div class="text-danger pt-1">
+                    {% for error in form.phone.errors %}
+                        {{error}}<br/>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+                <div class="invalid-feedback">Please enter a valid 10-digit number</div>
+            </div>
+        </div>
+        {% ifequal 'True'  is_breeder %}
+            <div class="row">
+                <div class="col-12">
+                    <p class="label mt-3 mb-0">
+                        Are you looking to adopt or a breeder?
+                    </p>
+                    {{ form.lead_type }}
+                    {% if form.lead_type.errors %}
+                        <div class="text-danger pt-1">
+                        {% for error in form.lead_type.errors %}
+                            {{error}}<br/>
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="invalid-feedback">Please fill out this field.</div>
+            </div>
+        {% endifequal %}
+
+        <div class="row">
+            <div class="col-12">
+                {{ form.message }}
+                {% if form.message.errors %}
+                    <div class="text-danger pt-1">
+                    {% for error in form.message.errors %}
+                        {{error}}<br/>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+                <div class="invalid-feedback">Please fill out this field.</div>
+            </div>
+        </div>
+
+        {% if shopwindow_enable %}
+            <div class="row">
+                <div class="col-12">
+                    <div class="mt-3">
+                        <label class="pt-0">
+                            <input class="form-check-input mt-0" type="checkbox" name="{{ form.shop_window.name }}" checked>
+                            Yes, Send Me Puppy Information And Any Coupons.
+                        </label>
+                        {% if form.shop_window.errors %}
+                            <div class="text-danger pt-1">
+                            {% for error in form.shop_window.errors %}
+                                {{error}}<br/>
+                            {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <p class="label mb-0">
+                        I consent to being contacted via the channels I have provided ie SMS text message/email etc.
+                    </p>
+                    <p class="text-center mt-2 mb-0">Shopwindow<a href="https://shopwindow.io/terms-of-use" class="text-decoration-none" target="_blank" area-label = "Terms of Use"> Terms of Use</a>.</p>
+                </div>
+            </div>
+        {% else %}
+            <div class="row">
+                <div class="col-12">
+                    <p class="label mb-0">
+                        I agree to receive pet & promotional information via the options selected below.
+                    </p>
+                    <div class="mt-2">
+                        <label class="pt-0">
+                            <input class="form-check-input mt-0" type="checkbox" name="{{ form.sms_okay.name }}" checked>
+                            It's okay to text me.
+                        </label>
+                        {% if form.sms_okay.errors %}
+                            <div class="text-danger pt-1">
+                            {% for error in form.sms_okay.errors %}
+                                {{error}}<br/>
+                            {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mt-2">
+                        <label class="pt-0">
+                            <input class="form-check-input mt-0" type="checkbox" name="{{ form.email_me_more.name }}" checked>
+                            It's okay to email me.
+                        </label>
+                        {% if form.email_me_more.errors %}
+                            <div class="text-danger pt-1">
+                            {% for error in form.email_me_more.errors %}
+                                {{error}}<br/>
+                            {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <input type="hidden" name="form" value="{{ form_type }}" maxlength="17" id="id_form">
+        <input type="hidden" name="site_url" value="{{ request.scheme }}://{{ request.get_host }}" maxlength="17" id="id_site_url">
+        <input type="hidden" name="page_referer" value="{{ request.build_absolute_uri }}" maxlength="17" id="id_page_referer">
+        
+        {% comment %} Location related Fields {% endcomment %}
+        {% if location_id %}
+            <input type="hidden" name="location_id" value="{{location_id}}" maxlength="55" id="id_{{location_id}}">
+        {% endif%}
+        {% if location_name %}
+            <input type="hidden" name="location" value="{{location_name}}" maxlength="55" id="id_{{location_name}}">
+        {% endif%}
+
+        {% comment %} Pet Form Specific Fields {% endcomment %}
+        {% if pet_id %}
+            <input type="hidden" name="pet_id" value="{{ pet_id }}" maxlength="55" id="id_pet_id">
+        {% endif %}
+        {% if pet_gender %}
+            <input type="hidden" name="pet_gender" value="{{ pet_gender }}" maxlength="55" id="id_pet_gender">
+        {% endif %}
+
+        {% comment %} Breed Form Specific Fields {% endcomment %}
+        {% if breed_name %}
+            <input type="hidden" name="breed" value="{{ breed_name }}" maxlength="55" id="id_breed_name">
+        {% endif %}
+        {% if breed_slug %}
+            <input type="hidden" name="breed_slug" value="{{ breed_slug }}" maxlength="55" id="id_breed_slug">
+        {% endif %}
+
+        {% comment %} Extra Fields {% endcomment %}
+        {% if breed_pet_type_slug %}
+            <input type="hidden" name="breed_pet_type_slug" value="{{ breed_pet_type_slug }}" maxlength="55" id="id_breed_pet_type_slug">
+        {% endif %}
+        {% if pet_type_slug %}
+            <input type="hidden" name="pet_type_slug" value="{{ pet_type_slug }}" maxlength="55" id="id_pet_type_slug">
+        {% endif %}
+
+        {{ form.captcha }}
+        {% if form.captcha.errors %}
+            <div class="text-danger pt-1">
+            {% for error in form.captcha.errors %}
+                {{error}}<br/>
+            {% endfor %}
+            </div>
+        {% endif %}
+
+
+        <div class="col-12">
+            <p class="m-0 mt-1 text-danger alert alert-danger consumer-validation-form-error-msg" style="display: none;">
+                An error occurred while verifying the code. Please try refreshing the page.
+            </p>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <button type="submit" class="theme-primary-btn w-100 mt-3 submit_collection_form" id="submit_collection_form">
+                    Submit
+                </button>
+            </div>
+        </div>
+    </form>
+  </div>
+  <div class="otp d-none">
+    <div class="container  d-flex justify-content-center align-items-center"> 
+       <div class="position-relative"> <div class=" p-2 text-center">
+          <div id="otp" class="inputs justify-content-center mt-2"> 
+            <div class="row">
+            <div class="col-12">
+              <div class="poptitle">
+                Verification Code  
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <form class="note-form" method="PUT" action="{% url 'pinogy_common_ajax:otp_verification' %}" id="note-form-{{ product.product_id }}">
+            <div class="col-12">
+              {% csrf_token %}
+
+              {{formotp.code}}
+              {{formotp.location_id}}
+              <div id="otp" class="inputs d-flex flex-row justify-content-center mt-2">
+             <input class="m-2 text-center form-control rounded"  type="text" id="1" maxlength="1" /> 
+             <input class="m-2 text-center form-control rounded"  type="text" id="2" maxlength="1" />
+             <input class="m-2 text-center form-control rounded"  type="text" id="3" maxlength="1" />
+             <input class="m-2 text-center form-control rounded"  type="text" id="4" maxlength="1" />
+             <input class="m-2 text-center form-control rounded"  type="text" id="5" maxlength="1" /> 
+             <input class="m-2 text-center form-control rounded"  type="text" id="6" maxlength="1" /> 
+            </div> 
+            </div>
+          <div class="col-12 ps-0 note-btn-outer">
+            <button type="submit" class="theme-primary-btn w-100 mt-3 submit_collection_form otp_verify" id='otp_verify'>
+                Submit
+            </button>
+        </div>
+        <div class="col-12">
+            <p class="m-0 mt-1 text-danger otp-error-msg" style="display: none;">
+                An error occurred while verifying the code. Please try refreshing the page.
+            </p>
+        </div>
+        </form>
+      </div>
+    </div>
+        <div class="col-12">
+            <div class="poptitle" style="font-size: 15px; padding: 15px 0px 5px 0px;">
+                A message with a Verification code has been sent to your phone. Enter the code to Continue.
+            </div>
+        </div>
+       </div>
+    </div> 
+  </div>  
+
+</div>
+</div>
+
+
+{% addtoblock 'js' %}
+<script>      
+    function showErrorMessage(formOuter, errorMsg){
+        // Adding error message in `general-error-msg`
+        const errorMessage = `<div class="alert alert-danger mt-3 mb-0" role="alert"><strong>${errorMsg}</strong></div>`
+        formOuter.find('.general-error-msg').html(errorMessage);
+
+        setTimeout(function() {
+            formOuter.find('.general-error-msg').remove();
+        }, 5000);
+    }   
+
+    $(document).on("submit", "#consumer_validation_form_{{unique_id}}, #general_collection_form", function (event) {
+        event.preventDefault();
+    
+        {% if unique_id %}
+            const collectionForm = $("#consumer_validation_form_{{unique_id}}");
+            const form = document.getElementById("consumer_validation_form_{{unique_id}}");
+            const formOuter = $("#consumer_validation_form_outer_{{unique_id}}");
+        {% else %}
+            const collectionForm = $("#general_collection_form");
+            const form = document.getElementById("general_collection_form");
+            const formOuter = $("#consumer_validation_form_outer");
+        {% endif %}
+    
+
+
+        let loader=`<svg width="20" height="20" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg" stroke="#EB8207"><g fill="none" fill-rule="evenodd">
+              <g transform="translate(1 1)" stroke-width="2">
+                  <circle stroke-opacity=".5" cx="18" cy="18" r="18"/>
+                  <path d="M36 18c0-9.94-8.06-18-18-18">
+                      <animateTransform
+                          attributeName="transform"
+                          type="rotate"
+                          from="0 18 18"
+                          to="360 18 18"
+                          dur="1s"
+                          repeatCount="indefinite"/>
+                  </path>
+              </g>
+          </g>
+      </svg>`
+      let btn=document.getElementById('submit_collection_form');
+      btn.innerHTML=loader;
+      btn.disabled=true
+      // Check if the captcha field is empty or the value attribute is not present
+      {% comment %} const captchaField = $('input.django-recaptcha-hidden-field');
+      const captchaValue = captchaField.val();
+      if (!captchaValue || captchaField.attr('value') === undefined) {
+          showErrorMessage(formOuter, "No Captcha found. Please refresh.");
+          return false;
+      } {% endcomment %}
+  
+      // Manually submit the form using Fetch API
+      var formData = new FormData(form);
+        var url = form.action;
+        fetch(url, {
+            method: "POST",
+            body: formData,
+        })
+        .then(response => {
+            if (response.status === 200) {
+              $('.consumer_validation_form').addClass('d-none');
+              $('.otp').removeClass('d-none');
+              let model=document.getElementById('fieldvalidate')
+              model.childNodes[1].className='modal-dialog modal-sx'
+            } else if (response.status === 400) {
+              btn.disabled=false
+              btn.innerHTML='Submit';
+              btn.disabled=true
+              let error_msg=document.getElementsByClassName('consumer-validation-form-error-msg');
+              error_msg[0].innerHTML=response.statusText;
+              return response.text();
+            } else {
+              btn.innerHTML='Submit';
+              btn.disabled=false
+              let error_msg=document.getElementsByClassName('consumer-validation-form-error-msg');
+              error_msg[0].style.display="block"
+              error_msg[0].innerHTML=response.statusText;
+              return false;
+            }
+        })
+        .then(data => {
+            if (data) {
+                formOuter.html(data);
+            } else {
+                //showErrorMessage(formOuter, "Something went wrong. Please try again.");
+            }
+        });
+    
+        return false;
+    });
+    
+    document.getElementById("consumer_validation_form_{{unique_id}}").addEventListener("submit", function(event) {
+        event.preventDefault();
+        if (this.checkValidity() === false) {
+            event.stopPropagation();
+            this.classList.add("was-validated");
+        }
+    });
+        
+</script>
+<script>
+  $(document).ready(function() {
+    // show/hide the note form
+    $('.note-checkbox').change(function() {
+      var isChecked = $(this).is(':checked');
+      var addNoteForm = $($(this).data("target"));
+
+      if (isChecked) {
+        addNoteForm.slideDown('slow');
+      } else {
+        addNoteForm.slideUp('slow');
+      }
+    });
+
+    // enabled the buton if user will enter something in textarea of note
+    $(".note-textbox").on("input", function () {
+      var saveButton = $(this).closest(".note-form").find(".note-btn");
+      saveButton.prop("disabled", false);
+    });
+
+    let loader=`<svg width="20" height="20" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg" stroke="#EB8207"><g fill="none" fill-rule="evenodd">
+      <g transform="translate(1 1)" stroke-width="2">
+          <circle stroke-opacity=".5" cx="18" cy="18" r="18"/>
+          <path d="M36 18c0-9.94-8.06-18-18-18">
+              <animateTransform
+                  attributeName="transform"
+                  type="rotate"
+                  from="0 18 18"
+                  to="360 18 18"
+                  dur="1s"
+                  repeatCount="indefinite"/>
+          </path>
+      </g>
+        </g>
+    </svg>`
+
+    // submit cart product note form
+    $(".note-form").submit(function(event) {
+      event.preventDefault(); // Prevent the default form submission
+      
+      var url = $(this).attr('action');
+      var form = $(this);
+      
+
+      let btn=document.getElementById('otp_verify');
+      btn.innerHTML=loader;
+      btn.disabled=true
+      let code=''
+      for(let i=1; i<=6;i++){
+        code+= document.getElementById(i).value;
+      }
+      
+      document.getElementById('id_code').value=code;
+      var formData = new FormData(form[0]);
+
+      if ( code === '' ){
+        btn.innerHTML='Submit';
+        btn.disabled=false
+        let error_msg=document.getElementsByClassName('otp-error-msg');
+        error_msg[0].style.display="block"
+        error_msg[0].innerHTML='Please enter the OTP to complete the verification process.'
+        return false
+      }
+
+      fetch(url, {
+          method: "POST",
+          body: formData
+      })
+      .then(data => {
+        if(data.status==200){
+            $('#btndivvalidate').addClass('d-none');
+            $('#divvalidate').removeClass('d-none');
+            $("#fieldvalidate").hide();
+            const element = document.getElementsByClassName("modal-backdrop");
+            element[0].remove();
+        }else if(data.status==422){
+            btn.innerHTML='Submit';
+            btn.disabled=false
+            let error_msg=document.getElementsByClassName('otp-error-msg');
+            error_msg[0].style.display="block"
+            error_msg[0].innerHTML='Wrong verification code'
+        }else{
+            btn.innerHTML='Submit';
+            btn.disabled=false
+            let error_msg=document.getElementsByClassName('otp-error-msg');
+            error_msg[0].style.display="block"
+        }
+    
+      })
+      .catch(error => {
+          console.error("Error:", error);
+          // Change submit text button
+          submitButton.prop('disabled', false).html('Submit');
+      });
+      
+      return false;
+    });
+
+  });
+
+
+  function setFocus(id){
+    
+    document.getElementById(id+1).focus();
+  }
+  
+
+  {% comment %} OTP input box navigation {% endcomment %}
+  $(document).ready(function() {
+    function OTPInput() {
+        const inputs = document.querySelectorAll('#otp > *[id]');
+        for (let i = 0; i < inputs.length; i++) {
+            inputs[i].addEventListener('keydown', function(event) {
+                if (event.key === "Backspace") {
+                    inputs[i].value = '';
+                    if (i !== 0) inputs[i - 1].focus();
+                } else {
+                    if (i === inputs.length - 1 && inputs[i].value !== '') {
+                        return true;
+                    } else if (event.key >= "0" && event.key <= "9") {
+                        inputs[i].value = event.key;
+                        if (i !== inputs.length - 1) inputs[i + 1].focus();
+                        event.preventDefault();
+                    } else if (event.key.length === 1 && ((event.key >= "A" && event.key <= "Z") || (event.key >= "a" && event.key <= "z"))) {
+                        inputs[i].value = event.key;
+                        if (i !== inputs.length - 1) inputs[i + 1].focus();
+                        event.preventDefault();
+                    } else {
+                        inputs[i].value = '';
+                        event.preventDefault();
+                    }
+                }
+            });
+        }
+    }
+    OTPInput();
+  })
+</script>
+  })
+</script>
+{% endaddtoblock %}

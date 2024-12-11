@@ -1,0 +1,445 @@
+html, body {
+    overflow-x: hidden;
+}
+
+body {
+    position: relative
+}
+
+.disabled-block {
+    pointer-events: none;
+}
+
+
+.no-underline{
+    text-decoration: none;
+}
+
+.no-underline:hover{
+    text-decoration: none;
+}
+
+.image-border{
+    border: 1px solid rgba(0, 0, 0, 0.17);
+}
+
+/* ------------------------------------ Typography Css Start ------------------------------------ */
+h1, .h1-theme,
+.h1-theme-bold{
+    font-style: normal;
+    font-weight: 700;
+    line-height: 110%;
+    font-size: 48px;
+}
+
+h2, .h2-theme,
+.h2-theme-bold{
+    font-style: normal;
+    font-weight: 700;
+    line-height: 125%;
+    font-size: 40px;
+    text-transform: capitalize;
+}
+
+h3, .h3-theme,
+.h3-theme-bold{
+    font-style: normal;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 115%;
+}
+
+.primary1-bold{
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 140%;
+    color: var(--global-primary-color);
+    font-family: var(--general-font);
+}
+
+.primary1-semibold,
+.semi-bold{
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 140%;
+    color: var(--global-primary-color);
+    font-family: var(--general-font);
+}
+
+.primary1-regular{
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%;
+    color: var(--global-primary-color);
+    font-family: var(--general-font);
+    font-family: var(--general-font);
+}
+
+.primary2-bold{
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 140%;
+    color: var(--global-primary-color);
+    font-family: var(--general-font);
+}
+
+.primary2-semibold
+{
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 140%;
+    color: var(--global-primary-color);
+    font-family: var(--general-font);
+}
+
+.primary2-regular{
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%;
+    color: var(--global-primary-color);
+    font-family: var(--general-font);
+}
+
+.primary3-bold{
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 140%;
+    color: var(--global-primary-color);
+    font-family: var(--general-font);
+}
+
+.primary3-semibold
+{
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 140%;
+    color: var(--global-primary-color);
+    font-family: var(--general-font);
+}
+
+.primary3-regular{
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%;
+    color: var(--global-primary-color);
+    font-family: var(--general-font);
+}
+/* ------------------------------------ Typography Css End ------------------------------------ */
+
+/* ------------------------------------ Form CSS Start ------------------------------------ */
+.theme-form input[type="text"],
+.theme-form input[type="email"],
+.theme-form input[type="number"],
+.theme-form input[type="tel" ],
+.theme-form input[type="datetime-local"],
+.theme-form textarea, 
+.theme-form select
+{
+    font-family: var(--general-font);
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 140%;
+    color: var(--global-primary-color);
+    border: 1px solid var(--global-primary-color);
+    padding: 12px;
+    width: 100%;
+    margin-top: 15px;
+    border-radius: 0;
+    opacity: 1;
+}
+
+/* Updating dropdown icon of select input */
+.theme-form select
+{
+    background-image: var(--select-dropdown-icon-primary);
+    background-repeat: no-repeat;
+    background-position: right .75rem center;
+    background-size: 16px 12px;
+    appearance: none;
+}
+
+.theme-form input[type="text"]::placeholder,
+.theme-form input[type="email"]::placeholder,
+.theme-form input[type="number"]::placeholder,
+.theme-form input[type="tel" ]::placeholder,
+.theme-form input[type="datetime-local"]::placeholder,
+.theme-form textarea::placeholder
+{
+    color: var(--global-primary-color);
+}
+
+
+
+.theme-form button[type="submit"]{
+    margin-top: 15px;
+}
+
+.theme-form input[type="text"]:focus,
+.theme-form input[type="email"]:focus,
+.theme-form input[type="number"]:focus,
+.theme-form input[type="tel" ]:focus,
+.theme-form input[type="datetime-local"]:focus,
+.theme-form textarea:focus,
+.theme-form select:focus
+{
+    box-shadow: none;
+    border: 2px solid var(--global-primary-color);
+}
+
+.theme-form input[type="radio"],
+.theme-radio,
+.theme-checkbox {
+    width: 1em;
+    height: 1em;
+    vertical-align: top;
+    background-color: #fff;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    border: 1px solid var(--global-primary-color);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+/* Need to use form-check-input in checkbox input for theme checkbox style */
+/* TODO: remove form-check-input dependancy for the checkbox */
+.theme-form input[type="checkbox"],
+.theme-checkbox{
+    border: 1px solid var(--global-primary-color);
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.theme-form input[type="checkbox"]:checked,
+.theme-checkbox:checked{
+    background-color: white;
+    border: 1px solid var(--global-primary-color);
+    background-image: var(--checkbox-arrow-primary-color) !important;
+}
+
+.theme-form input[type="checkbox"]:focus, .theme-form input[type="checkbox"]:active,
+.theme-checkbox:focus, .theme-checkbox:active{
+    box-shadow: none;
+    background-color: white;
+    border: 1px solid var(--global-primary-color);
+}
+
+.theme-form input[type="radio"],
+.theme-radio{
+    border: 1px solid var(--global-primary-color);
+    padding: 10px;
+    border-radius: 50% !important;
+}
+
+.theme-form input[type="radio"]:checked,
+.theme-radio:checked{
+    background-color: white;
+    border: 1px solid var(--global-primary-color);
+    background-image: var(--radio-circle-primary-color) !important;
+}
+
+.theme-form input[type="radio"]:focus, .theme-form input[type="radio"]:active,
+.theme-radio:focus, .theme-radio:active{
+    box-shadow: none;
+    background-color: white;
+    border: 1px solid var(--global-primary-color);
+}
+
+.theme-form label,
+.theme-form .label{
+    font-family: var(--general-font);
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 140%;
+    color: var(--global-primary-color) !important;
+    padding-top: 15px;
+}
+/* ------------------------------------ Form CSS End ------------------------------------ */
+
+/* ------------------------------------ Breadcrumb CSS Start ------------------------------------ */
+.breadcrumb-outer a {
+    font-family: var(--general-font);
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 140%;
+    color: var(--global-primary-color);
+    text-transform: capitalize;
+    text-decoration: none;
+}
+
+.breadcrumb-outer a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb-outer .breadcrumb-item+.breadcrumb-item::before{
+    content: "|";
+    color: var(--global-primary-color);
+}
+
+.breadcrumb-outer .breadcrumb-item.active{
+    color: var(--global-primary-color);
+}
+
+/* ------------------------------------ Breadcrumb CSS End ------------------------------------ */
+
+/* ------------------------------------ Pet List Filter CSS Start ------------------------------------ */
+
+.filter-dropdown button{
+    background: white;
+    border: 1px solid var(--global-primary-color);
+}
+
+.filter-dropdown.bootstrap-select .dropdown-toggle:focus, 
+.filter-dropdown.bootstrap-select>select.mobile-device:focus+.dropdown-toggle{
+    outline: 0 !important;
+    border: 1px solid var(--global-primary-color);
+    box-shadow: none;
+}
+
+
+.filter-dropdown .filter-option-inner-inner{
+    color: var(--global-primary-color);
+    opacity: 0.6;
+}
+
+.filter-accodian  .accordion-button::after {
+    background-image: var(--accodian-icon-primary);
+}
+
+.filter-accodian button.accordion-button{
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 140%;
+}
+
+.filter-accodian .filter-accodian-item.accordion-item:first-of-type .accordion-button{
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: none;
+    padding: 8px !important;
+    color: var(--global-primary-color);
+}
+
+.filter-accodian .filter-accodian-item {
+    border: 0;
+    border-radius: 0;
+}
+
+/* ------------------------------------ Pet List Filter CSS End ------------------------------------ */
+
+/* ------------------------------------ Share icon CSS Start ------------------------------------ */
+.share-icon-section{
+    display: inline-block;
+}
+
+.share-title{
+    font-family: var(--button-font);
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 140%;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.share-icon-btn-outers.show{
+    justify-content: center;
+    min-width: fit-content;
+    padding: 6px;
+    margin-left: 20px;
+}
+.share-icon-btn-outers.show i{
+    font-size: 23px;
+}
+
+.share-icon-btn-outers li a{
+    font-size: 30px;
+    padding: 0;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.share-icon-section .dropdown-toggle::after{
+    content: none;
+}
+
+.share-icon-btn-outers .fa-facebook {
+    color: var(--global-secondary-color);
+}
+
+.share-icon-btn-outers .fa-twitter{
+    color: var(--global-secondary-color);
+}
+
+.share-icon-btn-outers a:active{
+    background-color: transparent;
+}
+/* ------------------------------------ Share icon CSS End ------------------------------------ */
+
+
+/* ------------------------------------ Card related css Start ------------------------------------ */
+
+.theme-box-shadow{
+    box-shadow: 0px 1px 8px 0px var(--primary-color-0-04-opacity), 1px 2px 60px 0px var(--primary-color-12-opacity);
+}
+
+/* ------------------------------------ Card related css End ------------------------------------ */
+
+/* ------------------------------------ Override Bootstrap css Start ------------------------------------ */
+
+.btn-close{
+    background: transparent var(--modal-close-btn-primary-color) center/1em auto no-repeat;
+}
+
+.btn-close:focus{
+    box-shadow: none;
+}
+
+/* ------------------------------------ Override Bootstrap css End ------------------------------------ */
+
+
+/* Small devices (portrait tablets and large phones, 600px and less) */
+@media (max-width: 575px) { 
+
+    /* ------------------------------------ Typography Css Start ------------------------------------ */
+    h1, .h1-theme,
+    .h1-theme-bold{
+        font-size: 40px;
+    }
+
+    h2, .h2-theme,
+    .h2-theme-bold{
+        font-size: 32px;
+    }
+    /* ------------------------------------ Typography Css End ------------------------------------ */
+
+    .sw-100{
+        width: 100%;
+    }
+}
+
+/* smaller than tablate screen */
+@media (max-width: 767px) { 
+
+    /* ------------------------------------ Pet List Filter Css Start ------------------------------------ */
+    .filter-accodian .filter-accodian-item {
+        border-bottom: 1px solid var(--global-primary-color);
+    }
+    /* ------------------------------------ Pet List Filter Css Start ------------------------------------ */
+
+}

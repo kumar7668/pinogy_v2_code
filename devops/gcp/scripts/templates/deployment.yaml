@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: pgy-websites
+    pin_domain: SITENUM.pinogy.dev
+  name: SITENUM
+  namespace: websites-v2
+spec:
+  minReadySeconds: 5
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: SITENUM
+  strategy:
+    rollingUpdate:
+      maxSurge: 100%
+      maxUnavailable: 40%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: SITENUM
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: cloud.google.com/gke-nodepool
+                    operator: In
+                    values:
+                      - pool-1
+                      - pool-2
+                      - pool-3
+      containers:
+        - command:
+            - /bin/bash
+            - "-c"
+            - |
+              uwsgi --ini=/app/uwsgi.ini
+          envFrom:
+            - secretRef:
+                name: SITENUM-secret
+          image: us.gcr.io/pinogy-websites/pinogy-new-base:IMAGE_TAG
+          imagePullPolicy: IfNotPresent
+          name: SITENUM
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /health/check/
+              port: 8000
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 10
+          resources:
+            limits:
+              cpu: 800m
+              ephemeral-storage: 1Gi
+              memory: 1Gi
+            requests:
+              cpu: 30m
+              ephemeral-storage: 400Mi
+              memory: 768Mi
+          volumeMounts:
+            - mountPath: /app/static_collected
+              name: static-files
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 120
+      tolerations:
+        - effect: NoSchedule
+          key: kubernetes.io/arch
+          operator: Equal
+          value: amd64
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app: SITENUM
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+      volumes:
+        - name: static-files
+          nfs:
+            path: /customers/SITENUM
+            server: 10.128.0.2

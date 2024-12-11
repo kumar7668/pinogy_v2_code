@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: SITENUM-migration-job
+  namespace: websites-v2
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+                - matchExpressions:
+                  - key: cloud.google.com/gke-nodepool
+                    operator: In
+                    values:
+                      - migration-pool
+      containers:
+        - name: SITENUM-migration-job
+          image: us.gcr.io/pinogy-websites/pinogy-new-base:IMAGE_TAG
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              cpu: 500m
+              ephemeral-storage: 200Mi
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              ephemeral-storage: 200Mi
+              memory: 64Mi
+          envFrom:
+            - secretRef:
+                name: SITENUM-secret
+          volumeMounts:
+            - mountPath: /app/static_collected
+              name: static-files
+          command: ["/bin/sh", "-c"]
+          args: ["python /app/manage.py prepare_launch"]
+      volumes:
+        - name: static-files
+          nfs:
+            path: /customers/SITENUM
+            server: 10.128.0.2

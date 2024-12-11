@@ -1,0 +1,67 @@
+{% comment %} #TODO: Create external css files for pet type pages {% endcomment %}
+<style>
+   .pet-type-title{
+      font-style: normal;
+      font-weight: 700;
+      line-height: 110%;
+      text-transform: capitalize;
+      color: {{ instance.glossary.title_color }};
+   }
+   .pet-type-sub-title{
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: 140%;
+      color: {{ instance.glossary.sub_title_color }};
+   }
+   .card-text{
+      text-decoration: none;
+   }
+   .pet-type-image{
+      min-height: 300px; 
+      height: 100px;
+      object-fit: cover;
+      object-position: top;
+   }
+   .pet-type-name-outer{
+      border-top: 1px solid rgba(0, 0, 0, 0.17);
+   }
+   a{
+      text-decoration: none;
+   }
+   @media screen 
+   and (min-device-width: 995px) 
+   and (max-device-width: 1200px)  { 
+      .col-set{
+         width:33.33%
+      }
+   }
+</style>
+<div class="container py-5">
+   <h1 class="pet-type-title">{{ instance.glossary.title }}</h1>
+   <h2 class="pet-type-sub-title">{{ instance.glossary.sub_title }}</h2>
+
+   <div class="row">
+      {% for petsType in pet_list%}
+      <div class="col-lg-3 col-md-6 col-sm-6 col-sx-6 col-set" style="padding-top: 10px;">
+         <a href="{% url 'pinogy_pet:pet_type' petsType.slug %}" >
+            <div class="card card-shape h-100">
+               <img src={{ petsType.image_url}} class="card-img-top pet-type-image" alt="{% if petsType.pet_images.file_image.instance.alt %}{{petsType.pet_images.file_image.instance.alt}}{% else %}default-pet-img{% endif %}" loading="lazy">
+               <div class="card-body pet-type-name-outer">
+                  <div  class="card-text"  style="text-align: center;">
+                     {{ petsType.name}}
+                  </div>
+               </div>
+            </div>
+         </a>
+      </div>
+      {% empty %}
+         <h3 class="pet-type-list-name pt-2">All our Pets have found their homes. Please let us know what type of Pets you are looking to add to your family and we will be in touch as soon as we have your match.</h3>
+         <div class="row">
+            <div class="col-12 col-lg-6">
+               {% include 'plugins/includes/general_collection_form.html' with unique_id="pet_type_list_collection_form" form=collection_form form_type='pet_list_collection_form' %}
+            </div>
+         </div>
+      {% endfor %}
+   </div>
+</div>

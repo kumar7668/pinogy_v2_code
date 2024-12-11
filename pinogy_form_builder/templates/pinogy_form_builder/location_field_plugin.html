@@ -1,0 +1,12 @@
+<div class="label">
+    {% if instance.label %}
+        <label for="{{ instance.name|slugify }}" class="form-label mb-0">
+            {{ instance.label }}
+        </label>
+    {% endif %}
+    <select name="{{ instance.name }}" class="form-select focus-color form-control" id="{{ instance.name|slugify }}">
+        {% for location_id, location_name in locations %}
+        <option value="{{ location_id }}">{{ location_name }}</option>
+        {% endfor %}
+    </select>
+</div>

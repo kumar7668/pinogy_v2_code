@@ -1,0 +1,45 @@
+{% load cms_tags sekizai_tags %}
+<!-- pinogy_form_builder/checkbox_field_plugin.html -->
+<div class="label form-check">
+  <input class="form-check-input mt-0" type="checkbox" id="{{ instance.cmsplugin_ptr_id|slugify }}" name="{{ instance.name }}"  
+         {% if instance.is_required %}required{% endif %} 
+         {% if instance.default %}checked{% endif %}>
+  {% if instance.label %}
+      <label class="pt-0" for="{{ instance.cmsplugin_ptr_id|slugify }}">{{ instance.label }}</label>
+  {% endif %}
+  <!-- Hidden input to ensure 0 is sent when checkbox is unchecked -->
+  <input type="hidden" id="{{ instance.cmsplugin_ptr_id|slugify }}_hidden" name="{{ instance.name }}" value="0">
+</div>
+
+{% addtoblock 'js' %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const checkbox = document.getElementById('{{ instance.cmsplugin_ptr_id|slugify }}');
+    const hiddenFieldId = '{{ instance.cmsplugin_ptr_id|slugify }}_hidden';
+    
+    function toggleHiddenField() {
+      const hiddenField = document.getElementById(hiddenFieldId);
+      if (checkbox.checked) {
+        if (hiddenField) {
+          hiddenField.parentNode.removeChild(hiddenField);
+        }
+      } else {
+        if (!hiddenField) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.id = hiddenFieldId;
+          input.name = checkbox.name;
+          input.value = '0';
+          checkbox.parentNode.appendChild(input);
+        }
+      }
+    }
+
+    // Attach event listener to checkbox
+    checkbox.addEventListener('change', toggleHiddenField);
+
+    // Initialize the state on page load
+    toggleHiddenField();
+  });
+</script>
+{% endaddtoblock %}

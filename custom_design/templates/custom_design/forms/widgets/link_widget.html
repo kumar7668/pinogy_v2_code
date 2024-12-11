@@ -1,0 +1,27 @@
+{% extends "custom_design/forms/widgets/base-widget.html" %}
+{% load static %}
+
+{% block widget_section %}
+<div class="w-50 admin-form">
+    {# Text Box Label #}
+    {% if widget.attrs.label %}
+        <div class="primary-label">
+            {{ widget.attrs.label|capfirst }}
+        </div>
+    {% endif %}
+
+    <div class="box-theme-form-item">
+        <div class="box-theme-form-item-inline">
+            {# Text Box  #}
+            <div class="box-theme-form-item-inline-input">
+                <input name="{{widget.name}}" id="{{widget.attrs.id}}" type="text"
+                       class="form-control form-input p-2 {{ widget.attrs.class }}" 
+                       value="{% if widget.value %}{{widget.value}}{% endif %}"
+                       {% if widget.attrs.placeholder %} placeholder="{{ widget.attrs.placeholder }}" {% endif %}
+                       class="form-input" {% if widget.required %} required {% endif %}>
+            </div>
+        </div>
+    </div>
+</div>
+{{ widget.script_init|safe }}
+{% endblock %}

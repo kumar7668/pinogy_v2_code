@@ -1,0 +1,22 @@
+{% load i18n blog_filter %}
+
+<style>
+    div.plugin-blog span {
+        float: right;
+    }
+
+    .plugin-blog {
+        padding-bottom: 50px;
+    }
+</style>
+
+<div style="display: none">{% get_publish_blogs %}</div>
+{% if archives|length > 0 %}
+    <div class="plugin plugin-blog">
+        <h1>{% trans "Blog Archives" %}</h1>
+        {% for item in archives %}
+            <a href="{% url 'djangocms_blog:posts-latest' %}{{ item.date_published__year }}/{{ item.date_published__month }}/"> {{ item.date_published__month|get_month_name }} {{ item.date_published__year }}</a>
+            <span>{{ item.pk__count }}</span><br>
+        {% endfor %}
+    </div>
+{% endif %}

@@ -1,0 +1,27 @@
+{% load static cms_tags sekizai_tags global_theme_config_tags %}
+
+{% addtoblock "css"  %}
+    <style>
+      .modal-{{instance.id}} .modal-header {
+        border-bottom : none;
+      }
+    </style>
+{% endaddtoblock  %}
+
+<div class="modal fade modal-{{instance.id}}" id="ModalToggle-{{instance.id}}" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1"  data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalToggleLabel" style = 'color:{{instance.popuptitlecolor}}'>{{instance.popuptitle|default:''}}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          
+          {% for plugin in instance.child_plugin_instances %}
+              <div class="">{% render_plugin plugin %}</div>
+          {% endfor %} 
+        </div>
+      </div>
+    </div>
+  </div>
+  <button id="Modal-{{instance.id}}" type="button" class="theme-primary-btn" data-bs-toggle="modal" data-bs-target="#ModalToggle-{{instance.id}}" data-bs-whatever="@mdo">{{instance.btn_text}}</button>

@@ -1,0 +1,36 @@
+{% load menu_tags cms_tags sekizai_tags %}
+{% for child in child.children %}
+<li class="submenu childmenu child{% if child.ancestor %} ancestor{% endif %}{% if child.sibling %} sibling{% endif %}{% if child.descendant %} descendant{% endif %} menu_item_{{child.get_menu_title}} parent_id_{{child.id}}">
+    <a class="dropdown-item dropdown-item-colors" href="{{ child.attr.redirect_url|default:child.get_absolute_url }}" title="" area-label = "dropdown url">
+        {{ child.get_menu_title }} {% if child.children %} <span style="float:right">&raquo;<span>{% endif %}
+    </a>
+    {% if child.children %}
+    <ul class="submenu sub-submenu-position dropdown-menu svmenu drop-menu-{{child.id}}" style="position: absolute; left: 100%; top: 0px; background: #fff;">    
+        {% for child1 in child.children %} 
+        <li>
+            <a class="dropdown-item " tabindex="-1" href="{{ child1.attr.redirect_url|default:child1.get_absolute_url }}" target="" area-label = "{{ child1.get_menu_title }}">
+                {{ child1.get_menu_title }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</li>
+
+{% endfor %}
+
+{% addtoblock 'js' %}
+<script>
+    let topPosition = 0; 
+
+    // Select all submenu <ul> elements
+    const submenus = document.querySelectorAll('.submenu.sub-submenu-position.dropdown-menu.svmenu');
+
+    // Loop through each submenu and adjust top position
+    submenus.forEach((submenu) => {
+        submenu.style.top = `${topPosition}px`;
+        topPosition += 45;
+    });
+
+</script>
+{% endaddtoblock %}

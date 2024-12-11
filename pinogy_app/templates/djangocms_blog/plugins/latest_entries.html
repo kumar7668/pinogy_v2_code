@@ -1,0 +1,84 @@
+{% load i18n %}{% spaceless %}
+
+<style>
+    .post-item__content {
+        padding: 22px;
+        padding-top: 14px;
+    }
+
+    .post-item__title a {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 4px;
+        color: #333 !important;
+    }
+
+    .post-item__link {
+        text-align: right;
+    }
+
+    .post-item__link {
+        color: #40609a !important;
+        font-size: 16px;
+        text-decoration: underline;
+        font-weight: 700;
+    }
+
+    .post-detail__info {
+        background-color: #40609a;
+        font-size: 16px;
+        width: 65px;
+        height: fit-content;
+        line-height: 23px;
+        padding: 4px;
+        text-align: center;
+        margin-right: 8px;
+        margin-bottom: 8px;
+    }
+
+    .blog-lead > * {
+        margin: 0 0 5px;
+    }
+
+    .post-detail {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .post-detail__tags-item {
+        font-size: 16px;
+        height: fit-content;
+        width: max-content;
+        line-height: 23px;
+        padding: 4px;
+        text-align: center;
+        margin-right: 8px;
+        margin-bottom: 8px;
+    }
+
+    .post-detail__tags-item--blue {
+        background-color: #40609a;
+    }
+
+    .post-detail__tags-item--lagoon {
+        background-color: #2fbab7;
+    }
+
+    .post-detail__link {
+        font-size: 16px;
+        color: #fff;
+    }
+
+</style>
+
+<div class="plugin plugin-blog">
+    <div class="blog-latest-entries row justify-lg-content-around flex-lg-row pt-3 pb-3">
+
+    {% for post in posts_list %}
+        {% include "djangocms_blog/includes/blog_item.html" with post=post image="true" TRUNCWORDS_COUNT=TRUNCWORDS_COUNT %}
+    {% empty %}
+    <p class="blog-empty">{% trans "No article found." %}</p>
+    {% endfor %}
+    </div>
+</div>
+{% endspaceless %}

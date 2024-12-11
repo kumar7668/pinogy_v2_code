@@ -1,0 +1,8 @@
+{% load cms_tags menu_tags %}
+{% for child in children %}
+    <li class="child{% if child.ancestor %} ancestor{% endif %}{% if child.sibling %} sibling{% endif %}{% if child.descendant %} descendant{% endif %} menu_item_{{child.get_menu_title|cut:" "}}">
+        <a href="{{ child.attr.redirect_url|default:child.get_absolute_url }}" title="" area-label = "redirected to {{ child.get_menu_title }}">
+            {{ child.get_menu_title }}
+        </a>
+    </li>
+{% endfor %}

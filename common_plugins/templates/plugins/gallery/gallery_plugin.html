@@ -1,0 +1,226 @@
+{% load static sekizai_tags thumbnail %}
+
+{% addtoblock "css" %}
+    <style>
+        .gallery-image-main{
+            padding: 12px;
+        }
+
+        .gallery-title-{{ instance.id }} {
+            color: {{ instance.glossary.title_color }};
+        }
+
+        .gallery-img {
+            min-height: 306px;
+            object-fit: cover;
+            height: 306px !important;
+            cursor: pointer;
+        }
+        
+        .gallery-img-model {
+            min-height: 306px;
+            object-fit: contain;
+            height: 450px !important;
+        }
+
+        .gallery-img-title-{{ instance.id }}{
+            color: {{ instance.glossary.title_color }};
+            font-size: 20px;
+            font-style: normal;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            margin-bottom: 8px;
+            text-decoration: none;
+        }
+
+        .gallery-img-label-outer-{{ instance.id }}{
+            padding: 8px 12px;
+            {% if instance.glossary.label_bg_style == "Gradient" %}
+                background: linear-gradient(180deg, rgba(0, 0, 0, 0.00) -5%, {{ instance.glossary.label_bg_color }} 100%);
+            {% else %}
+                background: {{ instance.glossary.label_bg_color }};
+                opacity: 0.8;
+            {% endif %}
+        }
+
+        .gallery-img-label-{{ instance.id }}{
+            color: {{ instance.glossary.label_font_color }};
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 600;
+            margin: 0;
+            font-size: clamp(13px, 4vw, 16px);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+    {% if instance.glossary.click_action != "Link" %}
+    <style>
+        {% comment %} Large Image View related CSS {% endcomment %}
+        .gallery-img-title-large-{{ instance.id }}{
+            color: #FFF;
+            font-size: 24px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 115%;
+        }
+
+        .gallery-img-label-large-{{ instance.id }}{
+            color: #FFF;
+            font-size: 20px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 140%;
+            margin-top: 10px;
+        }
+
+        .galleryLargeImageModal{
+            background: rgba(0, 0, 0, 0.80);
+            backdrop-filter: blur(4px);
+        }
+
+        .galleryLargeImageModal .modal-content{
+            background: transparent;
+            border: none;
+        }
+        
+        .slick-dotted.slick-slider {
+            margin-bottom: 0px !important;
+        }
+        
+        .slick-prev:before,
+        .slick-next:before {
+            color: white;
+            font-size: 2rem !important;
+            font-family: 'FontAwesome';
+            opacity: 1 !important;
+        }
+        
+        .slick-next:before {
+            content: '›' !important;
+        }
+        
+        .slick-prev::before {
+            content: '‹' !important;
+        }
+    </style>
+    {% endif %}
+{% endaddtoblock %}
+
+<div class="container py-4">
+    {% if instance.glossary.info_title %}
+    <div class="row m-auto mb-3">
+        <div class="col-12 p-0" >
+            <div class="title_text">
+                <h2 class="h2-theme-bold gallery-title-{{ instance.id }}"> 
+                    {{instance.glossary.info_title|safe}}       
+                </h2>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        {% for image in images %}
+        <div class="gallery-image-main {% if image.double_image_width %} col-12 col-sm-6 col-lg-8 col-xl-6 {% else %} col-12 col-sm-6 col-lg-4 col-xl-3 {% endif %} d-flex flex-column justify-content-end" 
+            {% if instance.glossary.click_action != "Link" %} data-bs-toggle="modal" data-bs-target="#galleryLargeImageModal-{{ instance.id }}" {% endif %} >
+            
+            {% if instance.glossary.click_action == "Link" and image.glossary.image_url %} <a href="{{ image.glossary.image_url }}" class="no-underline" target="_self" area-label = "image url"> {% endif %}
+
+                {% if image.glossary.image_title %}
+                    <div class="gallery-img-title-outer">
+                        <p class="gallery-img-title-{{ instance.id }}">{{ image.glossary.image_title }}</p>
+                    </div>
+                {% endif %}
+                <div class="gallery-img-outer card image-shape position-relative" data-slide="{{ forloop.counter0 }}">
+                    {% if image.glossary.image_file.image %}
+                        {% if image.double_image_width %}
+                            {% thumbnail image.glossary.image_file.image "612x306" as thumb %}
+                        {% else %}
+                            {% thumbnail image.glossary.image_file.image "306x306" as thumb %}
+                        {% endif %}
+                        <img
+                            src="{{ thumb.url }}"
+                            alt="{{ image.glossary.image_file.image.default_alt_text|default:'info-img-alt-text' }}"
+                            class="img-fluid image-shape gallery-img"
+                            loading="lazy"
+                        />
+                    {% else %}
+                        <img
+                            src="{% static 'images/default-placeholder-image.webp' %}"
+                            alt="{{ image.glossary.image_file.image.default_alt_text|default:'info-img-alt-text' }}"
+                            class="img-fluid image-shape gallery-img"
+                            loading="lazy"
+                        />
+                    {% endif %}
+                    {% if image.glossary.image_label %}
+                        <div class="image-shape gallery-img-label-outer-{{ instance.id }} position-absolute w-100 bottom-0">
+                            <p class="gallery-img-label-{{ instance.id }}" title="{{ image.glossary.image_label }}">{{ image.glossary.image_label }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+            {% if instance.glossary.click_action == "Link" and image.glossary.image_url %} </a> {% endif %}
+        </div>
+        {% endfor %}           
+    </div>
+</div>
+
+{% if instance.glossary.click_action != "Link" %}
+<div class="modal fade galleryLargeImageModal" id="galleryLargeImageModal-{{ instance.id }}" tabindex="1" aria-label="galleryLargeImageModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="gallery-large-image-slider-{{ instance.id }}">
+                    {% for image in images %}
+                    <div class="gallery-large-images-outer">
+                        <div class="d-flex flex-column justify-content-center">
+                            {% if image.glossary.image_title %}
+                                <div class="gallery-img-title-large-outer text-center">
+                                    <p class="gallery-img-title-large-{{ instance.id }}">{{ image.glossary.image_title }}</p>
+                                </div>
+                            {% endif %}
+                            <img
+                                src="{% if image.glossary.image_file.image %}{{image.glossary.image_file.image.url}}{% else %}{% static 'images/default-placeholder-image.webp' %}{% endif %}" 
+                                alt="{{image.glossary.image_file.image.default_alt_text|default:"info-img-alt-text"}}"
+                                class="img-fluid gallery-img-model" 
+                                loading="lazy"
+                            />
+                            {% if image.glossary.image_label %}
+                                <div class="image-shape gallery-img-label-large-outer-{{ instance.id }} text-center">
+                                    <p class="gallery-img-label-large-{{ instance.id }}">{{ image.glossary.image_label }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% addtoblock "js" %}
+    {% if instance.glossary.click_action != "Link" %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // Initialize Slick slider
+            $('.gallery-large-image-slider-{{ instance.id }}').slick({
+                dots: false,
+                infinite: true,
+                speed: 300,
+                slidesToShow: 1,
+                slidesToScroll: 1,
+            });
+        });
+
+        // Set the correct starting slide based on the clicked image
+        $('.gallery-image-main').click(function() {
+            var clickedIndex = $(this).find(".gallery-img-outer").data('slide');
+            $('.gallery-large-image-slider-{{ instance.id }}').slick('slickGoTo', clickedIndex);
+        });
+    </script>
+    {% endif %}
+{% endaddtoblock %}

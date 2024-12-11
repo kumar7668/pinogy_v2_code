@@ -1,0 +1,102 @@
+
+
+{% load sekizai_tags static %}  <!-- Load Sekizai tags -->
+
+<!-- Add custom CSS to the "css" block -->
+{% addtoblock "css" %}
+<style>
+    {% if instance.glossary.grid_card_size == 'SMALL' and instance.glossary.promotion_layout == 'promotion_layout_2' %}
+            .grid-container {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(391px, 1fr)); /* six equal columns */
+              gap: 20px; /* Space between grid items */
+              align-items : center;
+          }
+          {% elif instance.glossary.grid_card_size == 'LARGE' and instance.glossary.promotion_layout == 'promotion_layout_2'%} 
+            .grid-container {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(550px, 1fr)); /* four equal columns */
+              gap: 20px; /* Space between grid items */
+              align-items : center;
+            }
+    {% endif %}
+
+    .grid-item-{{instance.id}} h3{
+        color : black;
+    }
+    .grid-item-{{instance.id}}  {
+        position : relative;
+        text-align: center;
+        padding: 20px;
+        display :none;
+      }
+      .grid-item-title{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+      {% comment %} .grid-item-{{instance.id}} img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      } {% endcomment %}
+      .grid-item-{{instance.id}} .logo-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto;
+        padding: 20px;
+        border: 2px solid #000;
+        border-radius: 10px;
+        margin-top : 20px;
+    }
+
+    .grid-item-{{instance.id}} .logo-box img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+    .hr-desc-{{instance.id}}{
+        font-style: normal;
+        font-weight: 700;
+        line-height: 115%;
+        padding : 10px;
+    }
+
+</style>
+{% endaddtoblock %}
+
+{% for item in promotion_data %}
+
+    <div class = "grid-item-{{instance.id}}">
+        <div class="hr-carousel-item-box hr-carousel-item-box-style-5 hr-promotion-box">
+        <div class="row g-0 " style="align-items: center;
+        background: {{instance.glossary.card_bg_color}};width:100%">
+            <div class="col-lg-6 col-md-6 col-sm-6 col-sx-12">
+                <a href='{{ item.product_page_url }}'>
+                    <div class="hr-carousel-item-box-img horizontal-image-box">
+                        <img src="{{ item.images }}" class="car_main_img" alt="car_main_img" style=" height: 100% !important;
+                        object-fit: fill;width:100%" laoding = "lazy">   
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-6 col-sx-12">
+                <a href='{{ item.product_page_url }}'>
+                    <div class="hr-carousel-item-box-hr-desc">
+                        <div class="hr-desc-{{instance.id}}" 
+                            >
+                            {{item.name}}
+                        </div>
+                        <div class="message" >{{item.description|truncatechars:40}}                       
+                            {% if item.description|length > 25 %}                            
+                            More
+                            {% endif %}
+                        </div>                    
+                    </div>  
+                </a>
+            </div>
+        </div>
+        </div>
+    </div>
+
+{% endfor %}

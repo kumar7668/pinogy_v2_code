@@ -1,0 +1,72 @@
+{% extends "djangocms_blog/base.html" %}
+{% load i18n djangocms_blog easy_thumbnails_tags %}{% spaceless %}
+
+{% block canonical_url %}<link rel="canonical" href="{{ view.get_view_url }}"/>{% endblock canonical_url %}
+
+{% block content_blog %}
+
+<style>
+    .pagination-element {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .pagination span {
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+</style>
+
+<div class="container-fluid" id="blog-container-fluid">
+    <div class="container" id="blog-container">
+        {% block blog_title %}
+            <header>
+                <h2>
+                {% if author %}{% trans "Articles by" %} {{ author.get_full_name }}
+                {% elif archive_date %}{% trans "Archive" %} &ndash; {% if month %}{{ archive_date|date:'F' }} {% endif %}{{ year }}
+                {% elif tagged_entries %}{% trans "Tag" %} &ndash; {{ tagged_entries|capfirst }}
+                {% elif category %}{% trans "Category" %} &ndash; {{ category }}{% endif %}
+                </h2>
+            </header>
+        {% endblock %}
+        <div class="row">
+            <div class="col-12 col-md-3">
+                <div id="blog_categories">
+                    {% include "djangocms_blog/plugins/categories.html" %}
+                </div>
+                <div id="blog_filter_by_date">
+                    {% include "djangocms_blog/plugins/filter_by_date.html" %}
+                </div>
+            </div>
+            <div class="col-12 col-md-9">
+                <div id="post-list">
+                    {% for post in post_list %}
+                        {% include "djangocms_blog/includes/blog_item.html" with post=post image="true" TRUNCWORDS_COUNT=TRUNCWORDS_COUNT %}
+                    {% empty %}
+                        <p class="blog-empty">{% trans "No article found." %}</p>
+                    {% endfor %}
+                    {% if author or archive_date or tagged_entries %}
+                        <p class="blog-back"><a href="{% url 'djangocms_blog:posts-latest' %}">{% trans "Back" %}</a></p>
+                    {% endif %}
+                    {% if is_paginated %}
+                        <nav class="{% firstof css_grid instance.css_grid %} pagination">
+                            <div class="pagination-element">
+                                {% if page_obj.has_previous %}
+                                    <a href="?{{ view.page_kwarg }}={{ page_obj.previous_page_number }}">&laquo; {% trans "previous" %}</a>
+                                {% endif %}
+                                <span class="current">
+                                    {% trans "Page" %} {{ page_obj.number }} {% trans "of" %} {{ paginator.num_pages }}
+                                </span>
+                                {% if page_obj.has_next %}
+                                    <a href="?{{ view.page_kwarg }}={{ page_obj.next_page_number }}">{% trans "next" %} &raquo;</a>
+                                {% endif %}
+                            </div>
+                        </nav>
+                    {% endif %}
+                </div>
+        </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% endspaceless %}

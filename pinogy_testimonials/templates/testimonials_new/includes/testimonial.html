@@ -1,0 +1,16 @@
+{% load cms_tags thumbnail %}
+<div class="row testimonial testimonial__item-carusel{% if testimonial.featured %} featured{% endif %} bg-light rounded-lg">
+    <div class="body col-12">
+        <h4 class="testimonial__item-title">{% render_model testimonial "subject" %}</h4>
+        {% if testimonial.photo %}
+            {% if testimonial.photo.width > testimonial.photo.height %}
+                {% thumbnail testimonial.photo 360x360 upscale as img %}
+            {% else %}
+                {% thumbnail testimonial.photo 180x180 upscale as img %}
+            {% endif %}
+            <img class="img-responsive lazy" data-src="{{ img.url }}" style="margin-bottom: 10px;">
+        {% endif %}
+        <span class="tbody testimonial__item-text">{% render_model testimonial "body" %}</span>
+        <p class="testimonial__item-name name mt-2">{{ testimonial.display_name }}</p>
+    </div>
+</div>

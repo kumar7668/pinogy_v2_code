@@ -1,0 +1,63 @@
+{% load cms_tags humanize static thumbnail sekizai_tags%}
+
+<div class="col-12 col-sm-6 col-lg-4">
+    <div class="carousel-item-box py-3 carousel-item-box-style-5">
+        <div class="carousel-item-box-img text-center mb-3 tcImage">
+            {% if testimonial.photo %}
+                {% thumbnail testimonial.photo 200x200 as thumb %}
+                <img src="{{ thumb.url }}" class="card_tc_image img-fluid" alt="testimonial-image">
+            {% else %}
+                <img src="{% static 'images/default-placeholder-image.webp' %}" class="card_tc_image img-fluid" alt="testimonial-default-image"> 
+            {% endif %}
+        </div>
+        <div class="carousel-item-box-desc">
+            <div class="carousel-item-box-desc-title h3-theme-bold">
+                {% render_model testimonial "subject" %}
+            </div>
+            <div class="carousel-item-box-desc-desc my-2">
+                <p class="m-0 tbody">{{testimonial.body|truncatechars:100}} <a href="#" class="more_view" data-text="{{testimonial.body}}">More </a></p>
+            </div>
+            {% if testimonial.display_name %}
+                <h5 class="carousel-item-box-desc-auth">- {{testimonial.display_name}}
+                </h5>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal carousel-plugin fade" id="moreModal" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="text-end m-2 mb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <p class="more-body-text m-0"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% comment %} <div id="testimonial-modal" class="white-popup-block mfp-hide">
+</div> {% endcomment %}
+{% addtoblock "js" %}
+<script>
+    $( document ).ready(function() {
+        $('.more_view').on('click', function () {
+            var more_text = $(this).data("text");
+            $('.more-body-text').html(more_text);
+            $('#moreModal').modal('show');
+            return false;
+        });
+
+        $(".modal-close").on('click', function () {
+            $('#moreModal').modal('toggle');
+            return false;
+        });
+    });
+</script>
+{% endaddtoblock %}
+
+

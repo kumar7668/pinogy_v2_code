@@ -1,0 +1,39 @@
+{% extends CMS_TEMPLATE %}
+{% load cms_tags menu_tags i18n sekizai_tags %}
+{% block title %}About {{selected_breed_data.name}} Breed {% endblock title %}
+{% block breadcrumb %}
+   <style>
+   
+    @media (min-width: 992px) {
+        .all-puppies-btn {
+            display: block !important;
+        }
+    }
+
+   </style>
+    <div class="container pt-4 pt-lg-5">
+        <div class="row avail-wrap">
+            <div class="col-12 col-md-8 d-none d-md-block">
+                {% show_breadcrumb 0 "pinogy_app/includes/breadcrumb.html" 0 %}
+            </div>
+            <div class="col-12 col-md-4 d-flex justify-content-end">
+                <div class="d-none all-puppies-btn"><a href="{% url 'pinogy_pet:pet_type' selected_pet_type_slug %}" class="theme-secondary-btn me-3 share-title no-underline">All {{ selected_pet_type_slug }}</a></div>
+                <div class="breed-page-share-link">{% include 'plugins/includes/share_page_link.html' %}</div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block meta %}
+    <meta property="url" content="{{ request.scheme }}://{{ request.get_host }}{{  request.path }}" />
+    <meta property="type" content="article"/>
+    <meta name="description" content="About {{selected_breed_data.name}} Breed. "/>
+    <meta name="keywords" content="About {{selected_breed_data.name}} Breed">
+{% endblock %}
+{% block canon %}
+    <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{  request.path }}">
+{% endblock %}
+{% block main %}
+    {% static_placeholder 'breed_detail_header' %}
+    {% static_placeholder 'breed_detail_body' %}
+    {% static_placeholder 'breed_detail_footer' %}
+{% endblock %}

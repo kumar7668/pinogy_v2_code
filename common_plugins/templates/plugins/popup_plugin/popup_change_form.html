@@ -1,0 +1,39 @@
+{% extends 'admin/base_change_form.html' %}
+
+{% load cms_tags menu_tags sekizai_tags static admin_modify %}
+{% load global_theme_config_tags %}
+
+{% block content %}
+<form {% if has_file_field %}enctype="multipart/form-data" {% endif %}{% if form_url %}action="{{ form_url }}" {% endif %}method="post" id="{{ opts.model_name }}_form" novalidate>
+    {% csrf_token %}
+    <div class="box-theme">
+
+        <div class="box-theme-title banner-text-layout">
+            Button
+        </div>
+        <div class="box-theme-form-item">
+            {{adminform.form.btn_text}}
+        </div>
+        <div class="box-theme-title banner-text-layout">
+            Text
+        </div>
+        <div class="box-theme-form-item">
+            {{adminform.form.popuptitle}}
+        </div>
+        <div class="box-theme-tab-wrap">
+            {{adminform.form.popuptitlecolor}}
+        </div>
+        <br>
+       
+        <div class="box-theme-form-item">
+            {{adminform.form.popupmessage}}
+        </div>
+        <div class="box-theme-tab-wrap">
+            {{adminform.form.popupmessagecolor}}
+        </div>
+
+    </div>
+    {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+</form>
+
+{% endblock content %}

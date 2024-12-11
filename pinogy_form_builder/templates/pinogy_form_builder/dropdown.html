@@ -1,0 +1,202 @@
+<style>
+    .dropdown {
+        position: relative;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .dropdown-list {
+        padding: 12px;
+        background: #fff;
+        position: absolute;
+        left: 2px;
+        right: 2px;
+        box-shadow: 0 1px 2px 1px rgba(0, 0, 0, .15);
+        transform-origin: 50% 0;
+        transform: scale(1, 0);
+        transition: transform .15s ease-in-out .15s;
+        max-height: 66vh;
+        overflow-y: scroll;
+    }
+
+    .dropdown-option {
+        display: block;
+        padding: 8px 12px;
+        opacity: 0;
+        transition: opacity .15s ease-in-out;
+    }
+
+    .dropdown-label {
+        display: block;
+        height: 55px;
+        background: #fff;
+        cursor: pointer;
+        font-family: var(--general-font);
+        font-style: normal;
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 140%;
+        color: var(--global-primary-color);
+        border: 1px solid var(--global-primary-color);
+        padding: 12px;
+        width: 100%;
+        border-radius: 0;
+        opacity: 0.6;
+    }
+
+    .dropdown-label.active {
+        opacity: 1; /* Active state opacity */
+    }
+
+    .dropdown-label:before {
+        content: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgdmlld0JveD0iMCAwIDEwIDEwIj4KICA8cGF0aCBkPSJNNS41IDcuN0w5LjIgMy44TDguMyAzIDUuNSA2LjkgMi43IDNsLS44LjggMy43IDMuOSAxIC0xWiIvPjwvc3ZnPgo=');
+        float: right;
+    }
+    
+    .dropdown.on .dropdown-label:before {
+        content: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgdmlld0JveD0iMCAwIDEwIDEwIj4KICA8cGF0aCBkPSJNNS41IDIuM0w5LjIgNi4yTDguMyA3IDUuNSAzLjEgMi43IDdsLS44IC0uOCAzLjcgLTMuOSAxIC0xWiIvPjwvc3ZnPgo=');
+    }
+    
+    
+
+    .dropdown.on .dropdown-list {
+        transform: scale(1, 1);
+        transition-delay: 0s;
+    }
+
+    .dropdown.on .dropdown-option {
+        opacity: 1;
+        transition-delay: .2s;
+    }
+
+
+    [type="checkbox"] {
+        position: relative;
+        top: -1px;
+        margin-right: 4px;
+    }
+
+    .error-message {
+        font-family: var(--general-font);
+        font-style: normal;
+        font-weight: 400;
+        width: 100%;
+        margin-top: .25rem;
+        font-size: 16px;
+        color: #dc3545;
+        display: none; /* Initially hidden */
+    }
+</style>
+
+<div class="label dropdown mt-3" data-control="checkbox-dropdown">
+    {% if instance.label %}
+    <label for="{{ instance.name|slugify }}" class="form-label">
+        {{ instance.label }}
+    </label>
+    {% endif %}
+    <label class="dropdown-label drop-input" placeholder="{{ instance.placeholder_text|default:'Select' }}"></label>
+    <div class="dropdown-list" style="z-index:1;">
+        {% for value in values %}
+        <label class="dropdown-option">
+            <input class="form-check-input" type="checkbox" name="{{ instance.name }}" value="{{ value }}" /> {{ value }}
+        </label>
+        {% endfor %}
+    </div>
+</div>
+<div class="error-message">Please select at least one option.</div> <!-- Error message element -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        class CheckboxDropdown {
+            constructor(el) {
+                this.isOpen = false;
+                this.el = el;
+                this.label = this.el.querySelector('.dropdown-label');
+                this.inputs = this.el.querySelectorAll('[type="checkbox"]');
+    
+                this.onCheckBox();
+    
+                this.label.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.toggleOpen();
+                });
+    
+                this.inputs.forEach(input => {
+                    input.addEventListener('change', () => {
+                        this.onCheckBox();
+                    });
+                });
+    
+                document.addEventListener('click', (e) => {
+                    if (!this.el.contains(e.target)) {
+                        this.closeDropdown();
+                    }
+                });
+            }
+    
+            onCheckBox() {
+                this.updateStatus();
+            }
+    
+            updateStatus() {
+                const checked = this.el.querySelectorAll(':checked');
+                if (checked.length <= 0) {
+                    this.label.classList.remove('active'); // Remove active class
+                    this.label.innerHTML = '{{ instance.placeholder_text|default:"Select" }}';
+                } else if (checked.length === 1) {
+                    this.label.classList.add('active'); // Add active class
+                    this.label.innerHTML = checked[0].parentElement.textContent.trim();
+                } else if (checked.length === this.inputs.length) {
+                    this.label.classList.add('active'); // Add active class
+                    this.label.innerHTML = 'All Selected';
+                } else {
+                    this.label.classList.add('active'); // Add active class
+                    this.label.innerHTML = `${checked.length} Selected`;
+                }
+            }
+    
+            toggleOpen(forceOpen) {
+                if (!this.isOpen || forceOpen) {
+                    this.isOpen = true;
+                    this.el.classList.add('on');
+                } else {
+                    this.isOpen = false;
+                    this.el.classList.remove('on');
+                }
+            }
+    
+            closeDropdown() {
+                this.isOpen = false;
+                this.el.classList.remove('on');
+            }
+        }
+    
+        const checkboxesDropdowns = document.querySelectorAll('[data-control="checkbox-dropdown"]');
+        checkboxesDropdowns.forEach(dropdown => new CheckboxDropdown(dropdown));
+    
+        // Validation function
+        function validateCheckboxes() {
+            const dropdown = document.querySelector('[data-control="checkbox-dropdown"]');
+            const checked = dropdown.querySelectorAll(':checked');
+            const errorMessage = document.querySelector('.error-message');
+    
+            if (checked.length <= 0) {
+                errorMessage.style.display = 'block';
+                return false;
+            } else {
+                errorMessage.style.display = 'none';
+                return true;
+            }
+        }
+    
+        // Proceed with the action if validation passes
+        const checkValidationButtons = document.getElementsByClassName('check_validation');
+        Array.prototype.forEach.call(checkValidationButtons, function(button) {
+            button.addEventListener('click', function(e) {
+                if (!validateCheckboxes()) {
+                    e.preventDefault(); 
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,10 @@
+{% if contact_number %}
+
+<p class='m-0 location-contact-outer'>
+    <a href="tel:{{ contact_number }}" style="color: {{font_color}};" aria-label = "contact number {{ contact_number }} ">
+        <i class="fa-solid fa-phone-flip"></i>
+        <span> {{ contact_number }} </span>
+    </a>
+</p>
+
+{% endif %}

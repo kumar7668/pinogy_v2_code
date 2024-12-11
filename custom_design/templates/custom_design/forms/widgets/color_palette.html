@@ -1,0 +1,68 @@
+{% extends "custom_design/forms/widgets/base-widget.html" %}
+{% load static global_theme_config_tags %}
+
+{% block widget_section %}
+{% global_theme_object as global_theme_config %}
+
+<div class="box-theme-tab-wrap admin-form">
+     {# Check if widget.attrs.label is present #}
+     {% if widget.attrs.label %}
+     {# Color Palette Label #}
+     <div class="secondary-label">
+         {{ widget.attrs.label }}
+     </div>
+     {% endif %}
+     {# ... other parts of the template ... #}
+    <div class="box-theme-form-item theme-tab-content" id="headline_color">
+        <input type="hidden" name="{{ widget.name }}" id="{{ widget.attrs.id }}"
+               value="{{ widget.value|default:"" }}">
+        <ul class="theme-color-tab" data-id="{{ widget.attrs.id }}">
+            
+            <li class="{% if widget.value == global_theme_config.primary_color %}active-border{% endif %} default-colors"
+                data-value="{{ global_theme_config.primary_color|default:"#003f5aff" }}">
+                <div class="{% if widget.value == global_theme_config.primary_color %}active{% endif %} tab-color"
+                     style="background: {{ global_theme_config.primary_color|default:'#003f5aff' }}"></div>
+            </li>
+
+            <li class="{% if widget.value == global_theme_config.secondary_color %}active-border{% endif %} default-colors"
+                data-value="{{ global_theme_config.secondary_color|default:"#12bbd2ff" }}">
+                <div class="{% if widget.value == global_theme_config.secondary_color %}active{% endif %} tab-color "
+                    style="background: {{ global_theme_config.secondary_color|default:'#12bbd2ff' }}"></div>
+            </li>
+
+            <li class="{% if widget.value == '#000000ff' %}active-border{% endif %} default-colors"
+                data-value="#000000ff">
+                <div class="{% if widget.value == '#000000ff' %}active{% endif %} tab-color tab-black"></div>
+            </li>
+
+            <li class="{% if widget.value == '#ffffffff' %}active-border{% endif %} default-colors"
+                data-value="#ffffffff">
+                <div class="{% if widget.value == '#ffffffff' %}active{% endif %} tab-color tab-white"></div>
+            </li>
+            
+            <li class="custom-color" style = "position: relative;"> 
+                <div class = "custom-color-picker-{{ widget.attrs.id }}" style = "position: absolute;z-index:1;pointer-events: none; color : #0FBCD2; background-color:white;border-radius: 8px;
+                padding: 2px 7px; top : 50%; left : 50%; transform : translate(-50%, -50%); font-size : 18px; border : 1px solid #0FBCD2; height : 33px; width : 84px; font-weight : 700">Custom</div>
+                <input type="text" id = "custom-color-picker-{{ widget.attrs.id }}" class="color-selector coloris instance1 custom_color_change"
+                       value="{{ widget.value}}"
+                       onChange="setColorValue(this.value, '{{ widget.attrs.id }}')" style = "height : 33px; width : 84px;" />
+            </li>
+        </ul>
+    </div>
+
+    {% if adminform.form.title_text.errors %}
+        {% for error in adminform.form.title_text.errors %}
+            <div class="alert alert-danger error-block" role="alert">
+                {{ error }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% if adminform.form.title_text_color.errors %}
+        {% for error in adminform.form.title_text_color.errors %}
+            <div class="alert alert-danger error-block" role="alert">
+                {{ error }}
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,1044 @@
+{% extends CMS_TEMPLATE %}
+{% load static sekizai_tags %}
+{% block title %} Global Theme Configuration {% endblock title %}
+
+{% block content %}
+
+    {% addtoblock "css"  %}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.css"/>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/theme-custom.css' %}">
+        <style>
+            .error-block{
+                font-size: 14px;
+                padding: 10px;
+            }
+            .dev_colorpicker_preview .clr-field{
+                opacity: 0;
+                cursor: pointer;
+            }
+            .dev_colorpicker_preview img{
+                position: absolute;
+            }
+            .image-preview-list {
+                height: 65px !important;
+                max-height: 65px !important;
+                width: 141px !important;
+                max-width: 141px !important;
+                overflow: hidden !important;
+            }
+            .sample-json,
+            .sample-json:hover{
+                text-decoration: none;
+                color: #12BBD2;
+            }
+            .img-shape-1{
+                border-radius:0px
+
+            }.img-shape-2{
+                border-radius:32px
+            }
+            .clsuploadtitle{
+                {% comment %} font-weight: 600 !important;
+                opacity: .5; {% endcomment %}
+                color : #003F5A;
+            }
+        </style>
+    {% endaddtoblock  %}
+    <div class="box-theme container">
+        {% if form.errors %}
+            <div class="alert alert-danger error-block" role="alert">
+                Oops, Something went wrong
+            </div>
+        {% endif %}
+        <form method="POST" enctype="multipart/form-data" action="." id="global-theme-form"  onsubmit="return validate_form(this)">
+            {% csrf_token %}
+            <div class="align-items-baseline d-flex justify-content-between">
+                <div class="box-theme-header">
+                    Theme Configuration
+                </div>
+                <div>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn-theme btn-style-2 d-none" data-bs-toggle="modal" data-bs-target="#themeJsonModal">
+                        Upload Json
+                    </button>
+                    <a href="{% static 'json/sample_theme.json' %}" download="sample_theme.json" type="button" class="btn-theme btn-style-2 sample-json d-none">
+                        Sample Json
+                    </a>
+                </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="themeJsonModal" tabindex="-1" aria-labelledby="themeJsonModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title box-theme-title mb-0" id="themeJsonModalLabel">Upload json</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="file" name="jsonfilemodal" id="jsonfilemodal"/>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-theme btn-style-2 themeJsonUpload">Upload</button>
+                            <button type="button" class="btn-theme btn-style-2" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-none">
+                {{form.theme_json}}
+            </div>
+            {% if form.theme_json.errors %}
+                {% for error in form.theme_json.errors  %}
+                <div class="alert alert-danger error-block" role="alert">
+                    {{error}}
+                </div>
+                {% endfor %}
+            {% endif %}
+            <div class="box-theme-title">
+                Logo
+            </div>
+            <div class="box-theme-help-text">
+                Upload one or several possible variations of your store’s logo that will be used on the website (e.g. normal, inverse).
+            </div>
+            <div class="box-theme-form-item">
+                <div class="form-upload">
+                    <p class="clsuploadtitle">Drop files or click to upload</p>
+                    <button class="btn-theme btn-shape-1 btn-style-1 btn-color-1">Upload Image</button>
+                    {% comment %} <input type="file" name="{{form.logo.name}}" id="{{form.logo.name}}" class="dropify filepond d-none" data-height="160" data-allowed-file-extensions="jpg jpeg png svg webp gif" multiple/> {% endcomment %}
+                    <div class="area">
+                        <input type="file" name="{{form.logo.name}}" id="{{form.logo.name}}" multiple/>
+                    </div>
+                </div>
+            </div>
+            {% if form.logo.errors %}
+                {% for error in form.logo.errors  %}
+                <div class="alert alert-danger error-block" role="alert">
+                    {{error}}
+                </div>
+                {% endfor %}
+            {% endif %}
+            <div class="box-theme-sub-title">
+                Preview
+            </div>
+            <div class="box-theme-preview-list">
+                <ul id="logo-preview-section">
+                    {% for logo in logos %}
+                        <li class="image-preview-list {% if logo == theme.selected_logo %}active{% endif %}"><img src="{{logo.image.url}}" alt="">
+                            <button onclick="deleteThemeImage(this,{{logo.id}})" type="button">
+                                <img src="{% static 'images/ic-delete.svg' %}" alt="">
+                            </button></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="box-theme-form-devider">
+            </div>
+            <div class="box-theme-title">
+                Favicon
+            </div>
+            <div class="box-theme-help-text">
+                Upload an image for the website icon. Displayed by the browser in a tab before the page name.
+            </div>
+            <div class="box-theme-form-item">
+                <div class="form-upload">
+                    <p class="clsuploadtitle">Drop files or click to upload</p>
+                    <button class="btn-theme btn-shape-1 btn-style-1 btn-color-1">Upload Image</button>
+                    {% comment %} <input type="file" name="{{form.favicon.name}}" id="{{form.favicon.name}}"  class="filepond2 filepond d-none" data-height="160" data-allowed-file-extensions="jpg jpeg png svg webp gif" multiple/> {% endcomment %}
+                    <div class="area">
+                        <input type="file" name="{{form.favicon.name}}" id="{{form.favicon.name}}" multiple/>
+                    </div>
+                </div>
+            </div>
+            {% if form.favicon.errors %}
+                {% for error in form.favicon.errors  %}
+                <div class="alert alert-danger error-block" role="alert">
+                    {{error}}
+                </div>
+                {% endfor %}
+            {% endif %}
+            <div class="alert alert-danger error-block" style="display: none;" role="alert" id="nessage_alert">
+                
+            </div>
+            <div class="box-theme-sub-title">
+                Preview
+            </div>
+            <div class="box-theme-preview-list">
+                <input type="hidden" value="{% if theme.selected_favicon in favicons %}{{theme.selected_favicon.id}}{% endif %}" id="selected_favicon" name="selected_favicon">
+                <ul id="favicon-preview-section">
+                    {% for favicon in favicons %}
+                        <li class="image-preview-list {% if favicon == theme.selected_favicon %}active{% endif %}" onclick="select_favicon(this,'{{favicon.id}}')">
+                            <img src="{{favicon.image.url}}" alt="">
+                            <button onclick="deleteThemeImage(this,{{favicon.id}})" type="button">
+                                <img src="{% static 'images/ic-delete.svg' %}" alt="">
+                            </button></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="box-theme-form-devider">
+            </div>
+            <div class="box-theme-title">
+                Background Image
+            </div>
+            <div class="box-theme-help-text">
+                Upload an image for the website background.
+            </div>
+            <div class="box-theme-form-item">
+                <div class="form-upload">
+                    <p class="clsuploadtitle">Drop files or click to upload</p>
+                    <button class="btn-theme btn-shape-1 btn-style-1 btn-color-1">Upload Image</button>
+                    <div class="area">
+                        <input type="file" name="{{form.background.name}}" id="{{form.background.name}}" multiple/>
+                    </div>
+                </div>
+            </div>
+            {% if form.background.errors %}
+                {% for error in form.background.errors  %}
+                <div class="alert alert-danger error-block" role="alert">
+                    {{error}}
+                </div>
+                {% endfor %}
+            {% endif %}
+            <div class="box-theme-sub-title">
+                Preview
+            </div>
+            <div class="box-theme-preview-list">
+                <input type="hidden" value="{% if theme.selected_background in backgrounds %}{{theme.selected_background.id|default:'None'}}{% endif %}" id="selected_background" name="select_background">
+                <ul id="background-preview-section">
+                    {% for background in backgrounds %}
+                        <li class="image-preview-list {% if background == theme.selected_background %}active{% endif %}"  onclick="select_background(this,'{{background.id}}')">
+                            <img src="{{background.image.url}}" alt="">
+                            <button onclick="deleteThemeImage(this,{{background.id}})" type="button">
+                                <img src="{% static 'images/ic-delete.svg' %}" alt="">
+                            </button></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="box-theme-form-devider">
+            </div>
+            <div class="box-theme-title">
+                Color
+            </div>
+            <div class="box-theme-help-text">
+                The assigned colors will be applied to the website.
+            </div>
+            <div class="box-theme-form-inline-item">
+                <div class="box-theme-form-item form-item-inline">
+                    <div class="box-theme-form-label">
+                        Primary
+                        <span>
+                            <img src="{% static 'images/ic-info.svg' %}">
+                            <div class="form-tooltip">
+                                Main color to be applied on the website for such items as main menu, social icons, headlines, general text, etc.
+                            </div>
+                        </span>
+                    </div>
+                    <div class="box-theme-form-content">
+                        <div class="dev_colorpicker">
+                            <div class="form-color-picker-box dev_colorpicker_preview pk-col-preview" style="background: {{form.primary_color.value}};">
+                                <img src="{% static 'images/ic-buck.svg' %}">
+                                <input type="text" name="{{form.primary_color.name}}" id="{{form.primary_color.name}}" value="{{form.primary_color.value}}" class="coloris instance1 d-none" onChange="updatePrimaryElement(this.value)" style="max-width: 50px; cursor: pointer;">
+                            </div>
+                        </div>
+                    </div>
+                    {% if form.primary_color.errors %}
+                        {% for error in form.primary_color.errors  %}
+                        <div class="alert alert-danger error-block" role="alert">
+                            {{error}}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="box-theme-form-item form-item-inline">
+                    <div class="box-theme-form-label">
+                        Secondary
+                        <span>
+                            <img src="{% static 'images/ic-info.svg' %}">
+                            <div class="form-tooltip">
+                                Color to be applied for such items as call-to-action buttons, links, badges, traits.
+                            </div>
+                        </span>
+                    </div>
+                    <div class="box-theme-form-content">
+                        <div class="dev_colorpicker">
+                            <div class="form-color-picker-box dev_colorpicker_preview sk-col-preview" style="background: {{form.secondary_color.value}};">
+                                <img src="{% static 'images/ic-buck.svg' %}">
+                                <input type="text" name="{{form.secondary_color.name}}" id="{{form.secondary_color.name}}" value="{{form.secondary_color.value}}" class="coloris instance1 d-none" onChange="updateSecondaryElement(this.value)" style="max-width: 50px;">
+                            </div>
+                        </div>
+                    </div>
+                    {% if form.secondary_color.errors %}
+                        {% for error in form.secondary_color.errors  %}
+                        <div class="alert alert-danger error-block" role="alert">
+                            {{error}}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="box-theme-form-item form-item-inline">
+                    <div class="box-theme-form-label">
+                        Highlight
+                        <span>
+                            <img src="{% static 'images/ic-info.svg' %}">
+                            <div class="form-tooltip">
+                                Color to be applied to Cart and Check Out for such items as Promo banners, promotions, discounts, and similar items
+                            </div>
+                        </span>
+                    </div>
+                    <div class="box-theme-form-content">
+                        <div class="dev_colorpicker">
+                            <div class="form-color-picker-box dev_colorpicker_preview hk-col-preview" style="background: {{form.highlight_color.value}};">
+                                <img src="{% static 'images/ic-buck.svg' %}">
+                                <input type="text" name="{{form.highlight_color.name}}" id="{{form.highlight_color.name}}" value="{{form.highlight_color.value}}" class="coloris instance1 d-none" onChange="updateHighlightElement(this.value)" style="max-width: 50px;">
+                            </div>
+                        </div>
+                    </div>
+                    {% if form.highlight_color.errors %}
+                        {% for error in form.highlight_color.errors  %}
+                        <div class="alert alert-danger error-block" role="alert">
+                            {{error}}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="box-theme-form-item form-item-inline">
+                    <div class="box-theme-form-label">
+                        Alert
+                        <span>
+                            <img src="{% static 'images/ic-info.svg' %}">
+                            <div class="form-tooltip">
+                                Color to be applied for alerts and error messages.
+                            </div>
+                        </span>
+                    </div>
+                    <div class="box-theme-form-content">
+                        <div class="dev_colorpicker">
+                            <div class="form-color-picker-box dev_colorpicker_preview ak-col-preview" style="background: {{form.alert_color.value}};">
+                                <img src="{% static 'images/ic-buck.svg' %}">
+                                <input type="text" name="{{form.alert_color.name}}" id="{{form.alert_color.name}}" value="{{form.alert_color.value}}" class="coloris instance1 d-none" onChange="updateAlertElement(this.value)" style="max-width: 50px;">
+                            </div>
+                        </div>
+                    </div>
+                    {% if form.alert_color.errors %}
+                        {% for error in form.alert_color.errors  %}
+                        <div class="alert alert-danger error-block" role="alert">
+                            {{error}}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="box-theme-form-devider">
+            </div>
+            <div class="box-theme-title">
+                Fonts
+            </div>
+            <div class="box-theme-sub-title">
+                Headline
+            </div>
+            <div class="box-theme-tab-wrap">
+                <div class="box-theme-tab">
+                    <ul class="theme-tab">
+                        <li class="active" data-target="headline_font">Font</li>
+                        <li class="" data-target="headline_alignment">Alignment</li>
+                    </ul>
+                </div>
+                <div class="box-theme-form-item theme-tab-content" id="headline_font">
+                    {{form.heading_font}}
+                </div>
+                <div class="box-theme-form-item theme-tab-content" id="headline_alignment" style="display: none;">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="{{form.font_alignment.name}}" id="inlineRadio1" value="left" {% if form.font_alignment.value == 'left' %} checked {% endif%}>
+                        <label class="form-check-label" for="inlineRadio1">Left</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="{{form.font_alignment.name}}" id="inlineRadio3" value="center" {% if form.font_alignment.value == 'center' %} checked {% endif%}>
+                        <label class="form-check-label" for="inlineRadio2">Center</label>
+                      </div>
+                </div>
+                {% if form.heading_font.errors %}
+                    {% for error in form.heading_font.errors  %}
+                    <div class="alert alert-danger error-block" role="alert">
+                        {{error}}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="box-theme-sub-title" id="headline_color">
+                General Text
+            </div>
+            <div class="box-theme-tab-wrap">
+                <div class="box-theme-tab">
+                    <ul class="theme-tab">
+                        <li class="active" data-target="general_font">Font</li>
+                    </ul>
+                </div>
+                <div class="box-theme-form-item theme-tab-content" id="general_font">
+                    {{form.general_font}}
+                </div>
+                {% if form.general_font.errors %}
+                    {% for error in form.general_font.errors  %}
+                    <div class="alert alert-danger error-block" role="alert">
+                        {{error}}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="box-theme-form-devider">
+            </div>
+            <div class="box-theme-title">
+                Button
+            </div>
+            <div class="box-theme-help-text">
+                Your first button is the major button you would have in a specific section. If you require additional button in the same section you will select second button.
+            </div>
+            <div class="box-theme-sub-title">
+                Shape
+            </div>
+            <div class="box-theme-form-item">
+                <input type="hidden" id="{{form.primary_button_shape.name}}" name="{{form.primary_button_shape.name}}" value="{{form.primary_button_shape.value}}">
+                <ul class="theme-button-tab" id="btn-primary-shape">
+                    <li class="{% if form.primary_button_shape.value == 'rectangle' %} active {% endif %}" onclick="setBtnShape('rectangle')"><button class="btn-theme btn-shape-1 btn-color-1 btn-style-1">Button</button></li>
+                    <li class="{% if form.primary_button_shape.value == 'rounded' %} active {% endif %}" onclick="setBtnShape('rounded')"><button class="btn-theme btn-shape-2 btn-color-1 btn-style-1">Button</button></li>
+                    <li class="{% if form.primary_button_shape.value == 'pill' %} active {% endif %}" onclick="setBtnShape('pill')"><button class="btn-theme btn-shape-3 btn-color-1 btn-style-1">Button</button></li>
+                </ul>
+            </div>
+            {% if form.primary_button_shape.errors %}
+                {% for error in form.primary_button_shape.errors  %}
+                <div class="alert alert-danger error-block" role="alert">
+                    {{error}}
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="box-theme-sub-title" id="headline_color">
+                Button Font
+            </div>
+            <div class="box-theme-tab-wrap">
+                <div class="box-theme-tab">
+                    <ul class="theme-tab">
+                        <li class="active" data-target="button_font">Font</li>
+                    </ul>
+                </div>
+                <div class="box-theme-form-item theme-tab-content" id="general_font">
+                    {{form.button_font}}
+                </div>
+                {% if form.button_font.errors %}
+                    {% for error in form.button_font.errors  %}
+                    <div class="alert alert-danger error-block" role="alert">
+                        {{error}}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="box-theme-sub-title" id="headline_color">
+                First Button
+            </div>
+            <div class="box-theme-tab-wrap" id="primary-btn-section">
+                <div class="box-theme-tab">
+                    <ul class="theme-tab">
+                        <li class="active" data-target="btn_style_1">Style</li>
+                        <li class="" data-target="btn_color_1">Color</li>
+                    </ul>
+                </div>
+                <div class="box-theme-form-item theme-tab-content" id="btn_style_1">
+                    <input type="hidden" name="{{form.primary_button_style.name}}" id="{{form.primary_button_style.name}}" value="{{form.primary_button_style.value}}">
+                    <ul class="theme-button-tab ">
+                        <li class="firstBtnStyle1 {% if form.primary_button_style.value == 'fill' %}active{% endif %}" onclick="setPrimaryBtnStyle('fill')"><button class="btn-theme btn-shape-1 btn-color-1 btn-style-1">Button </button></li>
+                        <li class="firstBtnStyle1 {% if form.primary_button_style.value == 'outline' %}active{% endif %}" onclick="setPrimaryBtnStyle('outline')"><button class="btn-theme btn-shape-1 btn-color-1 btn-style-2">Button </button></li>
+                    </ul>
+                </div>
+                <div class="box-theme-form-item theme-tab-content" id="btn_color_1" style="display: none;">
+                    <input type="hidden" name="{{form.primary_button_color_pattern.name}}" id="{{form.primary_button_color_pattern.name}}" value="{{form.primary_button_color_pattern.value}}">
+                    <ul class="theme-button-tab d-none" id="primary-btn-set1">
+                        <li class="{% if form.primary_button_color_pattern.value == 'F2' %}active{% endif %}" onclick="setPrimaryBtnPattern('F2',this)"><button class="btn-theme btn-shape-1 btn-style-1 btn-color-2">Button</button></li>
+                        <li class="{% if form.primary_button_color_pattern.value == 'F1' %}active{% endif %}" onclick="setPrimaryBtnPattern('F1',this)"><button class="btn-theme btn-shape-1 btn-style-1 btn-color-1">Button</button></li>
+                        <li class="{% if form.primary_button_color_pattern.value == 'F4' %}active{% endif %}" onclick="setPrimaryBtnPattern('F4',this)"><button class="btn-theme btn-shape-1 btn-style-1 btn-color-3">Button</button></li>
+                        <li class="{% if form.primary_button_color_pattern.value == 'F3' %}active{% endif %}" onclick="setPrimaryBtnPattern('F3',this)"><button class="btn-theme btn-shape-1 btn-style-1 btn-color-4">Button</button></li>
+                    </ul>
+                    <ul class="theme-button-tab d-none" id="primary-btn-set2">
+                        <li class="{% if form.primary_button_color_pattern.value == 'O1' %}active{% endif %}" onclick="setPrimaryBtnPattern('O1',this)"><button class="btn-theme btn-shape-1 btn-style-2 btn-color-1">Button</button></li>
+                        <li class="{% if form.primary_button_color_pattern.value == 'O2' %}active{% endif %}" onclick="setPrimaryBtnPattern('O2',this)"><button class="btn-theme btn-shape-1 btn-style-2 btn-color-2">Button</button></li>
+                        <li class="{% if form.primary_button_color_pattern.value == 'O3' %}active{% endif %}" onclick="setPrimaryBtnPattern('O3',this)"><button class="btn-theme btn-shape-1 btn-style-2 btn-color-3">Button</button></li>
+                        <li class="{% if form.primary_button_color_pattern.value == '04' %}active{% endif %}" onclick="setPrimaryBtnPattern('O4',this)"><button class="btn-theme btn-shape-1 btn-style-2 btn-color-4">Button</button></li>
+                    </ul>
+                </div>
+                {% if form.primary_button_style.errors %}
+                    {% for error in form.primary_button_style.errors  %}
+                    <div class="alert alert-danger error-block" role="alert">
+                        {{error}}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                {% if form.primary_button_color_pattern.errors %}
+                    {% for error in form.primary_button_color_pattern.errors  %}
+                    <div class="alert alert-danger error-block" role="alert">
+                        {{error}}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="box-theme-sub-title" id="headline_color">
+                Second Button
+            </div>
+            <div class="box-theme-tab-wrap" id="secondary-btn-section">
+                <div class="box-theme-tab">
+                    <ul class="theme-tab">
+                        <li class="active" data-target="btn_style_2">Style</li>
+                        <li class="" data-target="btn_color_2">Color</li>
+                    </ul>
+                </div>
+                <div class="box-theme-form-item theme-tab-content" id="btn_style_2">
+                    <input type="hidden" name="{{form.secondary_button_style.name}}" id="{{form.secondary_button_style.name}}" value="{{form.secondary_button_style.value}}">
+                    <ul class="theme-button-tab">
+                        <li class="firstBtnStyle2 {% if form.secondary_button_style.value == 'fill' %}active{% endif %}" onclick="setSecondaryBtnStyle('fill')"><button class="btn-theme btn-shape-1 btn-style-1 btn-color-1">Button</button></li>
+                        <li class="firstBtnStyle2 {% if form.secondary_button_style.value == 'outline' %}active{% endif %}" onclick="setSecondaryBtnStyle('outline')"><button class="btn-theme btn-shape-1 btn-style-2 btn-color-1">Button</button></li>
+                    </ul>
+                </div>
+                <div class="box-theme-form-item theme-tab-content" id="btn_color_2" style="display: none;">
+                    <input type="hidden" name="{{form.secondary_button_color_pattern.name}}" id="{{form.secondary_button_color_pattern.name}}" value="{{form.secondary_button_color_pattern.value}}">
+                    <ul class="theme-button-tab d-none" id="secondary-btn-set1">
+                        <li class="{% if form.secondary_button_color_pattern.value == 'O1' %}active{% endif %}" onclick="setSecondaryBtnPattern('O1',this)"><button class="btn-theme btn-shape-1 btn-style-2 btn-color-1">Button</button></li>
+                        <li class="{% if form.secondary_button_color_pattern.value == 'O2' %}active{% endif %}" onclick="setSecondaryBtnPattern('O2',this)"><button class="btn-theme btn-shape-1 btn-style-2 btn-color-2">Button</button></li>
+                        <li class="{% if form.secondary_button_color_pattern.value == 'O3' %}active{% endif %}" onclick="setSecondaryBtnPattern('O3',this)"><button class="btn-theme btn-shape-1 btn-style-2 btn-color-3">Button</button></li>
+                        <li class="{% if form.secondary_button_color_pattern.value == 'O4' %}active{% endif %}" onclick="setSecondaryBtnPattern('O4',this)"><button class="btn-theme btn-shape-1 btn-style-2 btn-color-4">Button</button></li>
+                    </ul>
+                    <ul class="theme-button-tab d-none" id="secondary-btn-set2">
+                        <li class="{% if form.secondary_button_color_pattern.value == 'F2' %}active{% endif %}" onclick="setSecondaryBtnPattern('F2',this)"><button class="btn-theme btn-shape-1 btn-style-1 btn-color-2">Button</button></li>
+                        <li class="{% if form.secondary_button_color_pattern.value == 'F1' %}active{% endif %}" onclick="setSecondaryBtnPattern('F1',this)"><button class="btn-theme btn-shape-1 btn-style-1 btn-color-1">Button</button></li>
+                        <li class="{% if form.secondary_button_color_pattern.value == 'F4' %}active{% endif %}" onclick="setSecondaryBtnPattern('F4',this)"><button class="btn-theme btn-shape-1 btn-style-1 btn-color-3">Button</button></li>
+                        <li class="{% if form.secondary_button_color_pattern.value == 'F3' %}active{% endif %}" onclick="setSecondaryBtnPattern('F3',this)"><button class="btn-theme btn-shape-1 btn-style-1 btn-color-4">Button</button></li>
+                    </ul>
+                </div>
+                {% if form.secondary_button_style.errors %}
+                    {% for error in form.secondary_button_style.errors  %}
+                    <div class="alert alert-danger error-block" role="alert">
+                        {{error}}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                {% if form.secondary_button_color_pattern.errors %}
+                    {% for error in form.secondary_button_color_pattern.errors  %}
+                    <div class="alert alert-danger error-block" role="alert">
+                        {{error}}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="box-theme-title d-none">
+                Image
+            </div>
+            <div class="box-theme-sub-title d-none">
+                Shape
+            </div>
+            <div class="box-theme-form-item d-none">
+                <input type="hidden" id="{{form.image_shape.name}}" name="{{form.image_shape.name}}" value="{{form.image_shape.value}}">
+                <ul class="theme-button-tab" id="btn-primary-shape">
+                    <li class="{% if form.image_shape.value == 'rectangle' %} active {% endif %}" onclick="setImgShape('rectangle')">
+                <img 
+                src="/static/images/default-placeholder-image.webp" 
+                style="height:90px" 
+                class="img img-shape-1"
+                />
+                </li>
+                    <li class="{% if form.image_shape.value == 'rounded' %} active {% endif %}" onclick="setImgShape('rounded')">    
+                <img 
+                src="/static/images/default-placeholder-image.webp" 
+                style="height:90px" 
+                class="img img-shape-2"
+                />
+                    </li>
+                </ul>
+            </div>
+            <div id="divimage_radius" class="d-none">
+            <div class="box-theme-title">
+                Image Radius
+            </div>
+
+            <div>
+                <input type="hidden" id="{{form.image_radius.name}}" name="{{form.image_radius.name}}" 
+                value="{{form.image_radius.value}}">
+                <input 
+                onchange="setImageRadius(this.value)"
+                name="{{form.image_radius.name}}" 
+                type="number" 
+                id="txt{{form.image_radius.name}}"
+                value="{% if form.image_radius.value %}{{form.image_radius.name.value}}{% endif %}"
+                placeholder="Enter Radius in px"
+                class="form-control"
+                 >
+                <br/>
+            </div>
+        </div>
+            {% comment %} <div class="box-theme-title">
+                Advanced
+            </div>
+            <div class="box-theme-sub-title">
+                Background
+            </div>
+            <div class="box-theme-form-item">
+                <label class="checkcontainer">Color
+                    <input type="radio" checked="checked" name="radio">
+                    <span class="radiobtn"></span>
+                </label>
+            </div>
+            <div class="box-theme-form-item">
+                <label class="checkcontainer">Image
+                    <input type="radio"  name="radio">
+                    <span class="radiobtn"></span>
+                </label>
+            </div>
+            <div class="box-theme-form-item">
+                <div class="form-upload">
+
+                <p>Upload your .JPG, .PNG, .SVG, .WEBP or .GIF files here or drag the image</p>
+                <button class="btn-theme btn-shape-1 btn-style-1 btn-color-1">Upload Image</button>
+                </div>
+            </div>
+            <div class="box-theme-form-item">
+                <label class="checkcontainer">Repeat instead of stretching this image
+                    <input type="checkbox" checked="checked">
+                    <span class="checkmark"></span>
+                </label>
+            </div> {% endcomment %}
+            <div class="box-theme-footer">
+                <a href="/" class="btn-theme btn-shape-1 btn-style-2 btn-color-1">Cancel</a>
+                <input type="submit" value="Save" id="save" class="btn-theme btn-shape-1 btn-style-1 btn-color-1">
+            </div>
+        </form>
+    </div>
+
+    {% addtoblock "js"  %}
+        <script src="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.js"></script>
+        <script>
+
+            Coloris({
+                el: '.coloris'
+            });
+
+            Coloris.setInstance('.instance1', {
+                theme: 'default',
+                format: 'hex',
+                {% comment %} forceAlpha: true, {% endcomment %}
+            })
+        </script>
+        <script type="text/javascript">
+        $(document).ready(function() {
+            $('.coloris').removeClass('d-none');
+            $(".theme-tab li").on("click", function() {
+                var target_box = $(this).data("target");
+                $(this).siblings().removeClass("active");
+                $(this).addClass("active");
+                $(this).parents(".box-theme-tab-wrap").find(".box-theme-form-item").hide();
+                $("#" + target_box).show();
+            })
+            $(".theme-button-tab li").on("click", function() {
+                $(this).siblings().removeClass("active");
+                $(this).addClass("active");
+            })
+            $(".theme-color-tab li").on("click", function() {
+                $(this).siblings().removeClass("active");
+                $(this).addClass("active");
+            })
+        })
+            var upload1 = document.getElementById('{{form.logo.name}}');
+            var upload2 = document.getElementById('{{form.favicon.name}}');
+            var upload3 = document.getElementById('{{form.background.name}}');
+
+            function logoFile(uploadFile) {
+                var me = this,
+                    files = uploadFile.files;
+                var preview = $('#logo-preview-section')
+                $.each(files, function (i, file) {
+                    var img_src = URL.createObjectURL(file);
+                    preview.append(`
+                        <li class="image-preview-list"><img src="${img_src}" alt=""><button type="button" onclick="deleteThemeImage(this)"><img src="{% static 'images/ic-delete.svg' %}" alt=""></button></li>
+                    `)
+                });
+
+            }
+
+            function faviconFile(uploadFile) {
+                var me = this,
+                    files = uploadFile.files;
+                var preview = $('#favicon-preview-section')
+                $.each(files, function (i, file) {
+                    var img_src = URL.createObjectURL(file);
+                    preview.append(`
+                        <li class="image-preview-list" onclick="select_favicon(this,'${file.name}')"><img src="${img_src}" alt="">
+                            <button type="button" onclick="deleteThemeImage(this)"><img src="{% static 'images/ic-delete.svg' %}" alt=""></button></li>
+                    `)
+                });
+
+            }
+
+            function backgroundFile(uploadFile) {
+                var me = this,
+                    files = uploadFile.files;
+                var preview = $('#background-preview-section')
+                $.each(files, function (i, file) {
+                    var img_src = URL.createObjectURL(file);
+                    preview.append(`
+                        <li class="image-preview-list"><img src="${img_src}" alt="">
+                            <button type="button" onclick="deleteThemeImage(this)"><img src="{% static 'images/ic-delete.svg' %}" alt=""></button></li>
+                    `)
+                });
+
+            }
+
+            function deleteThemeImage(element,id){
+                if(!id){element.parentNode.remove()}else{
+                var url = "{% url 'themeimage-url' %}"
+                const data = { image_id : id };
+                fetch(url, {
+                    method: 'delete',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        "Content-Type": "application/json",
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then((response) => response.json())
+                .then((result) => {
+                    $(element).parent().remove()
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            }
+            }
+
+            $(".themeJsonUpload").on('click', function(event){
+                $("#id_theme_json").prop("files",$("#jsonfilemodal").prop("files"));
+                $( "#global-theme-form" ).submit();
+            });
+
+            upload1.addEventListener('dragenter', function (e) {
+                upload1.parentNode.className = 'area dragging';
+            }, false);
+
+            upload1.addEventListener('dragleave', function (e) {
+                upload1.parentNode.className = 'area';
+            }, false);
+
+            upload1.addEventListener('dragdrop', function (e) {
+                logoFile(upload1);
+            }, false);
+
+            upload1.addEventListener('change', function (e) {
+                logoFile(upload1);
+            }, false);
+
+            upload2.addEventListener('dragenter', function (e) {
+                upload2.parentNode.className = 'area dragging';
+            }, false);
+
+            upload2.addEventListener('dragleave', function (e) {
+                upload2.parentNode.className = 'area';
+            }, false);
+
+            upload2.addEventListener('dragdrop', function (e) {
+                faviconFile(upload2);
+            }, false);
+
+            upload2.addEventListener('change', function (e) {
+                faviconFile(upload2);
+            }, false);
+
+            upload3.addEventListener('dragenter', function (e) {
+                upload1.parentNode.className = 'area dragging';
+            }, false);
+
+            upload3.addEventListener('dragleave', function (e) {
+                upload1.parentNode.className = 'area';
+            }, false);
+
+            upload3.addEventListener('dragdrop', function (e) {
+                backgroundFile(upload3);
+            }, false);
+
+            upload3.addEventListener('change', function (e) {
+                backgroundFile(upload3);
+            }, false);
+        </script>
+        <script>
+
+            function updatePrimaryElement(color){
+                if(color.length == 7)
+                    var primarycolor = `${color}ff`
+                else
+                    var primarycolor = color
+
+                $('#primary_color').val(primarycolor)
+                $('.pk-col-preview').css({"background":primarycolor});
+                // var primarycolor = color.toHEXAString()
+                $('#btn_color_1 .btn-color-1').css({"background":primarycolor});
+                $('#btn_color_1 .btn-color-4').css({"color":primarycolor});
+
+                $('#btn_color_2 .btn-color-1').css({"color":primarycolor, "border-color":primarycolor});
+
+                $('#primary-btn-set2 .btn-color-1').css({"color":primarycolor, "border-color":primarycolor ,"background":"#ffffff"});
+                $('#primary-btn-set2 .btn-color-4').css({"color":"#ffffff","background":"rgba(0, 63, 90, 0.05)"});
+                $('#primary-btn-set1 .btn-color-3').css({"background":"#ffffff"});
+                $('#primary-btn-set1 .btn-color-4').css({"background":"#ffffff"});
+
+                $('#secondary-btn-set2 .btn-color-1').css({"color":"#ffffff", "background":primarycolor});
+                $('#secondary-btn-set2 .btn-color-4').css({"color":primarycolor, "background":"#ffffff"});
+
+                $('.header-font-pk-tab').css({"background":primarycolor}).attr('data-color', primarycolor);
+                $('.general-font-pk-tab').css({"background":primarycolor}).attr('data-color', primarycolor);
+            }
+            function updateSecondaryElement(color){
+                if(color.length == 7){
+                    var secondarycolor = `${color}ff`
+                }
+                else{
+                    var secondarycolor = color
+                }
+                // var secondarycolor = color.toHEXAString()
+                $('#secondary_color').val(secondarycolor)
+                $('.sk-col-preview').css("background", secondarycolor);
+                $('#btn-primary-shape button').css("background", secondarycolor);
+                $('#btn_style_1 .btn-style-2').css({"color":secondarycolor, "border-color":secondarycolor});
+                $('#btn_style_2 .btn-style-1').css("background", secondarycolor);
+                $('#btn_style_2 .btn-style-2').css({"color":secondarycolor, "border-color":secondarycolor});
+                $('#btn_style_1 .btn-style-1').css("background", secondarycolor);
+                $('#btn_color_1 .btn-color-2').css({"background":secondarycolor});
+                $('#btn_color_1 .btn-color-3').css({"color":secondarycolor});
+
+                $('#btn_color_2 .btn-color-2').css({"color":secondarycolor, "border-color":secondarycolor});
+
+                $('#primary-btn-set2 .btn-color-2').css({"color":secondarycolor, "border-color":secondarycolor, "background":"#ffffff"});
+                $('#primary-btn-set2 .btn-color-3').css({"color":"#000"});
+
+                $('#secondary-btn-set2 .btn-color-2').css({"color":"#ffffff", "background":secondarycolor});
+                $('#secondary-btn-set2 .btn-color-3').css({"color":secondarycolor, "background":"#ffffff"});
+                $('#secondary-btn-set1 .btn-color-3').css({"color":'#000', "background":"#ffffff",border:'1px solid #000'});
+                $('#secondary-btn-set1 .btn-color-4').css({"color":'#fff', "background":"rgba(0, 63, 90, 0.05)",border:'1px solid #fff'});
+
+                $('.header-font-sk-tab').css({"background":secondarycolor}).attr('data-color', secondarycolor);
+                $('.general-font-sk-tab').css({"background":secondarycolor}).attr('data-color', secondarycolor);
+            }
+
+            function updateHighlightElement(color){
+                if(color.length == 7)
+                    var hilightcolor = `${color}ff`
+                else
+                    var hilightcolor = color
+
+                // var secondarycolor = color.toHEXAString()
+                $('#highlight_color').val(hilightcolor)
+                $('.hk-col-preview').css("background", hilightcolor);
+            }
+
+
+            function updateAlertElement(color){
+                if(color.length == 7)
+                    var alertcolor = `${color}ff`
+                else
+                    var alertcolor = color
+
+                // var secondarycolor = color.toHEXAString()
+                $('#alert_color').val(alertcolor)
+                $('.ak-col-preview').css("background", alertcolor);
+                
+            }
+            
+            function setBtnShape(shape){
+                $("#primary_button_shape").val(shape);
+
+                $("#primary-btn-section button").removeClass("rectangle rounded pill").addClass(shape);
+                $("#secondary-btn-section button").removeClass("rectangle rounded pill").addClass(shape);
+            }
+            function setImgShape(shape){                
+                if(shape==='rectangle')
+                {
+                    $("#image_shape").val(shape);
+                    document.getElementById('divimage_radius').style.display="none";
+                    $("#image_radius").val(0);
+                    $("#txtimage_radius").val(0);
+                }else{
+                    $("#image_shape").val(shape);
+                    document.getElementById('divimage_radius').style.display='block';
+                }
+            }
+
+
+            function setPrimaryBtnStyle(shape){
+                $("#primary_button_style").val(shape);
+
+                if(shape == 'fill'){
+                    $('.firstBtnStyle1').first().addClass('active')
+                    $('.firstBtnStyle1').last().removeClass('active')
+                    $("#primary-btn-set1").removeClass("d-none")
+                    $("#primary-btn-set2").addClass("d-none")
+                    $("#primary-btn-set2").children('li.active').removeClass('active')
+                    if ($("#primary-btn-set1").children('li.active').length <= 0){
+                        let firstcolor = $("#primary-btn-set1").children().first()
+                        firstcolor.addClass('active')
+                        
+
+                        let query1 = document.querySelector('#primary-btn-set1 > li.active')
+                        setPrimaryBtnPattern('F2',query1)
+                    }
+                    
+                } else if(shape == 'outline'){
+                    $('.firstBtnStyle1').first().removeClass('active')
+                    $('.firstBtnStyle1').last().addClass('active')
+                    $("#primary-btn-set1").addClass("d-none")
+                    $("#primary-btn-set2").removeClass("d-none")
+                    $("#primary-btn-set1").children('li.active').removeClass('active')
+                    if ($("#primary-btn-set2").children('li.active').length <= 0){
+                        let firstcolor =  $("#primary-btn-set2").children().first()
+                        firstcolor.addClass('active')
+
+                        let query2 = document.querySelector('#primary-btn-set2 > li.active')
+                        setPrimaryBtnPattern('O1',query2)
+                    }
+                    
+                }
+            }
+
+            function setSecondaryBtnStyle(shape){
+                $("#secondary_button_style").val(shape);
+        
+                if(shape == 'fill'){
+                    $('.firstBtnStyle2').first().addClass('active')
+                    $('.firstBtnStyle2').last().removeClass('active')
+                    $("#secondary-btn-set2").removeClass("d-none")
+                    $("#secondary-btn-set1").addClass("d-none")
+                    $("#secondary-btn-set1").children('li.active').removeClass('active')
+                    if ($("#secondary-btn-set2").children('li.active').length <= 0){
+                        let firstcolor = $("#secondary-btn-set2").children().first()
+                        firstcolor.addClass('active')
+                        
+                        let query1 = document.querySelector('#secondary-btn-set2 > li.active')
+                        setSecondaryBtnPattern('F2',query1)
+                    }
+
+                } else if(shape == 'outline'){
+                    
+                    $('.firstBtnStyle2').first().removeClass('active')
+                    $('.firstBtnStyle2').last().addClass('active')
+                    $("#secondary-btn-set2").addClass("d-none")
+                    $("#secondary-btn-set1").removeClass("d-none")
+                    $("#secondary-btn-set2").children('li.active').removeClass('active')
+
+                    if ($("#secondary-btn-set1").children('li.active').length <= 0){
+                        let firstcolor = $("#secondary-btn-set1").children().first()
+                        firstcolor.addClass('active')
+
+                        let query2 = document.querySelector('#secondary-btn-set1 > li.active')
+                        setSecondaryBtnPattern('O1',query2)
+                    }
+                }
+            }
+
+            function setPrimaryBtnPattern(pattern,data){
+                $("#primary_button_color_pattern").val(pattern);
+                $('.firstBtnStyle1.active').children().css("background",data.firstChild.style.backgroundColor)
+                $('.firstBtnStyle1.active').children().css("color",data.firstChild.style.color)
+                $('.firstBtnStyle1.active').children().css("borderColor",data.firstChild.style.color)
+            }
+
+            function setSecondaryBtnPattern(pattern,data){
+                $("#secondary_button_color_pattern").val(pattern);
+                $('.firstBtnStyle2.active').children().css("background",data.firstChild.style.backgroundColor)
+                $('.firstBtnStyle2.active').children().css("color",data.firstChild.style.color)
+                $('.firstBtnStyle2.active').children().css("borderColor",data.firstChild.style.color)
+            }
+
+
+            $(document).ready(function() {
+                updatePrimaryElement('{{form.primary_color.value}}')
+                updateSecondaryElement('{{form.secondary_color.value}}')
+                updateHighlightElement('{{form.highlight_color.value}}')
+                updateAlertElement('{{form.alert_color.value}}')
+                setBtnShape("{{form.primary_button_shape.value}}")
+                setPrimaryBtnStyle('{{form.primary_button_style.value}}')
+                setSecondaryBtnStyle('{{form.secondary_button_style.value}}')
+                setImageRadius('{{form.image_radius.value}}')
+
+                // block code to check which button is active
+                let active1 = document.querySelector('#primary-btn-set2 > li.active')
+                if(active1){
+                    setPrimaryBtnPattern('{{form.primary_button_color_pattern.value}}',active1)
+                }
+                else{
+                    active1 = document.querySelector('#primary-btn-set1 > li.active')
+                    setPrimaryBtnPattern('{{form.primary_button_color_pattern.value}}',active1)
+                }
+
+
+                let active2 = document.querySelector('#secondary-btn-set2 > li.active')
+                if(active2){
+                    setSecondaryBtnPattern('{{form.secondary_button_color_pattern.value}}',active2)
+                }
+                else{
+                    active2 = document.querySelector('#secondary-btn-set1 > li.active')
+                    setSecondaryBtnPattern('{{form.secondary_button_color_pattern.value}}',active2)
+                }
+                
+                
+            })
+
+            function setImageRadius(shape){
+                $("#image_radius").val(shape);
+                $("#txtimage_radius").val(shape);
+            }
+
+
+            function select_favicon(data,img_id){
+                let img_list = $("#favicon-preview-section").find('.active')
+                img_list.removeClass('active')
+                data.classList.add('active')
+                $('#selected_favicon').val(img_id)
+            }
+
+            function select_background(data,img_id){
+                let img_list = $("#background-preview-section").find('.active')
+                
+                if(data.classList.contains('active')){
+                    data.classList.remove('active')
+                    $('#selected_background').val('')
+                }else{
+                    data.classList.add('active')
+                    $('#selected_background').val(img_id)
+                }
+                img_list.removeClass('active')
+                
+                
+            }
+            function validate_favicon_data(data){
+                let active_img_list = $("#favicon-preview-section").find('.active')
+                let image_list = $("#favicon-preview-section").find(".image-preview-list")
+                if(active_img_list.length > 0 && image_list.length > 0 ){
+                    return true
+                }
+                else if(active_img_list.length > 0) {
+                    return true
+                }
+                else{
+                    $('#nessage_alert').text('Please Select Or Add One Of The Favicon Icon')
+                    $('#nessage_alert').show()
+                    // setTimeout(function(){  
+                    //     $('#nessage_alert').fadeOut('slow')
+                    // },3000);
+                    
+                    $('#favicon').focus()
+                    return false
+                }
+            }
+            function validate_form(data){
+                if(validate_favicon_data(data)){
+                    return true
+                }
+                else {
+                    return false
+                }
+            }
+        </script>
+    {% endaddtoblock  %}
+
+{% endblock content %}

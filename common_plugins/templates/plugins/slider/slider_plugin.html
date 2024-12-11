@@ -1,0 +1,92 @@
+{% load static cms_tags sekizai_tags global_theme_config_tags %}
+
+{% global_theme_object as global_theme_config %}
+
+{% addtoblock "css"  %}
+    <style>
+
+        .slider-center{
+            display:flex !important;
+            justify-content:center !important;
+        }
+
+        .common-silder .slick-dots li button:before{
+            border-radius: 50px;
+            border: 1px solid #FFF;
+            width: 16px;
+            height: 16px;
+            color: transparent;
+            opacity: 1;
+            background: transparent;
+        }
+
+        .common-silder .slick-dots li.slick-active button:before {
+            border-radius: 50px;
+            border-color: transparent;
+            background: #FFF;
+            width: 16px;
+            height: 16px;
+        }
+
+        .common-silder .slick-prev {
+            left: 0px;
+            z-index: 1;
+        }
+        .common-silder .slick-next {
+            right: 0;
+            z-index: 1;
+        }
+        .common-silder .slick-prev:before,
+        .common-silder .slick-next:before{
+            color: var(--global-primary-color);
+            font-size: 2rem !important;
+            font-family: 'FontAwesome';
+            opacity: 1 !important;
+        }
+        .common-silder .slick-next:before{
+            content: '›' !important;
+        }
+        .common-silder .slick-prev::before {
+            content: '‹'!important;
+        }
+        .common-silder .slick-dots{
+            display: {% if instance.child_plugin_instances|length == 1 %}none{% else %}block{% endif %};
+            border-radius: 8px 8px 0px 0px;
+            border: 1px solid rgba(255, 255, 255, 0.20);
+            background: rgba(209, 209, 209, 0.50);
+            backdrop-filter: blur(4px);
+            gap: 10px;
+            width: 148px;
+            height: 36px;
+        }
+
+        .slick-dots li button:after{
+            content: none !important;
+        }
+
+        .common-silder .slick-list{
+            width: 100% !important;
+        }
+    </style>
+{% endaddtoblock  %}
+
+<div class="common-silder-{{instance.id}} common-silder slider-center">
+    {% for plugin in instance.child_plugin_instances %}
+        <div class="common-slide">{% render_plugin plugin %}</div>
+    {% endfor %}
+</div>
+
+{% addtoblock "js"  %}
+    <script>
+        $( document ).ready(function() {
+            $('.common-silder-{{instance.id}}').slick({
+                autoplay: {{instance.glossary.slider_autoplay}},
+                autoplaySpeed: 3000,
+                infinite: {{instance.glossary.slider_loop}},
+                arrows: {{instance.glossary.arrow_display}},
+                dots: {{instance.glossary.dots_display}},
+                adaptiveHeight: true,
+            });
+        });
+    </script>
+{% endaddtoblock  %}

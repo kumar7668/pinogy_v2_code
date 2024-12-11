@@ -1,0 +1,39 @@
+{% extends "custom_design/forms/widgets/base-widget.html" %}
+{% load static global_theme_config_tags %}
+
+
+{% block widget_section %}
+<style>
+</style>
+<script>
+    function setPrimaryBtnStyle(shape){
+        
+        $("#primary_button_style").val(shape);
+
+        if(shape == 'fill'){
+            $("#primary-btn-set1").removeClass("d-none")
+            $("#primary-btn-set2").addClass("d-none")
+        } else if(shape == 'outline'){
+            $("#primary-btn-set1").addClass("d-none")
+            $("#primary-btn-set2").removeClass("d-none")
+        }
+    }
+</script>
+{% global_theme_object as global_theme_config %}
+
+<div class="box-theme-tab-wrap admin-form admin-form ">
+    {# Color Palette Label #}
+    <div class="secondary-label">
+        {{ widget.attrs.label }}
+    </div>
+    <div class="secondary-label">
+        {{ widget.attrs.description }}
+    </div>
+    <ul class="theme-button-tab ">
+        <input type="hidden" name="{{widget.attrs.name}}" id="{{widget.attrs.name}}" value="{{widget.attrs.value}}">
+                   
+        <li class="{% if form.ask_about_me_button.value == 'fill' %} active {% endif %}" onclick="setPrimaryBtnStyle('fill')"><button class="btn-theme btn-shape-1 btn-color-1 btn-style-1">Button </button></li>
+        <li class="{% if form.ask_about_me_button.value == 'outline' %} active {% endif %}" onclick="setPrimaryBtnStyle('outline')"><button class="btn-theme btn-shape-1 btn-color-1 btn-style-2">Button </button></li>
+    </ul>
+</div>
+{% endblock %}  

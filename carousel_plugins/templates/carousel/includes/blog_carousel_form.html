@@ -1,0 +1,200 @@
+{% load static %}
+{% comment %} Testimonial carousel Layout {% endcomment %}
+<div class="box-theme-title">
+    Layout
+</div>
+<div class="box-theme-form-item">
+    <div class="banner-layout-types">
+        <div class="banner-layout-wrap">
+            <div class="banner-layout-wrap-inner txt-1-btn-left" onclick="SelectTestimonialCarouselLayout('blog_1')">
+                <img class="img-fluid" src="{% static 'images/blog_carousel/layout1.png' %}">
+            </div>
+            <div class="banner-layout-box-control">
+                <label class="checkcontainer" id="blog_1">Horizontal
+                {% comment %} <input type="radio" value="carousel/includes/blog/blog_layout.html" id="layout_group2" name="{{adminform.form.blog_layout.name}}" {% if adminform.form.blog_layout.value == 'carousel/includes/blog/blog_layout.html' %} checked {% endif %} > {% endcomment %}
+               
+                <input type="radio" value="carousel/includes/blog/blog_info_layout.html" id="layout_group2" name="{{adminform.form.blog_layout.name}}" {% if adminform.form.blog_layout.value == 'carousel/includes/blog/blog_info_layout.html' %} checked {% endif %} >
+                
+                <span class="radiobtn"></span>
+                </label>
+            </div>
+        </div>
+        <div class="banner-layout-wrap">
+            <div class="banner-layout-wrap-inner txt-1-btn-right" onclick="SelectTestimonialCarouselLayout('blog_2')">
+                <img class="img-fluid" src="{% static 'images/testimonial_carousel/testimonials-layout2.png' %}">
+            </div>
+            <div class="banner-layout-box-control">
+                <label class="checkcontainer" id="blog_2">Vertical
+                    <input type="radio" value="carousel/includes/blog/blog_layout.html" id="layout_group2" name="{{adminform.form.blog_layout.name}}" {% if adminform.form.blog_layout.value == 'carousel/includes/blog/blog_layout.html' %} checked {% endif %} >
+                    <span class="radiobtn"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="box-theme-form-devider"></div>
+<div class="box-theme-title banner-text-layout">
+    Title
+</div>
+
+
+<div class="box-theme-form-item">
+    <div class="box-theme-form-item-inline">
+        <div class="box-theme-form-item-inline-input">
+            <input name="{{adminform.form.title_text.name}}" id="{{adminform.form.title_text.name}}" type="text" value="{% if adminform.form.title_text.value %}{{adminform.form.title_text.value}}{% endif %}" placeholder="Enter Brand Name" class="form-input">
+        </div>
+        <div class="dev_colorpicker">
+            <div class="form-color-picker-box dev_colorpicker_preview subtitle-color-display" style="background: {{adminform.form.sub_title_text_color.value}};">
+                <img src="{% static 'images/ic-buck.svg' %}">
+            </div>
+        </div>
+    </div>
+</div>
+{% comment %} 
+<div class="box-theme-sub-title">
+    Text color
+</div>
+<div class="box-theme-tab-wrap">
+    <div class="box-theme-form-item theme-tab-content" id="">
+        <input type="hidden" name="{{adminform.form.card_text_color.name}}" id="{{adminform.form.card_text_color.name}}" value="{{adminform.form.card_text_color.value}}" class="" onChange="" style="">
+        <ul class="theme-color-tab">
+            <li onclick="setCardTextColor('#000000ff')" class="{% if adminform.form.card_text_color.value == '#000000ff' %}active{% endif %} tab-color tab-black"></li>
+            <li onclick="setCardTextColor('#ffffffff')" class="{% if adminform.form.card_text_color.value == '#ffffffff' %}active{% endif %} tab-color tab-white"></li>
+            <li onclick="setCardTextColor('{{global_theme_config.primary_color}}')" class="{% if adminform.form.card_text_color.value == global_theme_config.primary_color %}active{% endif %} tab-color tab-color-1"></li>
+            <li onclick="setCardTextColor('{{global_theme_config.secondary_color}}')" class="{% if adminform.form.card_text_color.value == global_theme_config.secondary_color %}active{% endif %} tab-color tab-color-2"></li>
+            <li class="tab-color tab-custom dev_colorpicker"> Custom
+                <div class="dev_colorpicker_preview tab-custom-pre card-text-color-display" style="background:{{adminform.form.card_text_color.value}};">
+                    <input type="text" class="color-selector coloris instance1" onChange="setCardTextColor(this.value)" style="max-width: 50px; cursor: pointer;">
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endcomment %}
+
+ 
+<div class="box-theme-form-devider">
+</div>
+<div class="box-theme-title banner-text-layout">
+    Title Color
+</div>
+{{ adminform.form.carous_title_color }}
+{% if adminform.form.carous_title_color.errors %}
+    {% for error in adminform.form.carous_title_color.errors  %}
+        <div class="alert alert-danger error-block" role="alert">
+            {{error}}
+        </div>
+    {% endfor %}
+{% endif %}
+<br>
+<div class="box-theme-form-devider">
+</div>
+<div class="box-theme-title banner-text-layout">
+    Background Color
+</div>
+{{ adminform.form.blog_bg_color }}
+{% if adminform.form.blog_bg_color.errors %}
+    {% for error in adminform.form.blog_bg_color.errors  %}
+        <div class="alert alert-danger error-block" role="alert">
+            {{error}}
+        </div>
+    {% endfor %}
+{% endif %}
+<br>
+
+<div class="box-theme-form-devider button-layout"></div>
+<div class="box-theme-title banner-text-layout">
+    Button
+</div>
+{% comment %} First Button {% endcomment %}
+<div class="carousel-btn-sect first-btn-sect">
+    <div class="box-theme-sub-title banner-text-layout">
+        First Button
+    </div>
+    <div class="box-theme-form-item banner-edit-section">
+        <div class="box-theme-form-item-inline">
+            <div class="box-theme-form-item-inline-input">
+                {% comment %} <input type="text" placeholder="First button's text" class="form-input"> {% endcomment %}
+                <input name="{{adminform.form.first_button_text.name}}" id="{{adminform.form.first_button_text.name}}" type="text" value="{% if adminform.form.first_button_text.value %}{{adminform.form.first_button_text.value}}{% endif %}" placeholder="First button's text" class="form-input mb-2">
+                <input name="{{adminform.form.first_button_link.name}}" type="text" value="{% if adminform.form.first_button_link.value %}{{adminform.form.first_button_link.value}}{% endif %}" placeholder="First button's link" class="form-input">
+                <div class="mt-2">{{adminform.form.first_button_internallink}}</div>
+            </div>
+        </div>
+        {% if adminform.form.first_button_text.errors %}
+            {% for error in adminform.form.first_button_text.errors  %}
+                <div class="alert alert-danger error-block" role="alert">
+                    {{error}}
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if adminform.form.first_button_link.errors %}
+            {% for error in adminform.form.first_button_link.errors  %}
+                <div class="alert alert-danger error-block" role="alert">
+                    {{error}}
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if adminform.form.first_button_internallink.errors %}
+            {% for error in adminform.form.first_button_internallink.errors  %}
+                <div class="alert alert-danger error-block" role="alert">
+                    {{error}}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+<div class="box-theme-form-devider"></div>
+<div class="carousel-btn-sect second-btn-sect">
+    <div class="box-theme-sub-title banner-text-layout">
+        Second Button
+    </div>
+    <div class="box-theme-form-item banner-edit-section">
+        <div class="box-theme-form-item-inline">
+            <div class="box-theme-form-item-inline-input">
+                {% comment %} <input type="text" placeholder="Second button's text" class="form-input"> {% endcomment %}
+                <input name="{{adminform.form.second_button_text.name}}" id="{{adminform.form.second_button_text.name}}" type="text" value="{% if adminform.form.second_button_text.value %}{{adminform.form.second_button_text.value}}{% endif %}" placeholder="Second button's text" class="form-input mb-2">
+                <input name="{{adminform.form.second_button_link.name}}" type="text" value="{% if adminform.form.second_button_link.value %}{{adminform.form.second_button_link.value}}{% endif %}" placeholder="Second button's link" class="form-input">
+                <div class="mt-2">{{adminform.form.second_button_internallink}}</div>
+            </div>
+        </div>
+        {% if adminform.form.second_button_text.errors %}
+            {% for error in adminform.form.second_button_text.errors  %}
+                <div class="alert alert-danger error-block" role="alert">
+                    {{error}}
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if adminform.form.second_button_link.errors %}
+            {% for error in adminform.form.second_button_link.errors  %}
+                <div class="alert alert-danger error-block" role="alert">
+                    {{error}}
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if adminform.form.second_button_internallink.errors %}
+            {% for error in adminform.form.second_button_internallink.errors  %}
+                <div class="alert alert-danger error-block" role="alert">
+                    {{error}}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+  
+</div>
+{% comment %} Hidden Fields {% endcomment %}
+<input type='hidden' name='{{adminform.form.card_size.name}}' value='SMALL'/>
+<input type='hidden' name='{{adminform.form.pet_layout.name}}' value='carousel/includes/pet/pet_carousel_layout1.html'/>
+<input type='hidden' name='{{adminform.form.testimonial_layout.name}}' value='carousel/includes/testimonial/tc_horizontal.html'/>
+<input type='hidden' name='{{adminform.form.promotion_layout.name}}' value='carousel/includes/promotion/promotion_horizontal.html'/>
+
+<script type="text/javascript">
+
+function setCardTextColor(color){
+    $('.card-text-color-display').css({"background":color});
+    $("#{{adminform.form.card_text_color.name}}").val(color);
+}
+function setCardBgColor(color){
+    $('.card-bg-color-display').css({"background":color});
+    $('#{{adminform.form.card_bg_color.name}}').val(color);
+}
+</script>

@@ -1,0 +1,13 @@
+{% extends "custom_design/forms/widgets/base-widget.html" %}
+
+{% block widget_section %}
+    <div class="admin-form">
+        <div class="form-check checkbox-outer">
+            <input class="form-check-input custom-checkbox" name="{{ widget.name }}" type="checkbox" id="{{ widget.attrs.id }}"
+                    {% if widget.attrs.checked %} checked {% endif %}>
+            <label class="form-check-label custom-checkbox-label" for="{{ widget.attrs.id }}">
+                {{ widget.attrs.label }}
+            </label>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% load static sekizai_tags global_theme_config_tags %}
+<div class="label">
+    {% if instance.label %}
+        <label for="{{ instance.name|slugify }}" class="form-label mb-0">
+            {{ instance.label }}
+        </label>
+    {% endif %}
+    <input type="datetime-local" 
+        name="{{ instance.name }}" 
+        placeholder="{{ instance.placeholder_text|default:"" }}" 
+        id="{{ instance.name|slugify }}"
+        class="form-control flatpickr flatpickr-input {% if instance.label %} with-label {% endif %}"
+        {% if instance.is_required %} required {% endif %} 
+    />
+    <!-- The following div provides feedback for an invalid input -->
+    <div class="invalid-feedback">Please fill out this field.</div>
+</div>
+{% addtoblock 'js' %}
+<script>
+    // Define object mapping days to minTime and maxTime
+    const dayTimeRanges = {
+        {% for day, times in available_time.items %}
+            {% if times != 'Closed' %}
+              '{{ day }}': { minTime: '{{ times.0 }}', maxTime: '{{ times.1 }}' },
+            {% endif %}
+        {% endfor %}
+    };
+
+    // Get current date and time
+    const now = new Date();
+    const currentDateTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+    // Configuration for Flatpickr
+    const config = {
+        enableTime: true,
+        dateFormat: "Y-m-d h:i K",
+        defaultDate: currentDateTime, // Set the default date and time
+        plugins: [
+            new confirmDatePlugin({
+                confirmIcon: "<i class='fa fa-check'></i>",
+                confirmText: "APPLY",
+                showAlways: false,
+                theme: "light"
+            })
+        ],
+        "disable": [ function(date) {
+            // Get the day of the week for the current date
+            const day = date.getDay();
+            // Get the weekday name for the current date
+            const weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][day];
+
+            // Disable the date if it's not present in the dayTimeRanges object
+            return !(weekday in dayTimeRanges);
+        }
+        ],
+        onChange: function(selectedDates, dateStr, instance) {
+            // Get the selected date's day
+            const selectedDate = selectedDates[0];
+            const selectedDay = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
+    
+            // Check if the selected day is present in the dayTimeRanges object
+            if (selectedDay in dayTimeRanges) {
+                // If the day is present, set minTime and maxTime accordingly
+                const { minTime, maxTime } = dayTimeRanges[selectedDay];
+                instance.set("minTime", minTime);
+                instance.set("maxTime", maxTime);
+            }
+        },
+        onReady: function(selectedDates, dateStr, instance) {
+            // Get the current date and time
+            const now = new Date();
+            const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    
+            // Check if the current date is present in the dayTimeRanges object
+            const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' });
+            if (currentDay in dayTimeRanges) {
+                // If the current day is present, set minTime and maxTime accordingly
+                const { minTime, maxTime } = dayTimeRanges[currentDay];
+                instance.set("minTime", currentTime >= minTime ? currentTime : minTime);
+                instance.set("maxTime", maxTime);
+            }
+        }
+    };
+
+    flatpickr("input[type='datetime-local']", config);
+</script>
+{% endaddtoblock %}

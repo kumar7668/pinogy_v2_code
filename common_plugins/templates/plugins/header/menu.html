@@ -1,0 +1,22 @@
+{% load cms_tags menu_tags %}
+{% for child in children %}
+    {% if child.children %}
+       
+        <li class="child has-sub-menu {% if child.ancestor %} ancestor{% endif %} menu_item_{{child.get_menu_title}} parent_id_{{child.id}}" >
+            <div class="btn-group header-drop-menu d-flex">
+                <a href="{{ child.attr.redirect_url|default:child.get_absolute_url }}" aria-label = "menu title {{ child.get_menu_title }}">{{ child.get_menu_title }}</a>
+                <button class="btn dropmenubtn dropdown-toggle dropdown-toggle-split dropdown-btn-color px-lg-0" id="drop-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="dropdown-menu-button">
+                </button>
+                <ul class="dropdown-menu custom-position drop-menu-{{child.id}}" id="drop-menu">
+                    {% show_menu from_level to_level extra_inactive extra_active "plugins/header/submenu.html" "" "" child %}
+                </ul>
+            </div>
+        </li>
+    {% else %}
+        <li class="child cond1 {% if child.ancestor %} ancestor{% endif %}{% if child.sibling %} sibling{% endif %}{% if child.descendant %} descendant{% endif %} menu_item_{{child.get_menu_title|cut:" "}} parent_id_{{child.id}}">
+            <a href="{{ child.attr.redirect_url|default:child.get_absolute_url }}" title="" area-label = " child menu title{{ child.get_menu_title }}">
+                {{ child.get_menu_title }}
+            </a>
+        </li>
+    {% endif %}
+{% endfor %}

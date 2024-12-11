@@ -1,0 +1,451 @@
+{% extends 'admin/base_change_form.html' %}
+{% load cms_tags menu_tags sekizai_tags static admin_modify %}
+{% load global_theme_config_tags %}
+
+{% block content %}
+{% global_theme_object as global_theme_config %}
+<form {% if has_file_field %}enctype="multipart/form-data" {% endif %}{% if form_url %}action="{{ form_url }}"
+   {% endif %}method="post" id="{{ opts.model_name }}">
+   {% csrf_token %}
+   {% addtoblock 'css' %}
+   <!-- CSS styles -->
+   <style>
+
+    {% if global_theme_config.primary_color and global_theme_config.secondary_color %}
+    :root {
+        --primary-element: {{global_theme_config.primary_color}};
+        --secondary-element: {{global_theme_config.secondary_color}};
+    }
+    {% endif %}
+
+    {% comment %} Breed Detail Styling {% endcomment %}
+
+    .breed-form {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        padding: 40px;
+    }
+
+    .breed-form-title {
+        width: 1050px;
+        color: var(--Primary, #003F5A);
+        /* H2 */
+        font-family: "Open Sans";
+        font-size: 40px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 125%; /* 50px */
+        text-transform: capitalize;
+    }
+
+    .bs-title {
+        width: 1050px;
+        color: var(--Primary, #003F5A);
+        /* H4 */
+        font-family: "Open Sans";
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 125%; /* 30px */
+        margin-bottom: 20px;
+    }
+
+    .bs-message .primary-label {
+        margin-bottom:20px !important;
+    }
+
+
+    .form-variables {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top:20px;
+    }
+
+    .variable-info {
+        color: var(--Primary, #003F5A);
+        /* Primary1-Regular */
+        font-family: "Open Sans";
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 140%; /* 28px */
+    }
+
+    .mark-info {
+        display: inline-flex;
+        padding: 12px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 10px !important;
+        border-radius: 12px !important;
+        background: var(--White, #FFF) !important;
+        box-shadow: 0px 1px 24px 0px rgba(0, 63, 90, 0.20) !important;
+        width: 220px !important;
+        color: var(--Primary, #003F5A) !important;
+        font-family: "Open Sans";
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 140%; /* 22.4px */
+    }
+
+    .variable-mark {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .variable-mark .tooltiptext {
+        visibility: hidden;
+        position: absolute;
+        z-index: 1;
+        top: -35%;
+        left: 388%;
+        margin-left: -70px; /* Center the tooltip */
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .variable-mark:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .form-button {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-top:16px;
+    }
+
+    .form-btn {
+        display: flex;
+        padding: 4px 8px;
+        align-items: flex-start;
+        gap: 10px;
+        border-radius: 8px;
+        background: var(--Secondary, #12BBD2);
+        color: var(--White, #FFF);
+        /* Primary2-Regular */
+        font-family: "Open Sans";
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 140%; /* 25.2px */
+    }
+
+    .line-break {
+        width: 100%;
+        height: 2px;
+        background: rgba(0, 63, 90, 0.20);
+        margin:40px 0px;
+    }
+
+    .pet-enquiry {
+        display: flex;
+        width: 100%;
+        padding: 40px 20px;
+        align-items: center;
+        gap: 4px;
+        background: rgba(18, 187, 210, 0.10);
+    }
+
+    .enquiry-box {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .enquiry-text {
+        flex: 1 0 0;
+        color: var(--Primary, #003F5A);
+        /* Primary1-Bold */
+        font-family: "Open Sans";
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 140%; /* 28px */
+    }
+
+    .btntitle {
+        color: var(--primary, #003F5A);
+        font-family: Open Sans;
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 140%;
+     }
+
+    .button-style-fill {
+        background-color: var(--secondary-element);
+        color: white;
+        border : none;
+    }
+
+    .button-style-outline{
+        border : 1px solid var(--secondary-element);
+        color : var(--secondary-element);
+        background-color : white;
+    }
+
+    {% comment %} Breed Traits Styling {% endcomment %}
+
+    .activelayout {
+        padding: 10px;
+        border-radius: 12px;
+        border: 2px dashed #12BBD2;
+        background: rgba(18, 187, 210, 0.05);
+    }
+
+    .breed-form {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        padding: 40px;
+    }
+
+    .breed-form-title {
+        width: 1050px;
+        color: var(--Primary, #003F5A);
+        /* H2 */
+        font-family: "Open Sans";
+        font-size: 40px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 125%; /* 50px */
+        text-transform: capitalize;
+    }
+
+    .breed-traits-img {
+        max-width: 420px;
+    }
+
+    {% comment %} Common Spacing Classes {% endcomment %}
+
+    .pl-24 {
+        padding-left: 24px;
+    }
+
+   </style>
+   {% endaddtoblock %}
+
+    <div class="container breed-form">
+        <div class="breed-form-title">Breed Detail Summary</div>
+
+        {% comment %} Breed Detail Section {% endcomment %}
+
+        <div class="breed-form-settings">
+            <div class="bs-title">Collection Form</div>
+            <div class="bs-message">{{ adminform.form.message }}</div>
+            <div class="form-variables">
+                <div class="variable-info">The following variables can be used</div>
+                <div class="variable-mark">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <g opacity="0.6">
+                            <path d="M12 3C7.03725 3 3 7.03725 3 12C3 16.9628 7.03725 21 12 21C16.9628 21 21 16.9628 21 12C21 7.03725 16.9628 3 12 3ZM12 4.5C16.1512 4.5 19.5 7.84875 19.5 12C19.5 16.1512 16.1512 19.5 12 19.5C7.84875 19.5 4.5 16.1512 4.5 12C4.5 7.84875 7.84875 4.5 12 4.5ZM12 7.5C10.35 7.5 9 8.85 9 10.5H10.5C10.5 9.66225 11.1622 9 12 9C12.8378 9 13.5 9.66225 13.5 10.5C13.4998 10.7803 13.4114 11.0534 13.2473 11.2806C13.0832 11.5078 12.8517 11.6777 12.5858 11.766L12.2812 11.859C11.9815 11.96 11.7208 12.1523 11.5359 12.4089C11.351 12.6656 11.251 12.9737 11.25 13.29V14.25H12.75V13.2892L13.0545 13.1955C13.6196 13.0056 14.1111 12.6435 14.46 12.1601C14.8089 11.6767 14.9977 11.0962 15 10.5C15 8.85 13.65 7.5 12 7.5ZM11.25 15V16.5H12.75V15H11.25Z" fill="#003F5A"/>
+                        </g>
+                    </svg>
+                    <span class="tooltiptext mark-info">Click the button to put it into the message above</span>
+                </div>
+            </div>
+
+            <div class="form-button">
+                <div class="form-btn" onclick="insertVariable('breed_name')">breed</div>
+            </div>
+
+            <div class="btntitle" style="margin-top:40px; margin-bottom:20px;">Button</div>
+
+            <div class="variable-info" style="margin-bottom:20px;">Style</div>
+
+            <div class="box-theme-form-item theme-tab-content p-0">
+                <ul class="theme-button-tab">
+                    <input type="hidden" name="{{adminform.form.breedform_button_style.name}}" id="{{adminform.form.breedform_button_style.name}}" value="{{adminform.form.breedform_button_style.value}}">
+                    
+                    <li class="breedform_button_style_fill {% if adminform.form.breedform_button_style.value == 'fill' %} active {% endif %}" onclick="updateButtonStyle('fill')">
+                    <button class="btn-theme button-style-fill">Button</button>
+                    </li>
+                    <li class="breedform_button_style_outline {% if adminform.form.breedform_button_style.value == 'outline' %} active {% endif %}" onclick="updateButtonStyle('outline')">
+                    <button class="btn-theme button-style-outline">Button</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="pet-enquiry">
+            <div class="enquiry-box">
+                <div class="enquiry-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <g clip-path="url(#clip0_4499_20607)">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#003F5A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 16V12M12 8H12.01" stroke="#003F5A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </g>
+                    <defs>
+                    <clipPath id="clip0_4499_20607">
+                    <rect width="24" height="24" fill="white"/>
+                    </clipPath>
+                    </defs>
+                    </svg>
+                </div>
+                <div class="enquiry-text">Breed inquiries will be submitted as a lead to the POS.</div>
+            </div>
+        </div>
+
+        {% comment %} Breed Traits Section {% endcomment %}
+        <div class="line-break"></div>
+        <div>{{ adminform.form.show_breed_traits }}</div>
+        <div class="traits-layouts-section box-theme-form-item">
+            <div class="banner-layout-types">
+
+                {% comment %} LAYOUT 1 {% endcomment %}
+                <div class="banner-layout-wrap">
+                    <div class="banner-layout-wrap-inner banner-layout-wrap-inner_LAYOUT1 txt-2-btn-left {% if adminform.form.traits_layouts.value == 'LAYOUT1'%} activelayout {% endif %}">
+                        <img src="{% static 'images/breed_traits/traits1.png' %}" class="breed-traits-img" alt="">
+                    </div>
+                    <div class="">
+                        <label class="checkcontainer" id="layout_1">Simple Line
+                        <input type="radio" value="LAYOUT1" id="{{adminform.form.traits_layouts.name}}" name="{{adminform.form.traits_layouts.name}}" {% if adminform.form.traits_layouts.value == 'LAYOUT1' %} checked {% endif %} onclick="SelectMarketingLayout(this,'LAYOUT1')">
+                        <span class="radiobtn"></span>
+                        </label>
+                    </div>
+                </div>
+
+                {% comment %} LAYOUT 2  {% endcomment %}
+                <div class="banner-layout-wrap">
+                    <div class="banner-layout-wrap-inner banner-layout-wrap-inner_LAYOUT2 txt-2-btn-left {% if adminform.form.traits_layouts.value == 'LAYOUT2'%} activelayout {% endif %}">
+                        <img src="{% static 'images/breed_traits/traits2.png' %}" class="breed-traits-img" alt="">
+                    </div>
+                    <div class="">
+                        <label class="checkcontainer" id="layout_2">Circle
+                        <input type="radio" value="LAYOUT2" id="{{adminform.form.traits_layouts.name}}" name="{{adminform.form.traits_layouts.name}}" {% if adminform.form.traits_layouts.value == 'LAYOUT2' %} checked {% endif %} onclick="SelectMarketingLayout(this,'LAYOUT2')">
+                        <span class="radiobtn"></span>
+                        </label>
+                    </div>
+                </div>
+
+                {% comment %} LAYOUT 3  {% endcomment %}
+                <div class="banner-layout-wrap">
+                    <div class="banner-layout-wrap-inner banner-layout-wrap-inner_LAYOUT3 txt-2-btn-left {% if adminform.form.traits_layouts.value == 'LAYOUT3'%} activelayout {% endif %}">
+                        <img src="{% static 'images/breed_traits/traits3.png' %}" class="breed-traits-img" alt="">
+                    </div>
+                    <div class="">
+                        <label class="checkcontainer" id="layout_3">Bar
+                        <input type="radio" value="LAYOUT3" id="{{adminform.form.traits_layouts.name}}" name="{{adminform.form.traits_layouts.name}}" {% if adminform.form.traits_layouts.value == 'LAYOUT3' %} checked {% endif %} onclick="SelectMarketingLayout(this,'LAYOUT3')">
+                        <span class="radiobtn"></span>
+                        </label>
+                    </div>
+                </div>
+
+                {% if adminform.form.layout.errors %}
+                    {% for error in adminform.form.layout.errors  %}
+                            <div class="alert alert-danger error-block" role="alert">
+                                {{error}}
+                            </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
+        {% comment %} Breed Notes Section {% endcomment %}
+        
+        <div class="line-break"></div>
+        <div>{{ adminform.form.show_breed_notes }}</div>
+    </div>
+
+   {% addtoblock 'js'%}
+
+   {% comment %} Breed Detail JS {% endcomment %}
+
+    <script>
+        const breed_name = " {breed_name}"; // Replace with dynamic value
+    
+        function insertVariable(variable) {
+            let container = document.querySelector('.breed-form');
+            let messageInput = container.querySelector('#id_message');
+            let textToInsert = '';
+    
+            if (variable === 'breed_name') {
+                textToInsert = breed_name;
+            } else if (variable === 'pet_name') {
+                textToInsert = pet_name;
+            }
+    
+            // Insert the text at the cursor position
+            if (messageInput.selectionStart || messageInput.selectionStart === 0) {
+                let startPos = messageInput.selectionStart;
+                let endPos = messageInput.selectionEnd;
+                let beforeValue = messageInput.value.substring(0, startPos);
+                let afterValue = messageInput.value.substring(endPos, messageInput.value.length);
+                messageInput.value = beforeValue + textToInsert + afterValue;
+                messageInput.selectionStart = startPos + textToInsert.length;
+                messageInput.selectionEnd = startPos + textToInsert.length;
+            } else {
+                messageInput.value += textToInsert;
+            }
+    
+            messageInput.focus(); // Focus back to the input field
+        }
+  
+        function updateButtonStyle(style) {
+           document.getElementById('{{adminform.form.breedform_button_style.name}}').value = style;
+           
+           // Optional: Toggle 'active' class on li elements based on the selected style
+           var lis = document.querySelectorAll('[class^="breedform_button_style_"]');
+           lis.forEach(function(li) {
+               li.classList.remove('active');
+           });
+           
+           var selectedLi = document.querySelector('.breedform_button_style_' + style);
+           if (selectedLi) {
+               selectedLi.classList.add('active');
+           }
+       }
+    </script>
+
+    {% comment %} Breed Traits JS {% endcomment %}
+
+    <script>
+        function SelectMarketingLayout(element,layout) {
+            document.getElementById('{{adminform.form.traits_layouts.name}}').value = layout;
+            
+            // Optional: Toggle 'active' class on li elements based on the selected style
+            var lis = document.querySelectorAll('.banner-layout-wrap-inner');
+            lis.forEach(function(li) {
+                li.classList.remove('activelayout');
+            });
+            
+            var selectedLi = document.querySelector('.banner-layout-wrap-inner_' + layout);
+            if (selectedLi) {
+                selectedLi.classList.add('activelayout');
+            }
+        }
+
+        // Function to toggle the class based on the condition
+        function toggleClass() {
+            // Get the value of the checked radio button
+            var showTraits = document.querySelector('input[name="show_breed_traits"]:checked').value;
+            var traitsDiv = document.querySelector('.traits-layouts-section');
+            if (showTraits == "False") {
+                traitsDiv.classList.add('d-none');
+            } else {
+                traitsDiv.classList.remove('d-none');
+            }
+        }
+
+        // Add event listeners to the radio buttons
+        var radioButtons = document.querySelectorAll('input[name="show_breed_traits"]');
+        radioButtons.forEach(function(radioButton) {
+            radioButton.addEventListener('change', toggleClass);
+        });
+
+        // Run the function when the page loads
+        document.addEventListener('DOMContentLoaded', toggleClass);
+    </script>
+   {% endaddtoblock %}
+   <!-- Submit buttons -->
+   {% block submit_buttons_bottom %}
+   {% submit_row %}
+   {% endblock %}
+</form>
+{% endblock content %}

@@ -1,0 +1,84 @@
+
+{% load static sekizai_tags global_theme_config_tags thumbnail %}
+
+{% global_theme_object as global_theme_config %}
+
+{% addtoblock "css"  %}
+    <style>
+
+        .grid {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            grid-template-rows: repeat(3,230px);
+            grid-gap: 5px;
+            align-items: stretch;
+            margin: 0 7%;
+          }
+          .grid > .article img {
+            height: 100%;
+            width : 100%;
+            object-fit: cover;
+          }
+          .article{
+            position:relative;
+            justify-self: center;
+            width: 100%;
+          }
+          .price_value {
+            position: absolute;
+            display:flex;
+            flex-direction:column;
+            right:0;
+            padding-left: 8px;
+            background-color: var(--global-secondary-color);
+            color:white;
+            font-family : var(--general-font);
+          }
+        .pup_name {
+            position: absolute;
+            bottom:0;
+            opacity:0.3;
+            background-color:black;
+            height:28px;
+            width:100%;
+            text-align:center;
+        }
+        .pup_name a {
+          font-family : var(--general-font);
+          color:white;
+          font-weight:900;
+        }
+    </style>
+{% endaddtoblock  %}
+{% if items|length > 0 %}
+<div class= "container py-4">
+    <div class="h2-theme-bold text-center p-3">{{instance.glossary.title_text | safe}} </div>
+    <div class='grid'>
+         {% for item in items %}
+         <div class="article">
+            <a class ="stretched-link" style="text-decoration-line: none; color: white;" href="{% url 'pinogy_pet:pet_detail' item.ptype_slug item.pbrd_slug item.pet_id %}" ></a>
+             <div class="price_value">
+
+              {% comment %} check for Disabled price to be none or not {% endcomment %}
+              {% if item.disabled_price %}
+              <span style= "font-size: 11px; align-self:flex-end;padding-right:8px"><strike>${{item.disabled_price}}</strike></span>
+              {%else%}
+              <span style= "font-size: 11px; align-self:flex-end;padding-right:8px">{{item.disabled_price|default_if_none:''}}</span>
+              {% endif%}
+              
+
+              {% comment %} check for actual price to be none or not {% endcomment %}
+              {% if item.actual_price %}
+                <span style = "align-self:flex-end; padding-right:8px;font-size: 14px; ">${{item.actual_price}} </span>
+              {% else %}
+                <span style = "align-self:flex-end; padding-right:8px;font-size: 14px; ">{{ item.actual_price|default_if_none:'' }}</span>
+              {% endif %}
+              </div>
+             <div class='pup_name'><a href ="javascript:void(0)" style = "text-decoration:none;">{{item.pbrd_display_name}}</a></div>
+             {% if item.pet_images %} <img src="{{item.pet_images.url}}"  alt = 'alt image'> {% endif %}
+         </div>
+         {% endfor %}
+     </div>
+ </div>
+ {% endif %}

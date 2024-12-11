@@ -1,0 +1,2099 @@
+{% extends 'admin/base_change_form.html' %}
+{% load cms_tags menu_tags sekizai_tags static admin_modify %}
+{% load global_theme_config_tags %}
+
+{% block content %}
+{% global_theme_object as global_theme_config %}
+<form {% if has_file_field %}enctype="multipart/form-data" {% endif %}{% if form_url %}action="{{ form_url }}"
+   {% endif %}method="post" id="{{ opts.model_name }}" onsubmit="save_changes()" >
+   {% csrf_token %}
+   {% addtoblock 'css' %}
+   <!-- CSS styles -->
+
+   <style>
+      {% if global_theme_config.primary_color and global_theme_config.secondary_color %}
+      :root {
+      --primary-element: {{global_theme_config.primary_color}};
+      --secondary-element: {{global_theme_config.secondary_color}};
+      }
+      {% endif %}
+      .dev_colorpicker_preview .clr-field {
+      opacity: 0;
+      cursor: pointer;
+      }
+      .banner-layout-wrap-inner img{
+      {% comment %} width: 300px; {% endcomment %}
+      height: 120px;
+      }
+      #first-btn-section .rectangle,
+      #second-btn-section .rectangle {
+      border-radius: 0px;
+      }
+      #first-btn-section .rounded,
+      #second-btn-section .rounded {
+      border-radius: 12px;
+      }
+      #first-btn-section .pill,
+      #second-btn-section .pill {
+      border-radius: 100px;
+      }
+      .buck-absolute {
+      position: absolute;
+      }
+      /* Django admin style override */
+      ul > li {
+      list-style-type: none;
+      }
+      {% if global_theme_config.primary_button_shape %}
+      .infofirst-preview .infofirst-btn.pill{
+      border-radius: 100px;
+      }
+      .infofirst-preview .infofirst-btn.rounded{
+      border-radius: 12px;
+      }
+      .infofirst-preview .infofirst-btn.rectangle{
+      border-radius: 0;
+      }
+      {% endif %}
+      .infofirst-preview .infofirst-img {
+      width: 416px;
+      height: 416px;
+      }
+      .btnhide{
+      display: none;
+      }
+      .btnshow{
+      display: block;
+      }
+      .clsbuttontype{
+      font-size: 18px;
+      padding-bottom: 20px;
+      color: var(--primary);
+      }
+      .clsbgbuttontype{
+      font-size: 18px;
+      padding-bottom: 20px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      }
+   </style>
+   <style>
+      .tab {
+         display: none;
+         }
+       .main_tab {
+           display: flex;
+           align-items: center;
+           align-self: stretch;
+           margin: 20px 0 20px 0;
+           font-weight : 700;
+       }
+       p{
+         font-size : 18px;
+       }
+       .main_tab div span:after{
+           content : '|';
+           padding-left: 50px;
+           color : #003F5A;
+         }
+         {% comment %} .top-indicator{
+            color: #003F5A;
+            opacity : 0.6;
+         }
+         .top-indicator:hover{
+            color: #003F5A;
+            opacity : 1;
+         } {% endcomment %}
+         .not-top-indicator{
+            color: #003F5A;
+            opacity : 0.6;
+         }
+         .not-top-indicator:hover{
+            color: #003F5A;
+            opacity : 1;
+         }
+         .active1{
+            color: #12BBD2;
+         }
+   
+       .main_tab div:last-child span::after{
+          content : '';
+       }
+       .video_img > img{
+         width: 100%;
+       }
+       .admin-form.horizontal-checkbox {
+         gap: 12px;
+         padding : 15px 0 15px 0;
+     }
+      .F2{
+         background-color : var(--secondary-element);
+         color : white;
+         border : none;
+      }
+      .F1{
+         background-color : var(--primary-element);
+         color : white;
+         border : none;
+      }
+      .F4{
+         background-color : white;
+         color : var(--secondary-element);
+         border : none;
+      }
+      .F3{
+         background-color : white;
+         color : var(--primary-element);
+         border : none;
+      }
+      .O1{
+         background-color : white;
+         border : 1px solid var(--primary-element);
+         color : var(--primary-element);
+      }
+      .O2{
+         background-color : white;
+         border : 1px solid var(--secondary-element);
+         color : var(--secondary-element);
+      }
+      .O3{
+         background-color : white;
+         border : 1px solid black;
+         color : black;
+      }
+      .O4{
+         background-color : F2F5F6;
+         border : 1px solid white;
+         color : white;
+      }
+   
+      .btn_fill_fn{
+         background-color : {{adminform.form.first_button_fill_color.value}};
+         color : {{adminform.form.first_button_font_color.value}};
+         border : {{adminform.form.first_button_fill_color.value}};
+      }
+      .btn_fill_fn2{
+         background-color : {{adminform.form.second_button_fill_color.value}};
+         color : {{adminform.form.second_button_font_color.value}};
+         border : {{adminform.form.second_button_fill_color.value}};
+      }
+      .btn_outline_fn{
+         background-color : white;
+         color : {{adminform.form.first_button_outline_color.value}};
+         border :1px solid {{adminform.form.first_button_outline_color.value}};
+      }
+      .btn_outline_fn2{
+         background-color : white;
+         color : {{adminform.form.second_button_outline_color.value}};
+         border :1px solid {{adminform.form.second_button_outline_color.value}};
+      }
+      .button-style-fill {
+         background-color: var(--secondary-element);
+         color: white;
+         border : none;
+      }
+      .button-style-outline{
+         border : 1px solid var(--secondary-element);
+         color : var(--secondary-element);
+         background-color : white;
+      }
+      .submit_btn{
+         background-color : #02BBFF;
+         border : 1px solid #02BBFF;
+         color : white;
+         border-radius : 3px;
+         font-family: 'Open Sans';
+         font-style: normal;
+         float: left;
+         width: 100px;
+         height: 45px;
+         font-size: 18px;
+         font-weight: 700;
+      }
+      .d-none-display{
+         display : block;
+      }
+      .activelayout {
+         padding: 10px;
+         border-radius: 12px;
+         border: 2px dashed #12BBD2;
+         background: rgba(18, 187, 210, 0.05);
+     }
+     .banner-layout-types .banner-layout-wrap img {
+         width : 100%;
+     }
+     .my50img{
+      background-image : url(/media/{{adminform.form.image.value}});
+      background-size: cover;
+      background-repeat: round;
+     }
+     .card.formcard input{
+      border-color : var(--global-primary-color);
+      opacity : 0.4;
+     }
+     .card.formcard input::placeholder,textarea,label{
+      color : var(--global-primary-color);
+     }
+     .card.formcard textarea{
+      border-color : var(--global-primary-color);
+      opacity : 0.4;
+     }
+     .card.formcard textarea::placeholder{
+      color : var(--global-primary-color);
+     }
+     .info-layout-content-vid {
+       position: relative;
+       width: 100%;
+       padding-bottom: 56.25%;
+     }
+     .iframecss{
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+     }
+     @media (min-width : 1200px){
+      .banner-layout-types{
+         grid-template-columns: 1fr 1fr 1fr;
+      }
+     }
+   </style>
+   <style>
+      .mobile-view{
+         position : relative;
+         max-width : 320px;
+         border-radius : 5px;
+         background-size: cover; /* or background-size: 100%; */
+         background-repeat: no-repeat;
+         background-position: center; 
+   
+      }
+      .mobile-img-prev{
+         height : 100%;
+         width : 100%;
+      }
+      .devidor{
+         flex-direction : column;
+      }
+      #main-section-btn .box-theme-sub-title{
+         justify-content: space-between;
+      }
+      .del-anchor{
+         text-decoration : none;
+         color: #12BBD2!important;
+      }
+      #id_add_btn{
+         color : #003f5a;
+         text-decoration : none;
+      }
+      .ck-editor__editable {
+         cursor: text;
+     }
+   </style>
+
+   <style>
+      /* CSS styles */
+      .box-theme {
+         padding: 40px;
+      }
+
+      .mb-40{
+         margin-bottom: 40px;
+      }
+
+      .mt-40{
+         margin-top: 40px;
+      }
+
+      #media_id{
+         margin-left: -15px;
+      }
+
+      .content {
+         display: none; /* Hide all content sections by default */
+      }
+      
+      .active-content {
+         display: block; /* Show active content section */
+      }
+
+      .title {
+         font-size: 40px;
+         font-style: normal;
+         font-weight: 700;
+         line-height: 125%;
+         /* 50px */
+         text-transform: capitalize;
+         width: 1050px;
+         padding-bottom: 40px;
+      }
+
+      .section-header {
+         font-family: "Open Sans";
+         font-size: 24px;
+         font-style: normal;
+         font-weight: 700;
+         line-height: 125%;
+         /* 30px */
+         padding-bottom: 16px;
+      }
+
+      .section-sub-header {
+         font-family: "Open Sans";
+         font-size: 18px;
+         font-style: normal;
+         font-weight: 400;
+         line-height: 140%;
+         /* 25.2px */
+         width: 1050px;
+         opacity: 0.6;
+         padding-bottom: 16px;
+      }
+
+      .btntitle {
+         color: var(--primary, #003F5A);
+         font-family: Open Sans;
+         font-size: 20px;
+         font-style: normal;
+         font-weight: 700;
+         line-height: 140%;
+      }
+
+      .btnradio .admin-form {
+         display: flex;
+         gap: 10px;
+      }
+
+      .nav-tabs .nav-item.show .nav-link.active,
+      .nav-tabs .nav-link.active {
+         color: var(--Primary, #003F5A);
+         font-family: "Open Sans";
+         font-size: 20px;
+         font-style: normal;
+         font-weight: 400;
+         line-height: 140%;
+         /* 28px */
+         border: none !important;
+         padding-bottom: 16px;
+      }
+
+      .nav-tabs .nav-item.show .nav-link:not(.active),
+      .nav-tabs .nav-link:not(.active) {
+         color: var(--Primary, #003F5A);
+         font-family: "Open Sans";
+         font-size: 20px;
+         font-style: normal;
+         font-weight: 400;
+         line-height: 140%;
+         /* 28px */
+         opacity: 0.6;
+         border: none !important;
+         padding-bottom: 16px;
+      }
+
+      .nav-tabs {
+         border-bottom: none !important;
+      }
+
+      .clsinfo {
+         border-right: 1px solid rgba(0, 63, 90, 0.40);
+      }
+
+      .h-line {
+         width: 1060px;
+         height: 2px !important;
+         background: rgba(0, 63, 90, 0.20);
+         margin: 40px 0;
+         display: block;
+      }
+
+      .promotion-banner .section-header {
+         margin: 0px;
+      }
+
+      .btn-type-css {
+         margin: 40px 0;
+      }
+
+      .promo-image-specs {
+         width: 1050px;
+         color: var(--Primary, #003F5A);
+         /* Primary2-Regular */
+         font-family: "Open Sans";
+         font-size: 18px;
+         font-style: normal;
+         font-weight: 400;
+         line-height: 135%;
+         /* 24.3px */
+         opacity: 0.6;
+         margin-bottom: 20px;
+      }
+
+      .promo-form-upload {
+         height: 300px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         border-radius: 12px;
+      }
+
+      .btn-type-links {
+         margin-left: 32px;
+      }
+
+      .redir-btn-css {
+         width: 473px !important;
+      }
+
+      .btn-selector {
+         margin-bottom: 20px;
+         margin-top: 20px;
+      }
+
+      .btn-gap {
+         margin-bottom: 20px !important;
+      }
+
+      .char-count {
+         color: var(--Primary, #003F5A) !important;
+         /* Primary2-Regular */
+         font-family: "Open Sans";
+         font-size: 18px !important;
+         font-style: normal;
+         font-weight: 400;
+         line-height: 135%;
+         /* 24.3px */
+         opacity: 0.6;
+
+         position: absolute;
+         top: 50%;
+         right: 25px;
+         transform: translateY(-50%);
+         color: #999;
+         font-size: 12px;
+      }
+
+      .info-type-css {
+         display: flex;
+         flex-direction: column;
+         align-items: flex-start;
+         gap: 20px;
+         align-self: stretch;
+      }
+
+      .info-type-checkbox-1 {
+         display: flex;
+         align-items: center;
+         gap: 10px;
+      }
+
+      .info-type-checkbox-2 {
+         display: flex;
+         align-items: center;
+         gap: 10px;
+         opacity: 0.6;
+      }
+
+      .info-type-label {
+         color: var(--Primary, #003F5A);
+         /* Primary2-Regular */
+         font-family: "Open Sans";
+         font-size: 18px;
+         font-style: normal;
+         font-weight: 400;
+         line-height: 135%; /* 24.3px */
+      }
+
+      .info-type-css input[type="checkbox"] {
+         display: none;
+      }
+
+      /* Style for the checked state */
+      .info-type-checkbox-1 input[type="checkbox"]:checked + svg.checked {
+         width: 20.571px;
+         height: 20.571px;
+         flex-shrink: 0;
+         border-radius: 4px;
+         border: 1px solid var(--Primary, #003F5A);
+       }
+       
+       /* Style for the unchecked state */
+      .info-type-checkbox-2 input[type="checkbox"] + svg.unchecked {
+         width: 20.571px;
+         height: 20.571px;
+         flex-shrink: 0;
+         border-radius: 4px;
+         border: 1px solid var(--Primary, #003F5A);
+         opacity: 0.6;
+       }
+
+       /* About Pet Section */
+       .about-pet-box {
+         display: inline-flex;
+         flex-direction: column;
+         align-items: flex-start;
+         gap: 40px;
+       }
+
+       .about-pet-info {
+         display: flex;
+         flex-direction: column;
+         align-items: flex-start;
+       }
+
+       .pet-info-text {
+         width: 100%;
+         color: var(--Primary, #003F5A);
+         /* Primary2-Regular */
+         font-family: "Open Sans";
+         font-size: 18px;
+         font-style: normal;
+         font-weight: 400;
+         line-height: 135%; /* 24.3px */
+         opacity: 0.6;
+       }
+
+       .pet-info-checkbox {
+         display: flex;
+         flex-direction: column;
+         align-items: flex-start;
+         gap: 20px;
+       }
+
+       .pb-16{
+         padding-bottom: 16px;
+       }
+
+       .form-variables {
+         display: flex;
+         align-items: center;
+         gap: 8px;
+         margin-top:20px;
+       }
+
+       .variable-info {
+         color: var(--Primary, #003F5A);
+         /* Primary1-Regular */
+         font-family: "Open Sans";
+         font-size: 20px;
+         font-style: normal;
+         font-weight: 400;
+         line-height: 140%; /* 28px */
+       }
+
+       .mark-info {
+         display: inline-flex;
+         padding: 12px !important;
+         justify-content: center !important;
+         align-items: center !important;
+         gap: 10px !important;
+         border-radius: 12px !important;
+         background: var(--White, #FFF) !important;
+         box-shadow: 0px 1px 24px 0px rgba(0, 63, 90, 0.20) !important;
+         width: 220px !important;
+         color: var(--Primary, #003F5A) !important;
+         font-family: "Open Sans";
+         font-size: 16px;
+         font-style: normal;
+         font-weight: 400;
+         line-height: 140%; /* 22.4px */
+       }
+
+       .variable-mark {
+         position: relative;
+         display: inline-block;
+         cursor: pointer;
+     }
+
+     .variable-mark .tooltiptext {
+         visibility: hidden;
+         position: absolute;
+         z-index: 1;
+         top: -35%;
+         left: 388%;
+         margin-left: -70px; /* Center the tooltip */
+         opacity: 0;
+         transition: opacity 0.3s;
+     }
+
+     .variable-mark:hover .tooltiptext {
+         visibility: visible;
+         opacity: 1;
+     }
+
+     .form-button {
+         display: flex;
+         align-items: center;
+         gap: 16px;
+         margin-top:16px;
+     }
+
+     .form-btn {
+      display: flex;
+      padding: 4px 8px;
+      align-items: flex-start;
+      gap: 10px;
+      border-radius: 8px;
+      background: var(--Secondary, #12BBD2);
+      color: var(--White, #FFF);
+      /* Primary2-Regular */
+      font-family: "Open Sans";
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 140%; /* 25.2px */
+     }
+
+     .line-break {
+      width: 1090px;
+      height: 2px;
+      background: rgba(0, 63, 90, 0.20);
+      margin:40px 0px;
+     }
+
+     .pet-enquiry {
+      display: flex;
+      width: 1090px;
+      padding: 40px 20px;
+      align-items: center;
+      gap: 4px;
+      background: rgba(18, 187, 210, 0.10);
+     }
+
+     .enquiry-box {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+     }
+
+     .enquiry-text {
+      flex: 1 0 0;
+      color: var(--Primary, #003F5A);
+      /* Primary1-Bold */
+      font-family: "Open Sans";
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 140%; /* 28px */
+     }
+
+     .breed-checkbox {
+         display: block;
+         position: relative;
+         padding-left: 31px;
+         margin-bottom: 12px;
+         cursor: pointer;
+         font-size: 22px;
+         -webkit-user-select: none;
+         -moz-user-select: none;
+         -ms-user-select: none;
+         user-select: none;
+     }
+
+      /* Hide the browser's default checkbox */
+      .breed-checkbox input {
+         position: absolute;
+         opacity: 0;
+         cursor: pointer;
+         height: 0;
+         width: 0;
+      }
+
+      /* Create a custom checkbox */
+      .breed-checkbox .brd-btn-checkmark {
+         position: absolute;
+         top: 0;
+         left: 0;
+         height: 20.571px;
+         width: 20.571px;
+         background-color: white;
+         border: 1px solid #003F5A;
+         border-radius: 4px;
+      }
+
+      /* Create the checkmark/indicator (hidden when not checked) */
+      .breed-checkbox .brd-btn-checkmark:after {
+         content: "";
+         position: absolute;
+         display: none;
+      }
+
+      /* Show the checkmark when checked */
+      .breed-checkbox input:checked ~ .brd-btn-checkmark:after {
+         display: block;
+      }
+
+      /* Style the checkmark/indicator */
+      .breed-checkbox .brd-btn-checkmark:after {
+         left: 6px;
+         top: 2px;
+         width: 6px;
+         height: 11px;
+         border: 1px solid #003F5A;
+         border-width: 0 1.5px 1.5px 0;
+         -webkit-transform: rotate(45deg);
+         -ms-transform: rotate(45deg);
+         transform: rotate(45deg);
+      }
+
+     .pl-24 {
+      padding-left: 24px;
+     }
+   </style>
+   {% endaddtoblock %}
+
+   {{ adminform.form.errors }}
+   <div class="container pl-24">
+
+      <div class="plugin-section-flex mt-40 mb-40">
+         <div class="pet-details-section main_tab">
+             <div id="media_id" class="active1 header-tab">
+                 <img src="{% static 'images/widget_image/infoblockfirst/media1.svg' %}">
+                 <span>Pet Details</span>
+             </div>
+             <div id="text_id" class="not-top-indicator header-tab">
+                 <img src="{% static 'images/widget_image/infoblockfirst/media1.svg' %}">
+                 <span>About Pet</span>
+             </div>
+             <div id="button_id" class="not-top-indicator header-tab">
+                 <img src="{% static 'images/widget_image/infoblockfirst/media1.svg' %}">
+                 <span>Ask About Pet Form</span>
+             </div>
+      </div>
+
+      <!-- Content Sections -->
+      <div id="content_media_id" class="content active-content">
+         <!-- Pet Details content goes here -->
+
+            <div class="section-header">Pet Info</div>
+            <div class="section-sub-header">To update the information displayed in the pet details block, please log in to Pet Tracker and make the changes there.</div>
+            <!-- Navigation tabs -->
+            <ul class="nav nav-tabs pb-3" id="ex1" role="tablist">
+               <!-- Tab 1 -->
+               <li class="nav-item clsinfo" role="presentation">
+                  <a class="nav-link active py-0" style="padding-left:0px" id="ex1-tab-1" data-bs-toggle="tab"
+                     href="#ex1-tabs-1" role="tab" aria-controls="ex1-tabs-1" aria-selected="true">Info</a>
+               </li>
+               <!-- Tab 2 -->
+               <li class="nav-item" role="presentation">
+                  <a class="nav-link py-0" id="ex1-tab-2" data-bs-toggle="tab" href="#ex1-tabs-2" role="tab"
+                     aria-controls="ex1-tabs-2" aria-selected="false">Button</a>
+               </li>
+            </ul>
+            <!-- Tab content -->
+            <div class="tab-content" id="ex1-content">
+               <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
+                  <div class="info-type-css">
+                     <!-- Display form fields for pet info -->
+                     {% for key, label, checked in filtered_info_type %}
+                           <div>
+                              {% if checked %}
+                                 <label class="info-type-checkbox-1">
+                                    <input type="checkbox" {% if checked %}checked{% endif %} disabled>
+                                    <svg class="checked" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
+                                       <path d="M9.15388 16.1373C9.03665 16.1369 8.92075 16.1124 8.81338 16.0654C8.70602 16.0184 8.60947 15.9499 8.52976 15.864L4.37463 11.4487C4.21931 11.2834 4.1361 11.0631 4.14332 10.8365C4.15053 10.6099 4.24758 10.3954 4.41311 10.2403C4.57863 10.0851 4.79908 10.002 5.02596 10.0092C5.25284 10.0164 5.46756 10.1133 5.62288 10.2787L9.14533 14.0278L16.3356 6.17084C16.4086 6.08008 16.4993 6.00518 16.6023 5.95073C16.7053 5.89629 16.8184 5.86345 16.9346 5.85424C17.0507 5.84503 17.1676 5.85964 17.2779 5.89717C17.3882 5.93471 17.4896 5.99437 17.576 6.0725C17.6624 6.15063 17.7319 6.24557 17.7802 6.35151C17.8285 6.45744 17.8547 6.57212 17.857 6.6885C17.8593 6.80488 17.8378 6.92051 17.7938 7.02829C17.7497 7.13607 17.6841 7.23371 17.6009 7.31523L9.78656 15.8554C9.70759 15.9429 9.61139 16.013 9.50398 16.0615C9.39658 16.11 9.28029 16.1358 9.16243 16.1373H9.15388Z" fill="#003F5A"/>
+                                    </svg>
+                                    <div class="info-type-label">{{ label }}</div>
+                                 </label>
+                              {% else %}
+                                 <label class="info-type-checkbox-2">
+                                    <input type="checkbox" {% if checked %}checked{% endif %} disabled>
+                                    <svg class="unchecked" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
+                                       <path d="M9.15382 16.1373C9.03659 16.1369 8.92069 16.1124 8.81332 16.0654C8.70596 16.0184 8.60941 15.9499 8.5297 15.864L4.37457 11.4487C4.21925 11.2834 4.13604 11.0631 4.14326 10.8365C4.15047 10.6099 4.24752 10.3954 4.41304 10.2403C4.57857 10.0851 4.79902 10.002 5.0259 10.0092C5.25278 10.0164 5.46749 10.1133 5.62282 10.2787L9.14527 14.0278L16.3355 6.17084C16.4085 6.08008 16.4993 6.00518 16.6023 5.95073C16.7053 5.89629 16.8183 5.86345 16.9345 5.85424C17.0507 5.84503 17.1675 5.85964 17.2778 5.89717C17.3881 5.93471 17.4896 5.99437 17.576 6.0725C17.6624 6.15063 17.7318 6.24557 17.7802 6.35151C17.8285 6.45744 17.8546 6.57212 17.8569 6.6885C17.8593 6.80488 17.8378 6.92051 17.7937 7.02829C17.7497 7.13607 17.6841 7.23371 17.6009 7.31523L9.7865 15.8554C9.70753 15.9429 9.61133 16.013 9.50392 16.0615C9.39652 16.11 9.28023 16.1358 9.16237 16.1373H9.15382Z" fill="#003F5A"/>
+                                    </svg>
+                                    <div class="info-type-label">{{ label }}</div>
+                                 </label>
+                              {% endif %}
+                           </div>
+                     {% endfor %}
+                  </div>
+               </div>
+
+               <!-- Button Tab-->
+               <input type="hidden" value="" id="{{adminform.form.button_data.name}}"
+                  name="{{adminform.form.button_data.name}}"> 
+               <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
+                  <div class="banner-edit-section button-layout">
+                     <div id="main-section-btn">
+                        <div id="section-1">
+                           <div class="box-theme-sub-title d-flex" id="headline_color">
+                              <div>First Button</div>
+                              <a id="delAnchor-1" class="del-anchor" href="javascript:void(0);" onclick="DeleteButton(this)">
+                                 <svg width="24" height="24" viewBox="2 2 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                       d="M10 6H14C14 5.46957 13.7893 4.96086 13.4142 4.58579C13.0391 4.21071 12.5304 4 12 4C11.4696 4 10.9609 4.21071 10.5858 4.58579C10.2107 4.96086 10 5.46957 10 6ZM8 6C8 4.93913 8.42143 3.92172 9.17157 3.17157C9.92172 2.42143 10.9391 2 12 2C13.0609 2 14.0783 2.42143 14.8284 3.17157C15.5786 3.92172 16 4.93913 16 6H21C21.2652 6 21.5196 6.10536 21.7071 6.29289C21.8946 6.48043 22 6.73478 22 7C22 7.26522 21.8946 7.51957 21.7071 7.70711C21.5196 7.89464 21.2652 8 21 8H20.118L19.232 18.34C19.1468 19.3385 18.69 20.2686 17.9519 20.9463C17.2137 21.6241 16.2481 22.0001 15.246 22H8.754C7.75191 22.0001 6.78628 21.6241 6.04815 20.9463C5.31002 20.2686 4.85318 19.3385 4.768 18.34L3.882 8H3C2.73478 8 2.48043 7.89464 2.29289 7.70711C2.10536 7.51957 2 7.26522 2 7C2 6.73478 2.10536 6.48043 2.29289 6.29289C2.48043 6.10536 2.73478 6 3 6H8ZM15 12C15 11.7348 14.8946 11.4804 14.7071 11.2929C14.5196 11.1054 14.2652 11 14 11C13.7348 11 13.4804 11.1054 13.2929 11.2929C13.1054 11.4804 13 11.7348 13 12V16C13 16.2652 13.1054 16.5196 13.2929 16.7071C13.4804 16.8946 13.7348 17 14 17C14.2652 17 14.5196 16.8946 14.7071 16.7071C14.8946 16.5196 15 16.2652 15 16V12ZM10 11C10.2652 11 10.5196 11.1054 10.7071 11.2929C10.8946 11.4804 11 11.7348 11 12V16C11 16.2652 10.8946 16.5196 10.7071 16.7071C10.5196 16.8946 10.2652 17 10 17C9.73478 17 9.48043 16.8946 9.29289 16.7071C9.10536 16.5196 9 16.2652 9 16V12C9 11.7348 9.10536 11.4804 9.29289 11.2929C9.48043 11.1054 9.73478 11 10 11ZM6.76 18.17C6.8026 18.6694 7.03117 19.1346 7.40044 19.4735C7.76972 19.8124 8.25278 20.0003 8.754 20H15.246C15.7469 19.9998 16.2294 19.8117 16.5983 19.4728C16.9671 19.134 17.1954 18.6691 17.238 18.17L18.11 8H5.89L6.762 18.17H6.76Z"
+                                       fill="#12BBD2" />
+                                 </svg>
+                                 Delete
+                              </a>
+                              {% comment %} <a href="javascript:void(0)" class="section_class">Delete Button</a>
+                              {% endcomment %}
+                           </div>
+                           <div class="box-theme-form-item">
+                              <div class="box-theme-form-item-inline Btn_textbox">
+                                 <div class="box-theme-form-item-inline-input">
+
+                                    <!-- Button Selector-->
+                                    <div class="btn-selector">
+                                       {{ adminform.form.button_selector_1 }}
+                                    </div>
+
+                                    <!-- input the button1 name -->
+                                    <div style="position: relative;">
+                                       <input name="button_text-1" id="button_text-1" type="text" value="-----"
+                                          placeholder="Button's text" class="form-input">
+                                       <div id="char_count-1" class="char-count">0/25</div>
+                                    </div>
+
+                                    <!-- Button Settings-->
+                                    <div class="btn_settings" id="btn_settings-1">
+                                       
+                                          <div class="admin-form">
+               
+                                             <div class="form-check checkbox-outer d-flex align-items-center btn-top-checkbox gap-2 p-0">
+                                                <input class="form-check-input custom-checkbox top-checkbox m-0" name="button_settings_top-1" type="checkbox" value="top" id="id_button_settings_input_0-1">
+                                                <label class="form-check-label custom-checkbox-label m-0" for="id_button_settings_label_0-1">
+                                                   Place this button at the top of the page.
+                                                </label>
+                                             </div>
+                                       
+                                             <div class="form-check checkbox-outer d-flex align-items-center gap-2 p-0">
+                                                <input class="form-check-input custom-checkbox m-0" name="button_settings_width-1" type="checkbox" value="width" id="id_button_settings_input_1-1">
+                                                <label class="form-check-label custom-checkbox-label m-0" for="id_button_settings_label_1-1">
+                                                   Show this button in full width.
+                                                </label>
+                                             </div>
+                                       
+                                          </div>
+                                       
+                                    </div>
+
+                                    <div class="btn-links btn-gap d-none" id="btn_links-1">
+                                       <div class="admin-form horizontal-checkbox">
+                                          <div class="form-check radio-outer d-flex align-items-center gap-2 p-0">
+                                             <input class="form-check-input custom-radio m-0" type="radio"
+                                                name="link_choice_field-1" onclick="selectRadioOption(this)"
+                                                id="link_choice_field_1-1" value="Internal link" checked="">
+                                             <label class="form-check-label custom-radio-label m-0"
+                                                for="link_choice_field_1-1">
+                                                Internal link
+                                             </label>
+                                          </div>
+                                          <div class="form-check radio-outer d-flex align-items-center gap-2 p-0">
+                                             <input class="form-check-input custom-radio m-0" type="radio"
+                                                name="link_choice_field-1" onclick="selectRadioOption(this)"
+                                                id="link_choice_field_2-1" value="External link">
+                                             <label class="form-check-label custom-radio-label m-0"
+                                                for="link_choice_field_2-1">
+                                                External link
+                                             </label>
+                                          </div>
+                                       </div>
+                                       <!-- input fields for internal link, external link, phone link  -->
+                                       <div class="row">
+                                          <div class="col-8">
+                                             <div id="cont_internal_link_btn_1">
+                                                {{adminform.form.button_internallink_1}}
+                                             </div>
+                                             <div id="cont_external_link_btn_1"
+                                                style="display: {% if adminform.form.link_choice_field_btn1.value == 'External link' %}block{% else %}none{%endif%} ">
+                                                <input name="button_link-1" id="button_link-1" type="text"
+                                                   value="{% if adminform.form.first_button_link.value %}{{adminform.form.first_button_link.value}}{% endif %}"
+                                                   placeholder="http://" class="form-input">
+                                             </div>
+                                          </div>
+                                          <div class="col-4">
+                                             <select name="button_target-1" id="id_button_target-1">
+                                                <option value="_self" selected="">Same Window</option>
+                                                <option value="_blank">New Window</option>
+                                             </select>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                              {% if adminform.form.first_button_text.errors %}
+                              {% for error in adminform.form.first_button_text.errors  %}
+                              <div class="alert alert-danger error-block" role="alert">
+                                 {{error}}
+                              </div>
+                              {% endfor %}
+                              {% endif %}
+                              {% if adminform.form.first_button_link.errors %}
+                              {% for error in adminform.form.first_button_link.errors  %}
+                              <div class="alert alert-danger error-block" role="alert">
+                                 {{error}}
+                              </div>
+                              {% endfor %}
+                              {% endif %}
+                              {% if adminform.form.button_internallink_1.errors %}
+                              {% for error in adminform.form.button_internallink_1.errors  %}
+                              <div class="alert alert-danger error-block" role="alert">
+                                 {{error}}
+                              </div>
+                              {% endfor %}
+                              {% endif %}
+                              {% if adminform.form.first_button_target.errors %}
+                              {% for error in adminform.form.first_button_target.errors  %}
+                              <div class="alert alert-danger error-block" role="alert">
+                                 {{error}}
+                              </div>
+                              {% endfor %}
+                              {% endif %}
+                           </div>
+                           <div class="box-theme-tab-wrap" id="first-btn-section">
+                              <div class="box-theme-tab">
+                                 <ul class="theme-tab">
+                                    <li class="active btn_style_1" data-target="btn_style_1">Style</li>
+                                    <li class="btn_color_1" data-target="btn_color_1">Color</li>
+                                 </ul>
+                              </div>
+                              <div>
+                                 <div class="box-theme-form-item theme-tab-content style-tab" id="btn_style_1">
+                                    <div class="box-theme-tab-wrap admin-form admin-form ">
+                                       <ul class="theme-button-tab ">
+                                          <input type="hidden" name="button_style-1" id="button_style-1"
+                                             value="{{adminform.form.first_button_style.value}}">
+                                          <li class="button_style-1 {% if adminform.form.first_button_style.value == 'fill' %} active {% endif %}"
+                                             onclick="setPrimaryBtnStyle('fill',this)"><button
+                                                class="btn-theme {% if adminform.form.first_button_style.value == 'fill' and adminform.form.first_button_color_pattern.value != '' %} {{adminform.form.first_button_color_pattern.value}} {% elif adminform.form.first_button_style.value == 'fill' and adminform.form.first_button_color_pattern.value == '' and adminform.form.first_button_fill_color.value != '' and adminform.form.first_button_font_color.value != '' %} btn_fill_fn {% else %} button-style-fill {% endif %}">Button
+                                             </button></li>
+                                          <li class="button_style-1 {% if adminform.form.first_button_style.value == 'outline' %} active {% endif %}"
+                                             onclick="setPrimaryBtnStyle('outline',this)"><button
+                                                class="btn-theme {% if adminform.form.first_button_style.value == 'outline' and adminform.form.first_button_color_pattern.value != '' %} {{adminform.form.first_button_color_pattern.value}} {% elif adminform.form.first_button_style.value == 'outline' and adminform.form.first_button_color_pattern.value == '' and adminform.form.first_button_outline_color.value != '' %} btn_outline_fn {% else %} button-style-outline {% endif %}">Button
+                                             </button></li>
+                                       </ul>
+                                    </div>
+                                 </div>
+                                 <div class="box-theme-form-item theme-tab-content color-tab" id="btn_color_1"
+                                    style="display: none;">
+                                    <div class="box-theme-tab-wrap admin-form admin-form ">
+                                       <input type="hidden" name="button_color_pattern-1" id="button_color_pattern-1"
+                                          value="{{adminform.form.first_button_color_pattern.value}}">
+                                       <ul class="theme-button-tab {% if adminform.form.first_button_style.value == 'fill' %} {% else %} d-none {% endif %} "
+                                          id="primary-btn-set1-1">
+                                          <li class="button_color_pattern-1 {% if adminform.form.first_button_color_pattern.value == 'F2' %}active{% endif %}"
+                                             data-value="F2" onclick="selectButtonColor(this, 'F2')"><button
+                                                class="btn-theme F2">Button</button></li>
+                                          <li class="button_color_pattern-1 {% if adminform.form.first_button_color_pattern.value == 'F1' %}active{% endif %}"
+                                             data-value="F1" onclick="selectButtonColor(this, 'F1')"><button
+                                                class="btn-theme F1">Button</button></li>
+                                          <li class="button_color_pattern-1 {% if adminform.form.first_button_color_pattern.value == 'F4' %}active{% endif %}"
+                                             data-value="F4" onclick="selectButtonColor(this, 'F4')"><button
+                                                class="btn-theme F4">Button</button></li>
+                                          <li class="button_color_pattern-1 {% if adminform.form.first_button_color_pattern.value == 'F3' %}active{% endif %}"
+                                             data-value="F3" onclick="selectButtonColor(this, 'F3')"><button
+                                                class="btn-theme F3">Button</button></li>
+                                       </ul>
+                                       <ul class="theme-button-tab {% if adminform.form.first_button_style.value == 'outline' %} {% else %} d-none {% endif %} "
+                                          id="primary-btn-set2-1">
+                                          <li class="button_color_pattern-1 {% if adminform.form.first_button_color_pattern.value == 'O1' %}active{% endif %}"
+                                             data-value="O1" onclick="selectButtonColor(this, 'O1')"><button
+                                                class="btn-theme O1">Button</button></li>
+                                          <li class="button_color_pattern-1 {% if adminform.form.first_button_color_pattern.value == 'O2' %}active{% endif %}"
+                                             data-value="O2" onclick="selectButtonColor(this, 'O2')"><button
+                                                class="btn-theme O2">Button</button></li>
+                                          <li class="button_color_pattern-1 {% if adminform.form.first_button_color_pattern.value == 'O3' %}active{% endif %}"
+                                             data-value="O3" onclick="selectButtonColor(this, 'O3')"><button
+                                                class="btn-theme O3">Button</button></li>
+                                          <li class="button_color_pattern-1 {% if adminform.form.first_button_color_pattern.value == '04' %}active{% endif %}"
+                                             data-value="O4" onclick="selectButtonColor(this, 'O4')"><button
+                                                class="btn-theme O4">Button</button></li>
+                                       </ul>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           {% if adminform.form.first_button_style.errors %}
+                           {% for error in adminform.form.first_button_style.errors  %}
+                           <div class="alert alert-danger error-block" role="alert">
+                              {{error}}
+                           </div>
+                           {% endfor %}
+                           {% endif %}
+                           {% if adminform.form.first_button_outline_color.errors %}
+                           {% for error in adminform.form.first_button_outline_color.errors  %}
+                           <div class="alert alert-danger error-block" role="alert">
+                              {{error}}
+                           </div>
+                           {% endfor %}
+                           {% endif %}
+                           {% if adminform.form.first_button_fill_color.errors %}
+                           {% for error in adminform.form.first_button_fill_color.errors  %}
+                           <div class="alert alert-danger error-block" role="alert">
+                              {{error}}
+                           </div>
+                           {% endfor %}
+                           {% endif %}
+                           {% if adminform.form.first_button_font_color.errors %}
+                           {% for error in adminform.form.first_button_font_color.errors  %}
+                           <div class="alert alert-danger error-block" role="alert">
+                              {{error}}
+                           </div>
+                           {% endfor %}
+                           {% endif %}
+                        </div>
+                     </div>
+                     <div class="d-none">
+                        <div class="banner-layout-wrap no-hover">
+                           <div class="banner-layout-wrap-inner">
+                              <img src="{% static 'images/widget_image/bannerplugin/banner-view2.png' %}" alt="">
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="d-flex" style="gap:12px;">
+                     <a id="id_add_btn" href="javascript:void(0);" onclick="AddButtons(mydata = false)"> + Add Button</a>
+                  </div>
+               </div>
+            </div>
+
+             <!-- Horizontal line -->
+             <hr class="h-line">
+             <div class="col-12">
+                {{adminform.form.consumer_verification}}
+             </div>
+             
+            <!-- Horizontal line -->
+            <hr class="h-line">
+            <!-- Promotion banner -->
+            <div class="promotion-banner col-12" style="padding-bottom:40px;">
+               {{ adminform.form.promotion_banner }}
+            </div>
+            <!-- Promotion banner image upload section -->
+            <div class="col-12">
+               <div class="box-theme-title">
+                  Image
+               </div>
+               <div class="promo-image-specs">Optimal banner size is 636px × 250px.</div>
+               <div class="box-theme-form-item">
+                  <div class="form-upload promo-form-upload mb-0">
+                     <div>
+                        <p>Drop files or click to upload</p>
+                        <button class="btn-theme btn-shape-1 btn-style-1 btn-color-1" style="background:#12BBD2;">Upload
+                           Image</button>
+                        <div class="area">
+                           <input type="file" name="{{adminform.form.promob_image.name}}"
+                              id="{{adminform.form.promob_image.name}}" />
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <!-- Error message for required field -->
+            <div class="alert alert-danger error-block d-none err-img-bgmob" role="alert">
+               This field is required.
+            </div>
+            {% if adminform.form.promob_image.errors %}
+            {% for error in adminform.form.promob_image.errors  %}
+            <div class="alert alert-danger error-block" role="alert">
+               {{error}}
+            </div>
+            {% endfor %}
+            {% endif %}
+            <!-- Preview promo banner image -->
+            <div class="col-12">
+               <div
+                  class="{% if adminform.form.promob_image.value %}{% else%}d-none {% endif %} preview-{{adminform.form.promob_image.name}}">
+                  <div class="box-theme-sub-title">
+                     Preview Image
+                  </div>
+                  <div class="box-theme-preview-list">
+                     <ul class="{{adminform.form.promob_image.name}}">
+                        {% if adminform.form.promob_image.value %}
+                        <li class="banner-image-preview-list">
+                           <img id="banner-mob-img" src="{{adminform.form.instance.promob_image.url}}" alt="">
+                           <button
+                              onClick="deleteImage('{{adminform.form.promob_image.name}}','{{adminform.form.instance.id}}',this)"
+                              type="button">
+                              <img src="{% static 'images/ic-delete.svg' %}" alt="">
+                           </button>
+                        </li>
+                        {% endif %}
+                     </ul>
+                  </div>
+               </div>
+            </div>
+            <!-- ALT text for mobile image -->
+            <div class="box-theme-sub-title d-flex ms-1">
+               {{adminform.form.alt_name_promob_image}}
+               <div class="box-theme-form-label">
+                  <span style="position:relative;">
+                     <img src="/static/images/ic-info.svg">
+                     <div class="form-tooltip">
+                        ALT text is important, it improves your image accesibility & SEO.
+                     </div>
+                  </span>
+               </div>
+            </div>
+
+            <div class="col-12 btn-type-css mb-0">
+               {{ adminform.form.button_type }}
+            </div>
+
+            <!-- other button type redirections  -->
+
+            <div class="btn-type-links d-none">
+               {{ adminform.form.btn_type_link_choice }}
+
+               <div class="box-theme-form-item">
+                  <div class="box-theme-form-item-inline">
+                     <div class="row">
+                        <div class="col-8">
+                           <div id="btn_type_internal_link" class="redir-btn-css">
+                              {{ adminform.form.btn_type_internal_link }}
+                           </div>
+                           <div id="btn_type_external_link" class="redir-btn-css">
+                              <input id="external_btn" name="{{adminform.form.btn_type_external_link.name}}" type="text"
+                                 value="{% if adminform.form.btn_type_external_link.value %}{{adminform.form.btn_type_external_link.value}}{% endif %}"
+                                 placeholder="http://" class="form-input">
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+      </div>
+
+       <!-- About Pet Section -->
+
+       <div id="content_text_id" class="content">
+         <!-- About Pet content goes here -->
+         <div class="about-pet-box">
+            <div class="about-pet-info">
+               <div class="pet-info-text pb-16">To update the information displayed in the About Pet block, please log in to Pet Tracker and make the changes there. </div>
+               <div class="section-header">Pet Info</div>
+               <div class="pet-info-checkbox">
+                   <!-- Display form fields for pet info -->
+
+                  <div class="info-type-css">
+                     <!-- Display form fields for pet info -->
+                        {% for key, label, checked in filtered_about_pet %}
+                              <div>
+                                 {% if checked %}
+                                    <label class="info-type-checkbox-1">
+                                       <input type="checkbox" {% if checked %}checked{% endif %} disabled>
+                                       <svg class="checked" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
+                                          <path d="M9.15388 16.1373C9.03665 16.1369 8.92075 16.1124 8.81338 16.0654C8.70602 16.0184 8.60947 15.9499 8.52976 15.864L4.37463 11.4487C4.21931 11.2834 4.1361 11.0631 4.14332 10.8365C4.15053 10.6099 4.24758 10.3954 4.41311 10.2403C4.57863 10.0851 4.79908 10.002 5.02596 10.0092C5.25284 10.0164 5.46756 10.1133 5.62288 10.2787L9.14533 14.0278L16.3356 6.17084C16.4086 6.08008 16.4993 6.00518 16.6023 5.95073C16.7053 5.89629 16.8184 5.86345 16.9346 5.85424C17.0507 5.84503 17.1676 5.85964 17.2779 5.89717C17.3882 5.93471 17.4896 5.99437 17.576 6.0725C17.6624 6.15063 17.7319 6.24557 17.7802 6.35151C17.8285 6.45744 17.8547 6.57212 17.857 6.6885C17.8593 6.80488 17.8378 6.92051 17.7938 7.02829C17.7497 7.13607 17.6841 7.23371 17.6009 7.31523L9.78656 15.8554C9.70759 15.9429 9.61139 16.013 9.50398 16.0615C9.39658 16.11 9.28029 16.1358 9.16243 16.1373H9.15388Z" fill="#003F5A"/>
+                                       </svg>
+                                       <div class="info-type-label">{{ label }}</div>
+                                    </label>
+                                 {% else %}
+                                    <label class="info-type-checkbox-2">
+                                       <input type="checkbox" {% if checked %}checked{% endif %} disabled>
+                                       <svg class="unchecked" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
+                                          <path d="M9.15382 16.1373C9.03659 16.1369 8.92069 16.1124 8.81332 16.0654C8.70596 16.0184 8.60941 15.9499 8.5297 15.864L4.37457 11.4487C4.21925 11.2834 4.13604 11.0631 4.14326 10.8365C4.15047 10.6099 4.24752 10.3954 4.41304 10.2403C4.57857 10.0851 4.79902 10.002 5.0259 10.0092C5.25278 10.0164 5.46749 10.1133 5.62282 10.2787L9.14527 14.0278L16.3355 6.17084C16.4085 6.08008 16.4993 6.00518 16.6023 5.95073C16.7053 5.89629 16.8183 5.86345 16.9345 5.85424C17.0507 5.84503 17.1675 5.85964 17.2778 5.89717C17.3881 5.93471 17.4896 5.99437 17.576 6.0725C17.6624 6.15063 17.7318 6.24557 17.7802 6.35151C17.8285 6.45744 17.8546 6.57212 17.8569 6.6885C17.8593 6.80488 17.8378 6.92051 17.7937 7.02829C17.7497 7.13607 17.6841 7.23371 17.6009 7.31523L9.7865 15.8554C9.70753 15.9429 9.61133 16.013 9.50392 16.0615C9.39652 16.11 9.28023 16.1358 9.16237 16.1373H9.15382Z" fill="#003F5A"/>
+                                       </svg>
+                                       <div class="info-type-label">{{ label }}</div>
+                                    </label>
+                                 {% endif %}
+                              </div>
+                        {% endfor %}
+                  </div>
+
+               </div>
+            </div>
+            <div class="about-pet-info">
+               <div class="section-header p-0">Breed Info</div>
+               <div class="pet-info-checkbox">
+                  <!-- Display form fields for pet info -->
+
+                  <div class="info-type-css">
+                    <!-- Display form fields for pet info -->
+                       {% for label, checked in filtered_breed_info %}
+                             <div>
+                                {% if checked %}
+                                   <label class="info-type-checkbox-1">
+                                      <input type="checkbox" {% if checked %}checked{% endif %} disabled>
+                                      <svg class="checked" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
+                                         <path d="M9.15388 16.1373C9.03665 16.1369 8.92075 16.1124 8.81338 16.0654C8.70602 16.0184 8.60947 15.9499 8.52976 15.864L4.37463 11.4487C4.21931 11.2834 4.1361 11.0631 4.14332 10.8365C4.15053 10.6099 4.24758 10.3954 4.41311 10.2403C4.57863 10.0851 4.79908 10.002 5.02596 10.0092C5.25284 10.0164 5.46756 10.1133 5.62288 10.2787L9.14533 14.0278L16.3356 6.17084C16.4086 6.08008 16.4993 6.00518 16.6023 5.95073C16.7053 5.89629 16.8184 5.86345 16.9346 5.85424C17.0507 5.84503 17.1676 5.85964 17.2779 5.89717C17.3882 5.93471 17.4896 5.99437 17.576 6.0725C17.6624 6.15063 17.7319 6.24557 17.7802 6.35151C17.8285 6.45744 17.8547 6.57212 17.857 6.6885C17.8593 6.80488 17.8378 6.92051 17.7938 7.02829C17.7497 7.13607 17.6841 7.23371 17.6009 7.31523L9.78656 15.8554C9.70759 15.9429 9.61139 16.013 9.50398 16.0615C9.39658 16.11 9.28029 16.1358 9.16243 16.1373H9.15388Z" fill="#003F5A"/>
+                                      </svg>
+                                      <div class="info-type-label">{{ label }}</div>
+                                   </label>
+                                {% else %}
+                                   <label class="info-type-checkbox-2">
+                                      <input type="checkbox" {% if checked %}checked{% endif %} disabled>
+                                      <svg class="unchecked" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
+                                         <path d="M9.15382 16.1373C9.03659 16.1369 8.92069 16.1124 8.81332 16.0654C8.70596 16.0184 8.60941 15.9499 8.5297 15.864L4.37457 11.4487C4.21925 11.2834 4.13604 11.0631 4.14326 10.8365C4.15047 10.6099 4.24752 10.3954 4.41304 10.2403C4.57857 10.0851 4.79902 10.002 5.0259 10.0092C5.25278 10.0164 5.46749 10.1133 5.62282 10.2787L9.14527 14.0278L16.3355 6.17084C16.4085 6.08008 16.4993 6.00518 16.6023 5.95073C16.7053 5.89629 16.8183 5.86345 16.9345 5.85424C17.0507 5.84503 17.1675 5.85964 17.2778 5.89717C17.3881 5.93471 17.4896 5.99437 17.576 6.0725C17.6624 6.15063 17.7318 6.24557 17.7802 6.35151C17.8285 6.45744 17.8546 6.57212 17.8569 6.6885C17.8593 6.80488 17.8378 6.92051 17.7937 7.02829C17.7497 7.13607 17.6841 7.23371 17.6009 7.31523L9.7865 15.8554C9.70753 15.9429 9.61133 16.013 9.50392 16.0615C9.39652 16.11 9.28023 16.1358 9.16237 16.1373H9.15382Z" fill="#003F5A"/>
+                                      </svg>
+                                      <div class="info-type-label">{{ label }}</div>
+                                   </label>
+                                {% endif %}
+                             </div>
+                       {% endfor %}
+
+                       <!-- More about breed -->
+                       <label class="breed-checkbox">
+                           <input type="checkbox"
+                                 name="{{ adminform.form.more_about_breed.name }}"
+                                 id="{{ adminform.form.more_about_breed.id_for_label }}"
+                                 {% if adminform.form.more_about_breed.value %} checked {% endif %}>
+                           <span class="brd-btn-checkmark"></span>
+                           <div class="info-type-label">More About Breed</div>
+                       </label>
+                  </div>
+
+               </div>
+            </div>
+         </div>
+       </div>
+
+      <div id="content_button_id" class="ask-about-pet-form content">
+            <!-- Ask About Pet Form content goes here -->
+            {{ adminform.form.message }}
+            <div class="form-variables">
+               <div class="variable-info">The following variables can be used</div>
+               <div class="variable-mark">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <g opacity="0.6">
+                          <path d="M12 3C7.03725 3 3 7.03725 3 12C3 16.9628 7.03725 21 12 21C16.9628 21 21 16.9628 21 12C21 7.03725 16.9628 3 12 3ZM12 4.5C16.1512 4.5 19.5 7.84875 19.5 12C19.5 16.1512 16.1512 19.5 12 19.5C7.84875 19.5 4.5 16.1512 4.5 12C4.5 7.84875 7.84875 4.5 12 4.5ZM12 7.5C10.35 7.5 9 8.85 9 10.5H10.5C10.5 9.66225 11.1622 9 12 9C12.8378 9 13.5 9.66225 13.5 10.5C13.4998 10.7803 13.4114 11.0534 13.2473 11.2806C13.0832 11.5078 12.8517 11.6777 12.5858 11.766L12.2812 11.859C11.9815 11.96 11.7208 12.1523 11.5359 12.4089C11.351 12.6656 11.251 12.9737 11.25 13.29V14.25H12.75V13.2892L13.0545 13.1955C13.6196 13.0056 14.1111 12.6435 14.46 12.1601C14.8089 11.6767 14.9977 11.0962 15 10.5C15 8.85 13.65 7.5 12 7.5ZM11.25 15V16.5H12.75V15H11.25Z" fill="#003F5A"/>
+                      </g>
+                  </svg>
+                  <span class="tooltiptext mark-info">Click the button to put it into the message above</span>
+              </div>
+            </div>
+
+            <div class="form-button">
+               <div class="form-btn" onclick="insertVariable('pet_name')">pet name</div>
+               <div class="form-btn" onclick="insertVariable('breed_name')">breed</div>
+            </div>
+
+            <div class="line-break"></div>
+
+            <div class="btntitle" style="margin-bottom:20px;">Button</div>
+
+            <div class="variable-info" style="margin-bottom:20px;">Style</div>
+
+            <div class="box-theme-form-item theme-tab-content">
+               <ul class="theme-button-tab">
+                  <input type="hidden" name="{{adminform.form.petform_button_style.name}}" id="{{adminform.form.petform_button_style.name}}" value="{{adminform.form.petform_button_style.value}}">
+                  
+                  <li class="petform_button_style {% if adminform.form.petform_button_style.value == 'fill' %} active {% endif %}" onclick="updateButtonStyle('fill')">
+                    <button class="btn-theme button-style-fill">Button</button>
+                  </li>
+                  <li class="petform_button_style {% if adminform.form.petform_button_style.value == 'outline' %} active {% endif %}" onclick="updateButtonStyle('outline')">
+                    <button class="btn-theme button-style-outline">Button</button>
+                  </li>
+                </ul>
+            </div>
+
+            <div class="pet-enquiry">
+               <div class="enquiry-box">
+                  <div class="enquiry-icon">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <g clip-path="url(#clip0_4499_20607)">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#003F5A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 16V12M12 8H12.01" stroke="#003F5A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </g>
+                        <defs>
+                        <clipPath id="clip0_4499_20607">
+                        <rect width="24" height="24" fill="white"/>
+                        </clipPath>
+                        </defs>
+                     </svg>
+                  </div>
+                  <div class="enquiry-text">Pet inquiries will be submitted as a lead to the POS.</div>
+               </div>
+            </div>
+      
+            <div class="line-break"></div>
+            
+      </div>
+   </div>
+  
+
+   {% addtoblock "js" %}
+   <script>
+
+      document.addEventListener('DOMContentLoaded', function() {
+         const tabs = document.querySelectorAll('.header-tab');
+         const contents = document.querySelectorAll('.content');
+         tabs.forEach(tab => {
+             tab.addEventListener('click', () => {
+                 // Remove active classes from all tabs and contents
+                 tabs.forEach(t => t.classList.remove('active1'));
+                 tabs.forEach(t => t.classList.add('not-top-indicator'))
+                 contents.forEach(c => c.classList.remove('active-content'));
+     
+                 // Add active class to the clicked tab and the corresponding content
+                 tab.classList.add('active1');
+                 tab.classList.remove('not-top-indicator');
+                 const contentId = `content_${tab.id}`;
+                 document.getElementById(contentId).classList.add('active-content');
+             });
+         });
+     });
+
+      var promob_img = document.getElementById('{{adminform.form.promob_image.name}}');
+      if (promob_img) {
+         promob_img.addEventListener('dragenter', function(e) {
+            promob_img.parentNode.className = 'area dragging';
+         }, false);
+         promob_img.addEventListener('dragleave', function(e) {
+            promob_img.parentNode.className = 'area';
+         }, false);
+         promob_img.addEventListener('dragdrop', function(e) {
+            promoImageUpload(promob_img);
+         }, false);
+         promob_img.addEventListener('change', function(e) {
+            promoImageUpload(promob_img);
+         }, false);
+      }
+
+      function promoImageUpload(uploadFile) {
+         var me = this,
+            files = uploadFile.files;
+         let names = uploadFile.name
+         var preview = $('.' + uploadFile.getAttribute('id'))
+         preview.empty()
+         $.each(files, function(i, file) {
+            var img_src = URL.createObjectURL(file);
+            preview.parents(".d-none").addClass("d-none-display").removeClass("d-none");
+            preview.append(`
+                        <li class="banner-image-preview-list"><img src="${img_src}" alt="">
+                          <button onClick="deleteImage('${names}','{{adminform.form.instance.id}}', this)" type="button">
+                             <img src="{% static 'images/ic-delete.svg' %}" alt="">
+                         </button>
+                          </li>
+                    `)
+         });
+      }
+
+      function deleteImage(name, id, me) {
+         $(me).parents('.preview-' + name).addClass('d-none')
+         $(me).parents('li').remove()
+      }
+
+      function selectRadioOption(data) {
+         let id = data.id
+         let index = id.split('-')[1]
+         if (id == 'link_choice_field_1-' + index) {
+            $('#cont_internal_link_btn_' + index).show()
+            $("#cont_external_link_btn_" + index).hide()
+         } else if (id == 'link_choice_field_2-' + index) {
+            $('#cont_internal_link_btn_' + index).hide()
+            $("#cont_external_link_btn_" + index).show()
+         }
+      }
+      // btn_type_links js section start
+      document.addEventListener("DOMContentLoaded", function() {
+         var btnTypeLinks = document.querySelector('.btn-type-links');
+         var internalLinkRadio = document.getElementById('id_btn_type_link_choice_0');
+         var externalLinkRadio = document.getElementById('id_btn_type_link_choice_1');
+         var adminFormCheckboxDiv = document.querySelector('.btn-type-links .admin-form.horizontal-checkbox');
+         if (adminFormCheckboxDiv) {
+            adminFormCheckboxDiv.classList.add('pt-0');
+         }
+
+         function toggleLinkInputFields(internal) {
+            document.getElementById("btn_type_internal_link").style.display = internal ? "block" : "none";
+            document.getElementById("btn_type_external_link").style.display = internal ? "none" : "block";
+         }
+         if (internalLinkRadio) {
+            internalLinkRadio.addEventListener('click', function() {
+               toggleLinkInputFields(true);
+            });
+         }
+         if (externalLinkRadio) {
+            externalLinkRadio.addEventListener('click', function() {
+               toggleLinkInputFields(false);
+            });
+         }
+         // Trigger the initial state
+         if (internalLinkRadio && internalLinkRadio.checked) {
+            toggleLinkInputFields(true);
+         } else {
+            toggleLinkInputFields(false);
+         }
+         var otherDiv = document.querySelector('.btn-type-links');
+         var otherRadioButton = document.getElementById('id_button_type_5');
+         // Check if the other radio button is checked on page load
+         if (otherRadioButton && otherRadioButton.checked) {
+            otherDiv.classList.remove('d-none');
+         }
+         // Add event listener to the radio button
+         if (otherRadioButton) {
+            otherRadioButton.addEventListener('click', function() {
+               if (this.checked) {
+                  otherDiv.classList.remove('d-none');
+               } else {
+                  otherDiv.classList.add('d-none');
+               }
+            });
+         }
+         // Add event listener to all other radio buttons
+         var otherRadioButtons = document.querySelectorAll(
+            'input[type="radio"][name="button_type"]:not(#id_button_type_5)'
+         );
+         otherRadioButtons.forEach(function(radioButton) {
+            radioButton.addEventListener('click', function() {
+               otherDiv.classList.add('d-none');
+            });
+         });
+      });
+      // btn_type_links js section end
+
+      // Ask About Pet Form js
+      const breed_name = " {breed_name} "; // Replace with dynamic value
+      const pet_name = " {pet_name} "; // Replace with dynamic value
+  
+      function insertVariable(variable) {
+          let container = document.querySelector('.ask-about-pet-form');
+          let messageInput = container.querySelector('#id_message');
+          let textToInsert = '';
+  
+          if (variable === 'breed_name') {
+              textToInsert = breed_name;
+          } else if (variable === 'pet_name') {
+              textToInsert = pet_name;
+          }
+  
+          // Insert the text at the cursor position
+          if (messageInput.selectionStart || messageInput.selectionStart === 0) {
+              let startPos = messageInput.selectionStart;
+              let endPos = messageInput.selectionEnd;
+              let beforeValue = messageInput.value.substring(0, startPos);
+              let afterValue = messageInput.value.substring(endPos, messageInput.value.length);
+              messageInput.value = beforeValue + textToInsert + afterValue;
+              messageInput.selectionStart = startPos + textToInsert.length;
+              messageInput.selectionEnd = startPos + textToInsert.length;
+          } else {
+              messageInput.value += textToInsert;
+          }
+  
+          messageInput.focus(); // Focus back to the input field
+      }
+
+      function updateButtonStyle(style) {
+         document.getElementById('{{adminform.form.petform_button_style.name}}').value = style;
+         
+         // Optional: Toggle 'active' class on li elements based on the selected style
+         var lis = document.querySelectorAll('.petform_button_style');
+         lis.forEach(function(li) {
+             li.classList.remove('active');
+         });
+         
+         var selectedLi = document.querySelector('.petform_button_style.' + style);
+         if (selectedLi) {
+             selectedLi.classList.add('active');
+         }
+     }
+
+   </script>
+
+   <script>
+      {% comment %} function setupButtonEventListeners() {
+         // Loop through all elements with IDs matching the pattern id_button_selector-n
+         for (let i = 1; i <= 10; i++) {
+            let selector = document.getElementById("id_button_selector-" + i);
+            let btnLinks = document.getElementById("btn_links-" + i);
+            let inputElement = document.getElementById("button_text-" + i);
+            let charCountElement = document.getElementById("char_count-" + i);
+            let btnSettings = document.getElementById("btn_settings-" + i);
+            let btn_top = document.getElementById("id_button_settings_input_0-" + i);
+            if (selector && btnLinks && inputElement && charCountElement && btnSettings) {
+               // Add change event listener to select element
+               selector.addEventListener("change", function() {
+                  if (this.value === "link") {
+                     btnLinks.classList.remove("d-none");
+                  } else {
+                     btnLinks.classList.add("d-none");
+                  }
+                  // Update the value of the input element with the selected option's text
+                  let buttonText = this.options[this.selectedIndex].text;
+                  // Limit button text to 25 characters
+                  inputElement.value = buttonText.substring(0, 25);
+                  // Update character count
+                  updateCharacterCount(inputElement, charCountElement);
+               });
+               // Add input event listener to input element to enforce character limit
+               inputElement.addEventListener("input", function() {
+                  // Limit input to 25 characters
+                  this.value = this.value.substring(0, 25);
+                  // Update character count
+                  updateCharacterCount(this, charCountElement);
+               });
+               // Dispatch change event to trigger initial state
+               // selector.dispatchEvent(new Event('change'));
+               // Add event listener for btn_settings
+               btnSettings.addEventListener('change', function() {
+                  const topCheckbox = this.querySelector('input[value="top"]');
+                  const widthCheckboxDiv = this.querySelector('input[value="width"]').closest(
+                     '.form-check');
+                  if (topCheckbox.checked) {
+                     widthCheckboxDiv.classList.add('d-none');
+                  } else {
+                     widthCheckboxDiv.classList.remove('d-none');
+                  }
+               });
+               // Initialize the visibility based on the current state of the top checkbox
+               const topCheckbox = btnSettings.querySelector('input[value="top"]');
+               const widthCheckboxDiv = btnSettings.querySelector('input[value="width"]').closest('.form-check');
+               if (topCheckbox.checked) {
+                  widthCheckboxDiv.classList.add('d-none');
+               } else {
+                  widthCheckboxDiv.classList.remove('d-none');
+               }
+            }
+         }
+      } {% endcomment %}
+
+      function setupButtonEventListeners() {
+         for (let i = 1; i <= 10; i++) {
+             const selector = document.getElementById(`id_button_selector-${i}`);
+             const btnLinks = document.getElementById(`btn_links-${i}`);
+             const inputElement = document.getElementById(`button_text-${i}`);
+             const charCountElement = document.getElementById(`char_count-${i}`);
+             const btnSettings = document.getElementById(`btn_settings-${i}`);
+             
+             if (selector && btnLinks && inputElement && charCountElement && btnSettings) {
+                 selector.addEventListener("change", function() {
+                     btnLinks.classList.toggle("d-none", this.value !== "link");
+                     inputElement.value = this.options[this.selectedIndex].text.substring(0, 25);
+                     updateCharacterCount(inputElement, charCountElement);
+                 });
+     
+                 inputElement.addEventListener("input", function() {
+                     this.value = this.value.substring(0, 25);
+                     updateCharacterCount(this, charCountElement);
+                 });
+     
+                 btnSettings.addEventListener('change', function() {
+                     const widthCheckboxDiv = this.querySelector('input[value="width"]').closest('.form-check');
+                     widthCheckboxDiv.classList.toggle('d-none', this.querySelector('input[value="top"]').checked);
+                 });
+     
+                 const topCheckbox = btnSettings.querySelector('input[value="top"]');
+                 const widthCheckboxDiv = btnSettings.querySelector('input[value="width"]').closest('.form-check');
+                 widthCheckboxDiv.classList.toggle('d-none', topCheckbox.checked);
+             }
+         }
+     }
+     
+      // Function to update character count
+      function updateCharacterCount(inputElement, charCountElement) {
+         let count = inputElement.value.length;
+         charCountElement.textContent = count + "/25";
+      }
+
+      // Function to update character count on page load
+      function updateCharacterCountOnLoad() {
+         for (let i = 1; i <= 10; i++) {
+            let inputElement = document.getElementById("button_text-" + i);
+            let charCountElement = document.getElementById("char_count-" + i);
+            if (inputElement && charCountElement) {
+               updateCharacterCount(inputElement, charCountElement);
+            }
+         }
+      }
+
+      const btn_list = {
+         1: 'First Button',
+         2: 'Second Button',
+         3: "Third Button",
+         4: "Fourth Button",
+         5: "Fifth Button",
+         6: "Sixth Button",
+         
+      };
+
+      function AddButtons(mydata) {
+         let no_of_btns = $("#main-section-btn").children().length;
+         let x = $("#main-section-btn").children().last().clone()
+         // ADD THE DELETE BUTTON 
+         x.find(`#delAnchor-` + no_of_btns).attr('id', 'delAnchor-' + (no_of_btns + 1))
+         // change the id of the section
+         x.attr('id', 'section-' + (no_of_btns + 1))
+         // change the title and delete btn class
+         x.find('.box-theme-sub-title.d-flex').children().eq(0).text(btn_list[no_of_btns + 1])
+         //x.find('.box-theme-sub-title.d-flex').children().eq(1).removeClass().addClass('section-'+(no_of_btns+1))
+         // change the text of the button (also change the name and id)
+         x.find('#button_text-' + no_of_btns).attr('name', 'button_text-' + (no_of_btns + 1))
+         x.find('#button_text-' + no_of_btns).attr('id', 'button_text-' + (no_of_btns + 1))
+         // change the name and id of the buttons link 
+         x.find('#link_choice_field_1-' + no_of_btns).attr({
+            'id': 'link_choice_field_1-' + (no_of_btns + 1),
+            'name': 'link_choice_field-' + (no_of_btns + 1)
+         })
+         x.find('#link_choice_field_2-' + no_of_btns).attr({
+            'id': 'link_choice_field_2-' + (no_of_btns + 1),
+            'name': 'link_choice_field-' + (no_of_btns + 1)
+         })
+         x.find('#link_choice_field_3-' + no_of_btns).attr({
+            'id': 'link_choice_field_3-' + (no_of_btns + 1),
+            'name': 'link_choice_field-' + (no_of_btns + 1)
+         })
+         // change the name and id of button selector
+         x.find('#id_button_selector-' + no_of_btns).attr({
+            'id': 'id_button_selector-' + (no_of_btns + 1),
+            'name': 'button_selector_' + (no_of_btns + 1)
+         }).val('');
+         // change the id of btn_links
+         x.find('#btn_links-' + no_of_btns).attr({
+            'id': 'btn_links-' + (no_of_btns + 1),
+         })
+         // change the id of btn_settings
+         x.find('#btn_settings-' + no_of_btns).attr({
+            'id': 'btn_settings-' + (no_of_btns + 1),
+         })
+
+         // change the id of btn_settings_top input
+         x.find('#id_button_settings_input_0-' + no_of_btns).attr({
+            'id': 'id_button_settings_input_0-' + (no_of_btns + 1),
+            'name': 'button_settings_top-' + (no_of_btns + 1),
+         }).prop('checked', false);
+
+         // change the id of btn_settings_width input
+         x.find('#id_button_settings_input_1-' + no_of_btns).attr({
+            'id': 'id_button_settings_input_1-' + (no_of_btns + 1),
+            'name': 'button_settings_width-' + (no_of_btns + 1),
+         }).prop('checked', false);
+
+         //change the id char count
+         x.find('#char_count-' + no_of_btns).attr({
+            'id': 'char_count-' + (no_of_btns + 1),
+         })
+         // hide and show the link field using the below code 
+         x.find('#cont_internal_link_btn_' + no_of_btns).attr('id', 'cont_internal_link_btn_' + (no_of_btns + 1))
+         x.find('#cont_external_link_btn_' + no_of_btns).attr('id', 'cont_external_link_btn_' + (no_of_btns + 1))
+         x.find('#cont_phone_link_btn_' + no_of_btns).attr('id', 'cont_phone_link_btn_' + (no_of_btns + 1))
+         // change the name id tag of the dropdown for internal link
+         x.find('#id_button_internallink_' + no_of_btns).attr({
+            'id': 'id_button_internallink_' + (no_of_btns + 1),
+            'name': 'button_internallink_' + (no_of_btns + 1)
+         })
+         // change the id and name of the external link 
+         x.find('#button_link-' + no_of_btns).attr({
+            'id': 'button_link-' + (no_of_btns + 1),
+            'name': 'button_link-' + (no_of_btns + 1)
+         })
+         // change the id and name of the phone link 
+         x.find('#button_phone_link-' + no_of_btns).attr({
+            'id': 'button_phone_link-' + (no_of_btns + 1),
+            'name': 'button_phone_link-' + (no_of_btns + 1)
+         })
+         // change the id and name of the Window selection
+         x.find('#id_button_target-' + no_of_btns).attr({
+            'id': 'id_button_target-' + (no_of_btns + 1),
+            'name': 'button_target-' + (no_of_btns + 1)
+         })
+         // change the class of the tab for style and color
+         x.find(".btn_style_" + no_of_btns).attr({
+            'class': 'btn_style_' + (no_of_btns + 1),
+            'data-target': 'btn_style_' + (no_of_btns + 1)
+         })
+         x.find(".btn_color_" + no_of_btns).attr({
+            'class': 'btn_color_' + (no_of_btns + 1),
+            'data-target': 'btn_color_' + (no_of_btns + 1)
+         })
+         x.find("#btn_style_" + no_of_btns).attr('id', 'btn_style_' + (no_of_btns + 1))
+         x.find("#btn_color_" + no_of_btns).attr('id', 'btn_color_' + (no_of_btns + 1))
+         //x.find(".btn_style_"+no_of_btns).attr('class','btn_style_'+(no_of_btns+1))
+         //x.find(".btn_color_"+no_of_btns).attr('class','btn_color_'+(no_of_btns+1))
+         // below code to change the id of the hidden field of the style of the button
+         x.find("#button_style-" + no_of_btns).attr({
+            'id': 'button_style-' + (no_of_btns + 1),
+            'name': 'button_style-' + (no_of_btns + 1)
+         })
+         x.find(".button_style-" + no_of_btns).attr('class', 'button_style-' + (no_of_btns + 1))
+         // hide and show the custom color set options
+         x.find('#primary-btn-set1-' + no_of_btns).attr("id", "primary-btn-set1-" + (no_of_btns + 1))
+         x.find('#primary-btn-set2-' + no_of_btns).attr("id", "primary-btn-set2-" + (no_of_btns + 1))
+         //change the id and name of the input field for color patterns
+         x.find("#button_color_pattern-" + no_of_btns).attr({
+            'id': 'button_color_pattern-' + (no_of_btns + 1),
+            'name': 'button_color_pattern-' + (no_of_btns + 1)
+         })
+         x.find(".button_color_pattern-" + no_of_btns).attr('class', 'button_color_pattern-' + (no_of_btns + 1))
+         // add each button at the end of the last button 
+         $("#main-section-btn").append(x);
+         // empty the value of each field of the button
+         $('#button_text-' + (no_of_btns + 1)).val('-----')
+         $('input[name = "link_choice_field-' + (no_of_btns + 1) + '"][value = "Internal link"]').prop('checked', true)
+         $('#cont_internal_link_btn_' + (no_of_btns + 1)).css('display', 'block')
+         $('#cont_external_link_btn_' + (no_of_btns + 1)).css('display', 'none')
+         $('#cont_phone_link_btn_' + (no_of_btns + 1)).css('display', 'none')
+         $('#id_button_internallink_' + (no_of_btns + 1)).val('')
+         $('#id_button_target-' + (no_of_btns + 1)).val('_self')
+         // make style tab active and color tab inactive
+         x.find('.btn_style_' + (no_of_btns + 1)).addClass('active')
+         x.find('.btn_color_' + (no_of_btns + 1)).removeClass('active')
+         x.find('#btn_style_' + (no_of_btns + 1)).show()
+         x.find('#btn_color_' + (no_of_btns + 1)).hide()
+
+         // If there is at least one button, remove the parent div of the specified button
+         if ((no_of_btns+1) >= 2) {
+            $('input[name="button_settings_top-' + (no_of_btns+1) + '"]').closest('div').addClass('d-none');;
+         }
+
+         if (mydata == false) {
+            x.find('.button_style-' + (no_of_btns + 1)).first().addClass("active")
+            x.find('.button_style-' + (no_of_btns + 1)).last().removeClass("active")
+            x.find('#primary-btn-set1-' + (no_of_btns + 1)).removeClass("d-none")
+            x.find('#primary-btn-set2-' + (no_of_btns + 1)).addClass("d-none")
+            x.find('#button_style-' + (no_of_btns + 1)).val('fill')
+            let colors = x.find('#button_color_pattern-' + (no_of_btns + 1)).siblings('ul').children()
+            colors.removeClass('active')
+            colors.first().addClass('active')
+            x.find('#button_color_pattern-' + (no_of_btns + 1)).val('F2')
+            x.find('#btn_links-' + (no_of_btns + 1)).addClass('d-none');
+         }
+         setupButtonEventListeners();
+         updateCharacterCountOnLoad();
+         if (no_of_btns == 5) {
+            $('#id_add_btn').hide()
+            return false
+         }
+      }
+
+      function deleteImage(name, id, me) {
+         $(me).parents('.preview-' + name).addClass('d-none')
+         $(me).parents('li').remove()
+      }
+
+      function save_changes() {
+         let no_of_btns = $("#main-section-btn").children().length;
+         let custom_btn_data = {};
+         $("#main-section-btn").children().each(function(index, element) {
+            custom_btn_data['btn' + (index + 1)] = {}
+            custom_btn_data['btn' + (index + 1)]['button_text'] = $('#button_text-' + (index + 1)).val()
+            custom_btn_data['btn' + (index + 1)]['link_choice_field'] = $('[name = "link_choice_field-' + (index +
+               1) + '"]:checked').val()
+            custom_btn_data['btn' + (index + 1)]['id_button_internallink'] = $('[name = "button_internallink_' + (
+               index + 1) + '"').val()
+            custom_btn_data['btn' + (index + 1)]['button_link'] = $('[name = "button_link-' + (index + 1) + '"')
+               .val()
+            custom_btn_data['btn' + (index + 1)]['button_phone_link'] = $('[name = "button_phone_link-' + (index +
+               1) + '"').val()
+            custom_btn_data['btn' + (index + 1)]['id_button_target'] = $('[name = "button_target-' + (index + 1) +
+               '"').val()
+            custom_btn_data['btn' + (index + 1)]['button_style'] = $('[name = "button_style-' + (index + 1) + '"')
+               .val()
+            custom_btn_data['btn' + (index + 1)]['button_color_pattern'] = $('[name = "button_color_pattern-' + (
+               index + 1) + '"').val()
+
+            // Save the new fields
+            custom_btn_data['btn' + (index + 1)]['button_selector'] = $('#id_button_selector-' + (index + 1)).val();
+
+            // Save button width and top as "true" or "false" string
+            custom_btn_data['btn' + (index + 1)]['button_width'] = $('#id_button_settings_input_1-' + (index + 1)).prop('checked') ? "true" : "false";
+            custom_btn_data['btn' + (index + 1)]['button_top'] = $('#id_button_settings_input_0-' + (index + 1)).prop('checked') ? "true" : "false";
+           
+         });
+         let string_data = JSON.stringify(custom_btn_data)
+         $('#{{adminform.form.button_data.name}}').val(string_data)
+      }
+
+       // delete Buttons for now
+      function DeleteButton(data){
+         let ids = data.id.split('-')[1]
+         if (ids == '1'){
+            return false
+         }
+         else{
+            // THIS WILL DELETE THE SECTION
+            
+            let remain_btn = $("#main-section-btn").children()
+            console.log("wwewerwe",remain_btn,parseInt(ids)+1)
+            for (let no_of_btns = (parseInt(ids)); no_of_btns <= remain_btn.length; no_of_btns++){
+               
+                  // ADD THE DELETE BUTTON 
+                  console.log("ttttt",no_of_btns,$(remain_btn[2]).find(".del-anchor"))
+                  console.log("ttttt",$(remain_btn[no_of_btns]).find(`#delAnchor-`+no_of_btns))
+                  let btn_val = no_of_btns+1
+                  $(remain_btn[no_of_btns]).find(`#delAnchor-`+btn_val).attr('id','delAnchor-'+(no_of_btns))
+
+                  // change the id of the section
+                  $(remain_btn[no_of_btns]).attr('id','section-'+(no_of_btns))
+
+                  // change the title and delete btn class
+                  $(remain_btn[no_of_btns]).find('.box-theme-sub-title.d-flex').children().eq(0).text(btn_list[no_of_btns])
+                  //x.find('.box-theme-sub-title.d-flex').children().eq(1).removeClass().addClass('section-'+(no_of_btns+1))
+                  
+                  // change the text of the button (also change the name and id)
+                  $(remain_btn[no_of_btns]).find('#button_text-'+btn_val).attr('name','button_text-'+(no_of_btns))
+                  $(remain_btn[no_of_btns]).find('#button_text-'+btn_val).attr('id','button_text-'+(no_of_btns))
+
+                  // change the name and id of the buttons link 
+                  $(remain_btn[no_of_btns]).find('#link_choice_field_1-'+btn_val).attr({'id':'link_choice_field_1-'+(no_of_btns),'name' : 'link_choice_field-'+(no_of_btns)})
+                  $(remain_btn[no_of_btns]).find('#link_choice_field_2-'+btn_val).attr({'id':'link_choice_field_2-'+(no_of_btns),'name' : 'link_choice_field-'+(no_of_btns)})
+                  $(remain_btn[no_of_btns]).find('#link_choice_field_3-'+btn_val).attr({'id':'link_choice_field_3-'+(no_of_btns),'name' : 'link_choice_field-'+(no_of_btns)})
+
+                  // hide and show the link field using the below code 
+                  $(remain_btn[no_of_btns]).find('#cont_internal_link_btn_'+btn_val).attr('id','cont_internal_link_btn_'+(no_of_btns))
+                  $(remain_btn[no_of_btns]).find('#cont_external_link_btn_'+btn_val).attr('id','cont_external_link_btn_'+(no_of_btns))
+                  $(remain_btn[no_of_btns]).find('#cont_phone_link_btn_'+btn_val).attr('id','cont_phone_link_btn_'+(no_of_btns))
+
+                  // change the name id tag of the dropdown for internal link
+                  $(remain_btn[no_of_btns]).find('#id_button_internallink_'+btn_val).attr({'id':'id_button_internallink_'+(no_of_btns),'name' : 'button_internallink_'+(no_of_btns)})
+
+                  // change the id and name of the external link 
+                  $(remain_btn[no_of_btns]).find('#button_link-'+btn_val).attr({'id':'button_link-'+(no_of_btns),'name' : 'button_link-'+(no_of_btns)})
+                  
+                  // change the id and name of the phone link 
+                  $(remain_btn[no_of_btns]).find('#button_phone_link-'+btn_val).attr({'id':'button_phone_link-'+(no_of_btns),'name' : 'button_phone_link-'+(no_of_btns)})
+                  
+                  // change the id and name of the Window selection
+                  $(remain_btn[no_of_btns]).find('#id_button_target-'+btn_val).attr({'id':'id_button_target-'+(no_of_btns),'name' : 'button_target-'+(no_of_btns)})
+
+                  // change the class of the tab for style and color
+                  
+                  let btn_style = $(remain_btn[no_of_btns]).find(".btn_style_"+btn_val)
+                  btn_style.attr({'data-target':'btn_style_'+(no_of_btns)})
+                  btn_style.addClass('btn_style_'+(no_of_btns)).removeClass("btn_style_"+btn_val)
+                  let btn_color = $(remain_btn[no_of_btns]).find(".btn_color_"+btn_val)
+                  btn_color.attr({'data-target':'btn_color_'+(no_of_btns)})
+                  btn_color.addClass('btn_color_'+(no_of_btns)).removeClass("btn_color_"+btn_val)
+
+                  $(remain_btn[no_of_btns]).find("#btn_style_"+btn_val).attr('id','btn_style_'+(no_of_btns))
+                  $(remain_btn[no_of_btns]).find("#btn_color_"+btn_val).attr('id','btn_color_'+(no_of_btns))
+                  {% comment %} $(remain_btn[no_of_btns]).find(".btn_style_"+btn_val).attr('class','btn_style_'+(no_of_btns)) {% endcomment %}
+                  {% comment %} $(remain_btn[no_of_btns]).find(".btn_color_"+btn_val).attr('class','btn_color_'+(no_of_btns)) {% endcomment %}
+
+                  // below code to change the id of the hidden field of the style of the button
+                  $(remain_btn[no_of_btns]).find("#button_style-"+btn_val).attr({'id':'button_style-'+(no_of_btns),'name':'button_style-'+(no_of_btns)})
+                  let button_style = $(remain_btn[no_of_btns]).find(".button_style-"+btn_val)
+                  button_style.addClass('button_style-'+(no_of_btns)).removeClass('button_style-'+(btn_val))
+
+                  // hide and show the custom color set options
+                  $(remain_btn[no_of_btns]).find('#primary-btn-set1-'+btn_val).attr("id","primary-btn-set1-"+(no_of_btns))
+                  $(remain_btn[no_of_btns]).find('#primary-btn-set2-'+btn_val).attr("id","primary-btn-set2-"+(no_of_btns))
+
+                  //change the id and name of the input field for color patterns
+                  $(remain_btn[no_of_btns]).find("#button_color_pattern-"+btn_val).attr({'id':'button_color_pattern-'+(no_of_btns),'name':'button_color_pattern-'+(no_of_btns)})
+                  let button_color_pattern = $(remain_btn[no_of_btns]).find(".button_color_pattern-"+btn_val)
+                  button_color_pattern.addClass('button_color_pattern-'+(no_of_btns)).removeClass('button_color_pattern-'+(btn_val))
+
+                  // change the ids and names of the new fields
+                  $(remain_btn[no_of_btns]).find('#id_button_selector-' + btn_val).attr({'id': 'id_button_selector-' + no_of_btns, 'name': 'button_selector_' + no_of_btns});
+
+                  $(remain_btn[no_of_btns]).find("#button_settings_input_0-" + btn_val).attr({'id': 'button_settings_input_0-' + (no_of_btns), 'name': 'button_settings_top-' + (no_of_btns)});
+                  $(remain_btn[no_of_btns]).find("#button_settings_input_1-" + btn_val).attr({'id': 'button_settings_input_1-' + (no_of_btns), 'name': 'button_settings_width-' + (no_of_btns)});
+                     
+                  setupButtonEventListeners();
+                 
+            }
+            $('#section-'+ids).remove()
+            $('#id_add_btn').show()
+         }
+      }
+      
+
+   // onready load all the buttons that is saved
+   $(document).ready(function(){
+      let btn_data = {{adminform.form.button_data.value|default:'{}'|safe}}
+      let n = Object.keys(btn_data)
+      for(let i = 1;i<=n.length;i++){
+         if (i==1){
+            $('#button_text-'+i).val(btn_data['btn'+i]['button_text'])
+            $('[name = "link_choice_field-'+i+'"][value = "'+btn_data['btn'+i]['link_choice_field']+'"]').prop('checked',true)
+
+            // check which button is saved like internal link, external link, or phone link
+            if (btn_data['btn'+i]['link_choice_field'] == 'Internal link'){
+                  $('#cont_internal_link_btn_'+i).show()
+                  $('#cont_external_link_btn_'+i).hide()
+                  $('#cont_phone_link_btn_'+i).hide()
+            }
+            else if(btn_data['btn'+i]['link_choice_field'] == 'External link'){
+                  $('#cont_internal_link_btn_'+i).hide()
+                  $('#cont_external_link_btn_'+i).show()
+                  $('#cont_phone_link_btn_'+i).hide()
+            }
+            else if(btn_data['btn'+i]['link_choice_field'] == 'Phone link'){
+                  $('#cont_internal_link_btn_'+i).hide()
+                  $('#cont_external_link_btn_'+i).hide()
+                  $('#cont_phone_link_btn_'+i).show()
+            }
+            $('[name = "button_internallink_'+i+'"]').val(btn_data['btn'+i]['internallink_id'])
+            $('[name = "button_link-'+i+'"]').val(btn_data['btn'+i]['button_link'])
+            $('[name = "button_phone_link-'+i+'"]').val(btn_data['btn'+i]['button_phone_link'])
+            $('[name = "button_target-'+i+'"]').val(btn_data['btn'+i]['id_button_target'])
+            $('[name = "button_style-'+i+'"]').val(btn_data['btn'+i]['button_style'])
+            $('[name = "button_color_pattern-'+i+'"]').val(btn_data['btn'+i]['button_color_pattern'])
+
+            // Load new fields
+            $('#id_button_selector-' + i).val(btn_data['btn' + i]['button_selector']);
+
+            // Set button settings width and top
+            $('#id_button_settings_input_0-' + i).prop('checked', btn_data['btn' + i]['button_top'] === 'true');
+            $('#id_button_settings_input_1-' + i).prop('checked', btn_data['btn' + i]['button_width'] === 'true');
+
+            // Show link option if button selector is set to 'link'
+            if (btn_data['btn'+i]['button_selector'] == 'link'){
+               $('#btn_links-'+i).removeClass('d-none');
+            }
+            else {
+               $('#btn_links-' + i).addClass('d-none');
+            } 
+
+            if (btn_data['btn'+i]['button_style'] == 'fill'){
+                  $('[name = "button_style-'+i+'"]').siblings('li.button_style-'+i+':first').addClass('active')
+                  //$('[name = "button_style-'+i+'"]').siblings('li.button_style-'+i+':first').children().removeClass('button-style-fill').addClass(btn_data['btn'+i]['button_color_pattern'])
+                  $('#primary-btn-set1-'+i).removeClass('d-none')
+                  $('#primary-btn-set2-'+i).addClass('d-none')
+                  $('#primary-btn-set1-'+i+' li').each(function(){
+                     if(btn_data['btn'+i]['button_color_pattern'] == $(this).data('value')){
+                        $(this).addClass('active')
+                     } 
+                  });
+
+            }
+            else{
+                  $('[name = "button_style-'+i+'"]').siblings('li.button_style-'+i+':last').addClass('active')
+                  //$('[name = "button_style-'+i+'"]').siblings('li.button_style-'+i+':last').children().removeClass('button-style-outline').addClass(btn_data['btn'+i]['button_color_pattern'])
+                  $('#primary-btn-set2-'+i).removeClass('d-none')
+                  $('#primary-btn-set1-'+i).addClass('d-none')
+                  $('#primary-btn-set2-'+i+' li').each(function(){
+                     if(btn_data['btn'+i]['button_color_pattern'] == $(this).data('value')){
+                        $(this).addClass('active')
+                     } 
+                  });
+            }     
+         }
+         else{
+            AddButtons(mydata = true)
+            $('#button_text-'+i).val(btn_data['btn'+i]['button_text'])
+            $('[name = "link_choice_field-'+i+'"][value = "'+btn_data['btn'+i]['link_choice_field']+'"]').prop('checked',true)
+
+            // check which button is saved like internal link, external link, or phone link
+            if (btn_data['btn'+i]['link_choice_field'] == 'Internal link'){
+                  $('#cont_internal_link_btn_'+i).show()
+                  $('#cont_external_link_btn_'+i).hide()
+                  $('#cont_phone_link_btn_'+i).hide()
+            }
+            else if(btn_data['btn'+i]['link_choice_field'] == 'External link'){
+                  $('#cont_internal_link_btn_'+i).hide()
+                  $('#cont_external_link_btn_'+i).show()
+                  $('#cont_phone_link_btn_'+i).hide()
+            }
+            else if(btn_data['btn'+i]['link_choice_field'] == 'Phone link'){
+                  $('#cont_internal_link_btn_'+i).hide()
+                  $('#cont_external_link_btn_'+i).hide()
+                  $('#cont_phone_link_btn_'+i).show()
+            }
+            $('[name = "button_internallink_'+i+'"]').val(btn_data['btn'+i]['internallink_id'])
+            $('[name = "button_link-'+i+'"]').val(btn_data['btn'+i]['button_link'])
+            $('[name = "button_phone_link-'+i+'"]').val(btn_data['btn'+i]['button_phone_link'])
+            $('[name = "button_target-'+i+'"]').val(btn_data['btn'+i]['id_button_target'])
+            $('[name = "button_style-'+i+'"]').val(btn_data['btn'+i]['button_style'])
+            $('[name = "button_color_pattern-'+i+'"]').val(btn_data['btn'+i]['button_color_pattern'])
+
+            // Load new fields
+            $('#id_button_selector-' + i).val(btn_data['btn' + i]['button_selector']);
+
+            // Set button settings width and top
+            $('#id_button_settings_input_0-' + i).prop('checked', btn_data['btn' + i]['button_top'] === 'true');
+            $('#id_button_settings_input_1-' + i).prop('checked', btn_data['btn' + i]['button_width'] === 'true');
+
+             // Show link option if button selector is set to 'link'
+             if (btn_data['btn'+i]['button_selector'] == 'link'){
+               $('#btn_links-'+i).removeClass('d-none');
+             }
+             else {
+               $('#btn_links-' + i).addClass('d-none');
+             }
+
+            if (btn_data['btn'+i]['button_style'] == 'fill'){
+                  $('[name = "button_style-'+i+'"]').siblings('li.button_style-'+i+':first').addClass('active')
+                  //$('[name = "button_style-'+i+'"]').siblings('li.button_style-'+i+':first').children().removeClass('button-style-fill').addClass(btn_data['btn'+i]['button_color_pattern'])
+                  $('#primary-btn-set1-'+i).removeClass('d-none')
+                  $('#primary-btn-set2-'+i).addClass('d-none')
+                  $('#primary-btn-set1-'+i+' li').each(function(){
+                     if(btn_data['btn'+i]['button_color_pattern'] == $(this).data('value')){
+                        $(this).addClass('active')
+                     } 
+                  });
+            }
+            else if (btn_data['btn'+i]['button_style'] == 'outline'){
+                  $('[name = "button_style-'+i+'"]').siblings('li.button_style-'+i+':last').addClass('active')
+                  //$('[name = "button_style-'+i+'"]').siblings('li.button_style-'+i+':last').children().removeClass('button-style-outline').addClass(btn_data['btn'+i]['button_color_pattern'])
+                  $('#primary-btn-set2-'+i).removeClass('d-none')
+                  $('#primary-btn-set1-'+i).addClass('d-none')
+                  $('#primary-btn-set2-'+i+' li').each(function(){
+                     if(btn_data['btn'+i]['button_color_pattern'] == $(this).data('value')){
+                        $(this).addClass('active')
+                     } 
+                  });
+            }
+         }
+         
+      }
+
+      setupButtonEventListeners();
+      updateCharacterCountOnLoad();
+      
+   });
+
+      function setPrimaryBtnStyle(shape,name){
+         let ids = name.getAttribute('class')
+         $("#"+ids).val(shape);
+         let no = ids.split('-')[1]
+         if(shape == 'fill'){
+             // below code to toggle the color patterns 
+             $("#primary-btn-set1-"+no).removeClass("d-none")
+             $("#primary-btn-set2-"+no).addClass("d-none")
+      
+             // below code to hide and show custom button according to the style
+             $(".row.first-btn-custom-color").children().eq(0).hide()
+             $(".row.first-btn-custom-color").children().eq(1).show()
+             $(".row.first-btn-custom-color").children().eq(2).show()
+      
+             $(".row.first-btn-custom-color").find('#first_button_outline_color').val('')
+      
+         } else if(shape == 'outline'){
+             // below code to toggle the color patterns 
+             $("#primary-btn-set1-"+no).addClass("d-none")
+             $("#primary-btn-set2-"+no).removeClass("d-none")
+      
+             $(".row.first-btn-custom-color").find('#first_button_fill_color').val('')
+             $(".row.first-btn-custom-color").find('#first_button_font_color').val('')
+             $(".row.first-btn-custom-color").children().eq(0).show()
+             $(".row.first-btn-custom-color").children().eq(1).hide()
+             $(".row.first-btn-custom-color").children().eq(2).hide()
+      
+         }
+         
+      }
+      
+      function selectButtonColor(btn, colorPattern){
+         $("#" + btn.getAttribute('class')).val(colorPattern);
+      }
+
+      // to change the tab list like style to colors
+   $(document).on("click",".theme-tab li", function () {
+      let target_box = $(this).attr('class');
+      console.log('ksjflieesss',$(this).attr('class'))
+      $(this).siblings().removeClass("active");
+      $(this).addClass("active");
+      {% comment %} $(this).parents(".box-theme-tab-wrap").find('.box-theme-form-item').hide(); {% endcomment %}
+      $("#" + target_box).show();
+      $("#" + target_box).siblings().hide();
+   });
+   // this click function is on style two buttons to active and inactive the buttons
+   $(document).on("click",".theme-button-tab li", function () {
+      $(this).siblings().removeClass("active");
+      $(this).addClass("active");
+   });
+
+   $(document).ready(function() {
+      $('.admin-form .form-check-input').each(function() {
+          var parentDiv = $(this).closest('.form-check');
+          if ($(this).attr('id') !== 'id_button_settings_input_0-1') {
+              parentDiv.addClass('hidden');
+          } else {
+              parentDiv.removeClass('hidden');
+          }
+      });
+  });
+
+   </script>
+   {% endaddtoblock %}
+   <!-- Submit buttons -->
+   {% block submit_buttons_bottom %}
+   {% submit_row %}
+   {% endblock %}
+</form>
+{% endblock content %}

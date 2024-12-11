@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    cloud.google.com/backend-config: '{"default": "SITENUM-config"}'
+  labels:
+    app: pgy-websites
+    pin_domain: SITENUM.pinogy.dev
+  name: SITENUM-service
+  namespace: websites-v2
+spec:
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - port: 8000
+      protocol: TCP
+      targetPort: 8000
+  selector:
+    app: SITENUM
+  sessionAffinity: None
+  type: ClusterIP

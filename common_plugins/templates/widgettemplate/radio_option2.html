@@ -1,0 +1,7 @@
+{% load static %}
+{% if widget.wrap_label %}
+    <label{% if widget.attrs.id %} for="{{ widget.attrs.id }}"{% endif %}>
+{% endif %}
+    <img src='{% static widget.image %}' style="width:100%;" class="{% if widget.attrs.checked %}dashed-border{% endif %} layout-img" alt = "layout image"><br/>
+    <input style="margin-left: 10px;margin-top: 5px;" type="{{ widget.type }}" name="{{ widget.name }}"{% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %}{% for name, value in widget.attrs.items %}{% if value is not False %} {{ name }}{% if value is not True %}="{{ value|stringformat:'s' }}"{% endif %}{% endif %}{% endfor %}>
+{% if widget.wrap_label %} {{ widget.label }}</label>{% endif %}

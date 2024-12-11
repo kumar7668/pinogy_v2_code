@@ -1,0 +1,8 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: client-certs
+  namespace: websites-v2
+spec:
+  domains:
+    - shop.petstufftonka.com

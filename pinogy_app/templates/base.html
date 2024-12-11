@@ -1,0 +1,120 @@
+{% load static cms_tags menu_tags sekizai_tags recaptcha3 compress %}
+{% load site_config_tags global_theme_config_tags %}
+{% site_config_tag as config %}
+{% global_theme_object as global_theme_config %}
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>{% block title %}Title{% endblock title %}</title>
+        
+        {% if global_theme_config.selected_favicon %}
+        <link rel="icon" type="image/x-icon" href="{{global_theme_config.selected_favicon.image.url}}">
+        {% endif %}
+
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        
+        {% block meta %}
+            <meta name="description" content="{% page_attribute 'meta_description' %}">
+            <meta name="keywords" content="{% page_attribute 'meta_description' %}">
+        {% endblock %}
+        
+        {% block canon %}
+            {% comment %} <link rel="canonical" href="{% page_attribute 'canonical_tag' %}"> {% endcomment %}
+            <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{  request.path }}">
+        {% endblock %}   
+
+        <link href="{% static 'css/lib/bootstrap-5.2.3.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/lib/slick-1.8.1.min.css' %}" rel="stylesheet">
+        <script async src="//www.instagram.com/embed.js"></script> 
+
+        <link rel="stylesheet" href='{{global_theme_config.get_themecss_file}}'>
+        
+        {% comment %} TODO: Revert this if static file issue will be resolved {% endcomment %}
+        {% comment %} {% render_block "css" postprocessor "compressor.contrib.sekizai.compress" %} {% endcomment %}
+        {% render_block "css" %}
+
+        {% comment %} flat-picker css  {% endcomment %}
+        <link href="{% static 'css/lib/flatpickr.min.css' %}" rel="stylesheet">
+        <link href="{% static 'css/lib/confirmDate.css' %}" rel="stylesheet">
+
+
+
+        <!-- 
+            Adding jquery on the top for shop
+            TODO: check if its working in bottom than remove it from here
+        -->
+        {% if app_name == "pinogy_shop" %}
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        {% endif %}
+        
+        {% block captcha %}
+            {% recaptcha_init %}
+            {% recaptcha_ready %}
+        {% endblock captcha %}
+
+        {{ config.site_config.header_block|safe }}
+
+        {% if config.pos_config.gtm %}
+            <!-- Google Tag Manager -->
+            <script>
+                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+                })(window,document,'script','dataLayer','{{config.pos_config.gtm}}');
+            </script>
+            <!-- End Google Tag Manager -->
+        {% endif %}
+
+        {% if config.pos_config.client_gtm %}
+            <!-- Google Tag Manager -->
+            <script>
+                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+                })(window,document,'script','dataLayer','{{config.pos_config.client_gtm}}');
+            </script>
+            <!-- End Google Tag Manager -->
+        {% endif %}
+
+    </head>
+    <body>
+        {% cms_toolbar %}
+
+        {% if config.pos_config.gtm %}
+            <!-- Google Tag Manager (noscript) -->
+            <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{config.pos_config.gtm}}"
+                height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+            <!-- End Google Tag Manager (noscript) -->
+        {% endif %}
+
+        {% if config.pos_config.client_gtm %}
+            <!-- Google Tag Manager (noscript) -->
+            <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{config.pos_config.client_gtm}}"
+                height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+            <!-- End Google Tag Manager (noscript) -->
+        {% endif %}
+
+        {{ config.site_config.body_top_block|safe }}
+
+        {% block content %}{% endblock content %}
+
+        <script src="{% static 'js/lib/bootstrap-5.2.3.bundle.min.js' %}"></script>
+        <script src="{% static 'js/lib/jquery-3.7.1.min.js' %}"></script>
+        <script src="{% static 'js/lib/slick-1.8.1.min.js' %}"></script>
+        <script async src="https://kit.fontawesome.com/c4a89f144f.js" crossorigin="anonymous"></script>
+
+        {% comment %} flat-picker js {% endcomment %}
+
+        <script src="{% static 'js/lib/flatpickr.js' %}"></script>
+        <script src="{% static 'js/lib/confirmDate.js' %}"></script>
+
+        <script src="{% static 'js/main-flow-common-v1.js' %}" async></script>
+        <script src="{% static 'js/custom-plugin.js' %}"></script>
+
+        {% render_block "js" %}
+
+        {{ config.site_config.body_bottom_block|safe }}
+    </body>
+</html>

@@ -1,0 +1,17 @@
+<div class="label">
+    {% if instance.label %}
+        <label for="{{ instance.name|slugify }}" class="form-label mb-0">
+            {{ instance.label }}
+        </label>
+    {% endif %}
+    <textarea 
+        name="{{ instance.name }}" 
+        placeholder="{{ instance.placeholder_text|default:"" }}" 
+        id="{{ instance.name|slugify }}"
+        class="form-control focus-color {% if instance.label %} with-label {% endif %}"
+        {% if instance.is_required %} required {% endif %} 
+        rows="4" cols="50"
+    ></textarea>
+    <!-- The following div provides feedback for an invalid input -->
+    <div class="invalid-feedback">Please fill out this field.</div>
+</div>

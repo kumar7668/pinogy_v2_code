@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: SITENUM-newsite-job
+  namespace: websites-v2
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+                - matchExpressions:
+                  - key: cloud.google.com/gke-nodepool
+                    operator: In
+                    values:
+                      - migration-pool
+      containers:
+        - name: SITENUM-newsite-job
+          image: us.gcr.io/pinogy-websites/pinogy-new-base:IMAGE_TAG
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: 500m
+              ephemeral-storage: 200Mi
+              memory: 512Mi
+            requests:
+              cpu: 150m
+              ephemeral-storage: 200Mi
+              memory: 512Mi
+          volumeMounts:
+            - mountPath: /customers
+              name: static-files
+          envFrom:
+            - secretRef:
+                name: SITENUM-secret
+          command: ["/bin/sh", "-c"]
+          args: ["mkdir -p /customers/SITENUM && python /app/manage.py custom_loaddata"]
+      volumes:
+        - name: static-files
+          nfs:
+            path: /customers
+            server: 10.128.0.2

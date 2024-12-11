@@ -1,0 +1,1225 @@
+
+{% extends 'admin/base_change_form.html' %}
+{% load cms_tags menu_tags sekizai_tags static admin_modify %}
+{% load global_theme_config_tags %}
+{% block content %}
+{% global_theme_object as global_theme_config %}
+{% addtoblock 'css' %}
+<link rel="stylesheet" href='{{global_theme_config.get_themecss_file}}'>
+<link rel="stylesheet" type="text/css" href="{% static 'css/custom-info.css' %}">
+<style>
+    {% if global_theme_config.primary_color and global_theme_config.secondary_color %}
+    :root {
+    --primary-element: {{global_theme_config.primary_color}};
+    --secondary-element: {{global_theme_config.secondary_color}};
+    }
+    {% endif %}
+    .newsletter_container_main{
+        display : flex;
+        margin-top: 40px;
+        margin-bottom: 40px;
+        flex-direction : column;
+        gap : 40px;
+    }
+    .newsletter_container_main .box-theme-form-devider{
+        margin : 0;
+    }
+    .newsletter_container_main .box-theme-header{
+        margin-bottom : 0;
+    }
+    .text_h4{
+        color: var(--Primary, #003F5A);
+        /* H4 */
+        font-family: "Open Sans";
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 125%; /* 30px */
+    }
+
+    .marketing_background .box-theme-sub-title{
+        margin : 12px 0px;
+    }
+    .box-theme-form-item.colordiv{
+        padding-top : 20px;
+    }
+    .marketing_messages{
+        flex-direction : column;
+        gap : 20px;
+    }
+    .marketing_buttons{
+        flex-direction : column;
+        gap : 20px;
+    }
+.button-style-fill {
+    background-color: var(--secondary-element);
+    color: white;
+    border : none;
+ }
+ .button-style-outline{
+    border : 1px solid var(--secondary-element);
+    color : var(--secondary-element);
+    background-color : white;
+ }
+ 
+.F2{
+    background-color : var(--secondary-element);
+    color : white;
+    border : none;
+ }
+ .F1{
+    background-color : var(--primary-element);
+    color : white;
+    border : none;
+ }
+ .F4{
+    background-color : white;
+    color : var(--secondary-element);
+    border : none;
+ }
+ .F3{
+    background-color : white;
+    color : var(--primary-element);
+    border : none;
+ }
+ .O1{
+    background-color : white;
+    border : 1px solid var(--primary-element);
+    color : var(--primary-element);
+ }
+ .O2{
+    background-color : white;
+    border : 1px solid var(--secondary-element);
+    color : var(--secondary-element);
+ }
+ .O3{
+    background-color : white;
+    border : 1px solid black;
+    color : black;
+ }
+ .O4{
+    background-color : F2F5F6;
+    border : 1px solid white;
+    color : white;
+ }
+ .note_point{
+    gap : 4px;
+    padding : 40px 20px 40px 20px;
+    background-color : #12BBD21A;
+ }
+ .activelayout {
+    padding: 10px;
+    border-radius: 12px;
+    border: 2px dashed #12BBD2;
+    background: rgba(18, 187, 210, 0.05);
+}
+</style>
+<style>
+    .marketing_list .banner-layout-wrap-inner{
+        height: 158px;
+    }
+    .newsletter_container_main .newsletter_section_area {
+        flex-direction : column;
+        gap : 20px;
+    }
+    .newsletter_container_main .banner-layout-wrap{
+        margin-bottom : 0;
+    }
+    .marketing_list img{
+        max-width :420px;
+    }
+    .ck.ck-balloon-panel.ck-powered-by-balloon{
+        display : none;
+    }
+
+
+</style>
+{% comment %} this style is for preview {% endcomment %}
+<style>
+    .subscribe-us-outer{
+
+        {% if adminform.form.background_type.value == "Image" and adminform.form.background.value == "yes" %}
+            {% if instance.newsletter_bg_image %}
+                background-image: url("{{instance.newsletter_bg_image.url}}");
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: cover;
+            {% endif %}
+        {%elif instance.glossary.background_type == "Color" and instance.glossary.background == "yes"%}
+            background-color : {{instance.glossary.bg_color}};
+        {% else %}
+
+        {% endif %}
+    }
+
+    .subscribe-us-image{ 
+        max-height: 450px;
+    }
+    
+    .subscribe-btn{
+        display:block;
+        font-size: 20px;
+        font-weight: 500 !important;
+    }
+    .newsletter_main_content{
+        gap : 24px;
+        justify-content: space-around;
+        padding : 40px 0 40px 0;
+        align-items:center;
+        margin-left: 72px;
+        margin-right: 72px;
+    }
+    .newsletter_main_content > * {
+        flex : 1;
+    }
+    
+    .tsf_container{
+        gap : 24px;
+    }
+    .tsf_container.text_columns{
+        flex-direction : column;
+    }
+    .tsf_container.text_rows{
+        flex-direction : row;
+        align-item : center;
+    }
+    .tsf_container .marketing_message{
+        color: {{instance.glossary.marketing_font_color}};
+        font-family: "Open Sans";
+        font-style: normal;
+        font-weight: 700;
+        line-height: 125%; /* 50px */
+    }
+    .tsf_container input{
+        margin-top : 0!important;
+    }
+    .tsf_container.text_rows > * {
+        flex : 1;
+    }
+    {% if adminform.form.marketing_layouts_email.value == 'LAYOUT2' or adminform.form.marketing_layouts_email.value == 'LAYOUT5'%}
+        .newsletter_content {
+            flex : 2!important;
+        }
+        .marketing_message{
+            text-align : center;
+        }
+    {% endif %}
+    #subscribe_form input[name='email']{
+        margin-top : 16px!important;
+    }
+    .marketing_message p{
+        margin-bottom : 0;
+    }
+   
+
+    .theme-form input[type="text"], .theme-form input[type="email"], .theme-form input[type="number"] {
+        font-family: var(--general-font);
+        font-style: normal;
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 140%;
+        color: var(--global-primary-color);
+        border: 1px solid var(--global-primary-color);
+        padding: 12px;
+        width: 100%;
+        margin-top: 15px;
+        border-radius: 0;
+        opacity: 0.4;
+    }
+    .theme-form input[type="text"]::placeholder, .theme-form input[type="email"]::placeholder, .theme-form input[type="number"]::placeholder {
+       color : var(--global-primary-color);
+    }
+    .mobile-newsletter-preview{
+        max-width : 375px;
+    }
+
+
+    .mobile-newsletter-preview .newsletter_main_content{
+        padding: 40px 12px 40px 12px;
+        margin-left: 0;
+        margin-right: 0;
+        flex-direction: column;
+    }
+    .mobile-newsletter-preview .tsf_container.text_rows{
+        flex-direction : column;
+    }
+    .mobile-newsletter-preview .newsletter_content .row > div{
+        width : 100%;
+    }
+    .mobile-newsletter-preview .newsletter_content .row input[name = 'last_name']{
+        margin-top: 16px!important;
+    }
+    @media (min-width : 395px){
+        width: 100%;
+    }
+
+</style>
+{% endaddtoblock %}
+<form {% if has_file_field %}enctype="multipart/form-data" {% endif %}{% if form_url %}action="{{ form_url }}" {% endif %}method="post" id="{{ opts.model_name }}_form">
+{% csrf_token %}
+{{adminform.form.errors}}
+
+<div class="container d-flex newsletter_container_main">
+
+    {% comment %}  MAIN HEADER {% endcomment %}
+    <div class="box-theme-header">
+        Marketing list
+    </div>
+
+    {% comment %} MARKETING LIST  {% endcomment %}
+    <div class = 'complete_marketing_list'>
+        <div class="text_h4"> Choose Marketing List</div>
+        {{adminform.form.marketing_list}}
+    </div>
+
+    <div class="box-theme-form-devider">
+    </div>
+
+    {% comment %} LAYOUT OPTIONS {% endcomment %}
+    <div class="text_h4"> Layout</div>
+    <div class = 'marketing_list'>
+        <div id = "Email" class = "{% if adminform.form.marketing_list.value == 'Email'%}{% else %} d-none {% endif %}">
+            <div class="box-theme-form-item">
+                <div class="banner-layout-types">
+    
+                    {% comment %} LAYOUT 1 {% endcomment %}
+                   <div class="banner-layout-wrap">
+                      <div class="banner-layout-wrap-inner txt-2-btn-left" onclick="SelectMarketingLayout('layout_1',this)">
+                         <img src="{% static 'images/widget_image/newsletter/newsletter_No_image_collection_form_only.png' %}" alt="">
+                      </div>
+                      <div class="banner-layout-box-control">
+                         <label class="checkcontainer" id="layout_1">No image, collection form only
+                         <input type="radio" value="LAYOUT1" id="{{adminform.form.marketing_layouts_email.name}}" name="{{adminform.form.marketing_layouts_email.name}}" {% if adminform.form.marketing_layouts_email.value == 'LAYOUT1' %} checked {% endif %} >
+                         <span class="radiobtn"></span>
+                         </label>
+                      </div>
+                   </div>
+    
+                   {% comment %} LAYOUT 2  {% endcomment %}
+                   <div class="banner-layout-wrap">
+                      <div class="banner-layout-wrap-inner txt-2-btn-left" onclick="SelectMarketingLayout('layout_2',this)">
+                         <img src="{% static 'images/widget_image/newsletter/newsletter_No_image_collection_form_centered.png' %}" alt="">
+                      </div>
+                      <div class="banner-layout-box-control">
+                         <label class="checkcontainer" id="layout_2">No image, collection form centered 
+                         <input type="radio" value="LAYOUT2" id="{{adminform.form.marketing_layouts_email.name}}" name="{{adminform.form.marketing_layouts_email.name}}" {% if adminform.form.marketing_layouts_email.value == 'LAYOUT2' %} checked {% endif %} >
+                         <span class="radiobtn"></span>
+                         </label>
+                      </div>
+                   </div>
+    
+                   {% comment %} LAYOUT 3  {% endcomment %}
+                   <div class="banner-layout-wrap">
+                      <div class="banner-layout-wrap-inner txt-2-btn-left" onclick="SelectMarketingLayout('layout_3',this)">
+                         <img src="{% static 'images/widget_image/newsletter/newsletter_Image_right_and_a_collection_form.png' %}" alt="">
+                      </div>
+                      <div class="banner-layout-box-control">
+                         <label class="checkcontainer" id="layout_3">Image right and collection form on the left
+                         <input type="radio" value="LAYOUT3" id="{{adminform.form.marketing_layouts_email.name}}" name="{{adminform.form.marketing_layouts_email.name}}" {% if adminform.form.marketing_layouts_email.value == 'LAYOUT3' %} checked {% endif %} >
+                         <span class="radiobtn"></span>
+                         </label>
+                      </div>
+                   </div>
+    
+                   {% comment %} LAYOUT 4 {% endcomment %}
+                   <div class="banner-layout-wrap">
+                      <div class="banner-layout-wrap-inner txt-2-btn-left" onclick="SelectMarketingLayout('layout_4',this)">
+                         <img src="{% static 'images/widget_image/newsletter/newsletter_Image_left_and_a_collection_form.png' %}" alt="">
+                      </div>
+                      <div class="banner-layout-box-control">
+                         <label class="checkcontainer" id="layout_4">Image left and collection form on the right
+                         <input type="radio" value="LAYOUT4" id="{{adminform.form.marketing_layouts_email.name}}" name="{{adminform.form.marketing_layouts_email.name}}" {% if adminform.form.marketing_layouts_email.value == 'LAYOUT4' %} checked {% endif %} >
+                         <span class="radiobtn"></span>
+                         </label>
+                      </div>
+                   </div>
+    
+                   {% comment %} LAYOUT 5 {% endcomment %}
+                   <div class="banner-layout-wrap">
+                      <div class="banner-layout-wrap-inner txt-2-btn-left" onclick="SelectMarketingLayout('layout_5',this)">
+                         <img src="{% static 'images/widget_image/newsletter/newsletter_Two_images_and_a_collection_form.png' %}" alt="">
+                      </div>
+                      <div class="banner-layout-box-control">
+                         <label class="checkcontainer" id="layout_5">Two images and a collection form 
+                         <input type="radio" value="LAYOUT5" id="{{adminform.form.marketing_layouts_email.name}}" name="{{adminform.form.marketing_layouts_email.name}}" {% if adminform.form.marketing_layouts_email.value == 'LAYOUT5' %} checked {% endif %} >
+                         <span class="radiobtn"></span>
+                         </label>
+                      </div>
+                   </div>
+    
+                   {% if adminform.form.layout.errors %}
+                        {% for error in adminform.form.layout.errors  %}
+                                <div class="alert alert-danger error-block" role="alert">
+                                    {{error}}
+                                </div>
+                        {% endfor %}
+                   {% endif %}
+                </div>
+            </div>
+        </div>
+        <div id = "SMS" class = "{% if adminform.form.marketing_list.value == 'SMS'%}{% else %} d-none {% endif %}">
+            <div class="box-theme-form-item">
+                <div class="banner-layout-types">
+    
+                    {% comment %} LAYOUT 6 {% endcomment %}
+                   <div class="banner-layout-wrap">
+                      <div class="banner-layout-wrap-inner txt-2-btn-left" onclick="SelectMarketingLayout('layout_6',this)">
+                         <img src="{% static 'images/widget_image/newsletter/newsletter1_sms.png' %}" alt="">
+                      </div>
+                      <div class="banner-layout-box-control">
+                         <label class="checkcontainer" id="layout_6">Image left and text on the right 
+                         <input type="radio" value="LAYOUT6" id="{{adminform.form.marketing_layouts_sms.name}}" name="{{adminform.form.marketing_layouts_sms.name}}" {% if adminform.form.marketing_layouts_sms.value == 'LAYOUT6' %} checked {% endif %} >
+                         <span class="radiobtn"></span>
+                         </label>
+                      </div>
+                   </div>
+    
+                   {% comment %} LAYOUT 7  {% endcomment %}
+                   <div class="banner-layout-wrap">
+                      <div class="banner-layout-wrap-inner txt-2-btn-left" onclick="SelectMarketingLayout('layout_7',this)">
+                         <img src="{% static 'images/widget_image/newsletter/newsletter2_sms.png' %}" alt="">
+                      </div>
+                      <div class="banner-layout-box-control">
+                         <label class="checkcontainer" id="layout_7">Image left and text on the right 
+                         <input type="radio" value="LAYOUT7" id="{{adminform.form.marketing_layouts_sms.name}}" name="{{adminform.form.marketing_layouts_sms.name}}" {% if adminform.form.marketing_layouts_sms.value == 'LAYOUT7' %} checked {% endif %} >
+                         <span class="radiobtn"></span>
+                         </label>
+                      </div>
+                   </div>
+    
+                   {% comment %} LAYOUT 8  {% endcomment %}
+                   <div class="banner-layout-wrap">
+                      <div class="banner-layout-wrap-inner txt-2-btn-left" onclick="SelectMarketingLayout('layout_8',this)">
+                         <img src="{% static 'images/widget_image/newsletter/newsletter3_sms.png' %}" alt="">
+                      </div>
+                      <div class="banner-layout-box-control">
+                         <label class="checkcontainer" id="layout_8">Image left and text on the right 
+                         <input type="radio" value="LAYOUT8" id="{{adminform.form.marketing_layouts_sms.name}}" name="{{adminform.form.marketing_layouts_sms.name}}" {% if adminform.form.marketing_layouts_sms.value == 'LAYOUT8' %} checked {% endif %} >
+                         <span class="radiobtn"></span>
+                         </label>
+                      </div>
+                   </div>
+    
+                   {% comment %} LAYOUT 9 {% endcomment %}
+                   <div class="banner-layout-wrap">
+                      <div class="banner-layout-wrap-inner txt-2-btn-left" onclick="SelectMarketingLayout('layout_9',this)">
+                         <img src="{% static 'images/widget_image/newsletter/newsletter4_sms.png' %}" alt="">
+                      </div>
+                      <div class="banner-layout-box-control">
+                         <label class="checkcontainer" id="layout_9">Image left and text on the right 
+                         <input type="radio" value="LAYOUT9" id="{{adminform.form.marketing_layouts_sms.name}}" name="{{adminform.form.marketing_layouts_sms.name}}" {% if adminform.form.marketing_layouts_sms.value == 'LAYOUT9' %} checked {% endif %} >
+                         <span class="radiobtn"></span>
+                         </label>
+                      </div>
+                   </div>
+    
+                   {% comment %} LAYOUT 10 {% endcomment %}
+                   <div class="banner-layout-wrap">
+                      <div class="banner-layout-wrap-inner txt-2-btn-left" onclick="SelectMarketingLayout('layout_10',this)">
+                         <img src="{% static 'images/widget_image/newsletter/newsletter5_sms.png' %}" alt="">
+                      </div>
+                      <div class="banner-layout-box-control">
+                         <label class="checkcontainer" id="layout_10">Image left and text on the right 
+                         <input type="radio" value="LAYOUT10" id="{{adminform.form.marketing_layouts_sms.name}}" name="{{adminform.form.marketing_layouts_sms.name}}" {% if adminform.form.marketing_layouts_sms.value == 'LAYOUT10' %} checked {% endif %} >
+                         <span class="radiobtn"></span>
+                         </label>
+                      </div>
+                   </div>
+    
+                   {% if adminform.form.marketing_layouts_sms.errors %}
+                        {% for error in adminform.form.marketing_layouts_sms.errors  %}
+                                <div class="alert alert-danger error-block" role="alert">
+                                    {{error}}
+                                </div>
+                        {% endfor %}
+                   {% endif %}
+                   {% if adminform.form.marketing_layouts_email.errors %}
+                        {% for error in adminform.form.marketing_layouts_email.errors  %}
+                                <div class="alert alert-danger error-block" role="alert">
+                                    {{error}}
+                                </div>
+                        {% endfor %}
+                   {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="box-theme-form-devider">
+    </div>
+
+    {% comment %} BACKGROUND {% endcomment %}
+    <div class = 'newsletter_section_area d-flex'>
+        <div class="text_h4"> Background</div>
+        {{adminform.form.background}}
+        <div class = "background">
+            <div id = "yes" class = "{% if adminform.form.background.value == 'yes'%}{% else %}d-none{%endif%}">
+                <div class="box-theme-sub-title"> Type</div>
+                {{adminform.form.background_type}}
+
+                <div class = "background_type">
+                    <div id = "Image" class = "{% if adminform.form.background_type.value == 'Image'%}{% else %}d-none{%endif%}">
+                        <div class="box-theme-form-item colordiv">
+                            <div class="form-upload">
+                            <p>Drop files or click to upload</p>
+                            <button class="btn-theme btn-shape-1 btn-style-1 btn-color-1" style="background:#12BBD2;">Upload Image</button>
+                            <div class="area">
+                            <input type="file" name="{{adminform.form.newsletter_bg_image.name}}" id="{{adminform.form.newsletter_bg_image.name}}">
+                            </div>
+                            </div>
+                            <div class="alert alert-danger error-block d-none err-img-bg mt-3" role="alert">
+                            This field is required.
+                            </div>
+                            <div class="{% if adminform.form.newsletter_bg_image.value %}{% else%}d-none {% endif %} preview-{{adminform.form.newsletter_bg_image.name}}">
+                            <div class="box-theme-sub-title">
+                            Preview
+                            </div>
+                            <div class="box-theme-preview-list">
+                            <ul class="{{adminform.form.newsletter_bg_image.name}}">
+                            
+                            {% if adminform.form.newsletter_bg_image.value %}
+                            <li class="banner-image-preview-list">
+                            <img src="{{adminform.form.instance.newsletter_bg_image.url}}" alt="">
+                            <button onclick="deleteImage()" type="button">
+                            <img src="/static/images/ic-delete.svg" alt="">
+                            </button>
+                            </li>
+                            {% endif %}
+
+                            </ul>
+                            </div>
+                            </div>
+                            <div class="box-theme-sub-title d-flex ms-1">
+                            <div class="w-50 admin-form">
+                            <div class="box-theme-form-item">
+                            <div class="box-theme-form-item-inline">
+                            <div class="box-theme-form-item-inline-input">
+                            <input name="alt_name_bg_image" id="id_alt_name_bg_image" type="text" value="" placeholder="Enter ALT text" class="form-input">
+                            </div>
+                            </div>
+                            </div>
+                            </div>
+                            <div class="box-theme-form-label">
+                            <span style="position:relative;">
+                            <img src="/static/images/ic-info.svg">
+                            <div class="form-tooltip">
+                            ALT text is important, it improves your image accesibility &amp; SEO.
+                            </div>
+                            </span>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id = "Color" class = "{% if adminform.form.background_type.value == 'Color'%}{% else %}d-none{%endif%}">
+                        <div class = "mt-3">
+                            {{adminform.form.bg_color}}
+                        </div>
+                    </div>
+                </div>
+
+                
+            </div>
+            <div id = "no" class = "{% if adminform.form.background.value == 'no'%}d-none{% else %}{%endif%}">
+            </div>
+        </div>
+    </div>
+
+    <div class="box-theme-form-devider">
+    </div>
+
+    {% comment %} Image {% endcomment %}
+    <div class = "newsletter_section_area d-flex {% if adminform.form.marketing_layouts_email.value == 'LAYOUT3' or adminform.form.marketing_layouts_email.value == 'LAYOUT4' or adminform.form.marketing_layouts_email.value == 'LAYOUT5' or adminform.form.marketing_layouts_email.value == 'LAYOUT8' or adminform.form.marketing_layouts_email.value == 'LAYOUT9' or adminform.form.marketing_layouts_email.value == 'LAYOUT10'%}{% else %}d-none{% endif %}" id = 'no-image'>
+
+            <div class="text_h4">
+                Image
+            </div>
+            <div id = "one_Image" class = "{% if adminform.form.marketing_list.value == 'Email' and adminform.form.marketing_layouts_email.value == 'LAYOUT3' or adminform.form.marketing_layouts_email.value == 'LAYOUT4'%}{%elif adminform.form.marketing_list.value == 'SMS' and adminform.form.marketing_layouts_sms.value == 'LAYOUT8' or adminform.form.marketing_layouts_sms.value == 'LAYOUT9'%} {%else%}d-none{%endif%}">
+                <div class="box-theme-form-item colordiv">
+                    <div class="form-upload">
+                    <p>Drop files or click to upload</p>
+                    <button class="btn-theme btn-shape-1 btn-style-1 btn-color-1" style="background:#12BBD2;">Upload Image</button>
+                    <div class="area">
+                    <input type="file" name="{{adminform.form.newsletter_image.name}}" id="{{adminform.form.newsletter_image.name}}">
+                    </div>
+                    </div>
+                    <div class="alert alert-danger error-block d-none err-img-bg mt-3" role="alert">
+                    This field is required.
+                    </div>
+                    <div class="{% if adminform.form.newsletter_image.value %}{% else%}d-none {% endif %} preview-{{adminform.form.newsletter_image.name}}">
+                    <div class="box-theme-sub-title">
+                    Preview
+                    </div>
+                    <div class="box-theme-preview-list">
+                    <ul class="{{adminform.form.newsletter_image.name}}">
+
+                    {% if adminform.form.newsletter_image.value %}
+                    <li class="banner-image-preview-list">
+                    <img src="{{adminform.form.instance.newsletter_image.url}}" alt="">
+                    <button onclick="deleteImage()" type="button">
+                    <img src="/static/images/ic-delete.svg" alt="">
+                    </button>
+                    </li>
+                    {% endif %}
+
+                    </ul>
+                    </div>
+                    </div>
+                    <div class="box-theme-sub-title d-flex ms-1">
+                    <div class="w-50 admin-form">
+                    <div class="box-theme-form-item">
+                    <div class="box-theme-form-item-inline">
+                    <div class="box-theme-form-item-inline-input">
+                    <input name="alt_name_bg_image" id="id_alt_name_bg_image" type="text" value="" placeholder="Enter ALT text" class="form-input">
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="box-theme-form-label">
+                    <span style="position:relative;">
+                    <img src="/static/images/ic-info.svg">
+                    <div class="form-tooltip">
+                    ALT text is important, it improves your image accesibility &amp; SEO.
+                    </div>
+                    </span>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <div id = "two_Image" class = "{% if adminform.form.marketing_list.value == 'Email' and adminform.form.marketing_layouts_email.value == 'LAYOUT5'%}{%elif adminform.form.marketing_list.value == 'SMS' and adminform.form.marketing_layouts_sms.value == 'LAYOUT10'%} {%else%}d-none{%endif%}">
+                <div class="box-theme-sub-title"> On the left side</div>
+                <div class="box-theme-form-item colordiv">
+                    <div class="form-upload">
+                    <p>Drop files or click to upload</p>
+                    <button class="btn-theme btn-shape-1 btn-style-1 btn-color-1" style="background:#12BBD2;">Upload Image</button>
+                    <div class="area">
+                    <input type="file" name="{{adminform.form.newsletter_left_image.name}}" id="{{adminform.form.newsletter_left_image.name}}">
+                    </div>
+                    </div>
+                    <div class="alert alert-danger error-block d-none err-img-bg mt-3" role="alert">
+                    This field is required.
+                    </div>
+                    <div class="{% if adminform.form.newsletter_left_image.value %}{% else%}d-none {% endif %} preview-{{adminform.form.newsletter_left_image.name}}">
+                    <div class="box-theme-sub-title">
+                    Preview
+                    </div>
+                    <div class="box-theme-preview-list">
+                    <ul class="{{adminform.form.newsletter_left_image.name}}">
+
+                    {% if adminform.form.newsletter_left_image.value %}
+                    <li class="banner-image-preview-list">
+                    <img src="{{adminform.form.instance.newsletter_left_image.url}}" alt="">
+                    <button onclick="deleteImage()" type="button">
+                    <img src="/static/images/ic-delete.svg" alt="">
+                    </button>
+                    </li>
+                    {% endif %}
+
+                    </ul>
+                    </div>
+                    </div>
+                    <div class="box-theme-sub-title d-flex ms-1">
+                    <div class="w-50 admin-form">
+                    <div class="box-theme-form-item">
+                    <div class="box-theme-form-item-inline">
+                    <div class="box-theme-form-item-inline-input">
+                    <input name="alt_name_bg_image" id="id_alt_name_bg_image" type="text" value="" placeholder="Enter ALT text" class="form-input">
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="box-theme-form-label">
+                    <span style="position:relative;">
+                    <img src="/static/images/ic-info.svg">
+                    <div class="form-tooltip">
+                    ALT text is important, it improves your image accesibility &amp; SEO.
+                    </div>
+                    </span>
+                    </div>
+                    </div>
+                </div>
+                <div style = "margin-top: 20px;"></div>
+                <div class="box-theme-sub-title"> On the right side</div>
+                <div class="box-theme-form-item colordiv">
+                    <div class="form-upload">
+                    <p>Drop files or click to upload</p>
+                    <button class="btn-theme btn-shape-1 btn-style-1 btn-color-1" style="background:#12BBD2;">Upload Image</button>
+                    <div class="area">
+                    <input type="file" name="{{adminform.form.newsletter_right_image.name}}" id="{{adminform.form.newsletter_right_image.name}}">
+                    </div>
+                    </div>
+                    <div class="alert alert-danger error-block d-none err-img-bg mt-3" role="alert">
+                    This field is required.
+                    </div>
+                    <div class="{% if adminform.form.newsletter_right_image.value %}{% else%}d-none {% endif %} preview-{{adminform.form.newsletter_right_image.name}}">
+                    <div class="box-theme-sub-title">
+                    Preview
+                    </div>
+                    <div class="box-theme-preview-list">
+                    <ul class="{{adminform.form.newsletter_right_image.name}}">
+                    
+                    {% if adminform.form.newsletter_right_image.value %}
+                    <li class="banner-image-preview-list">
+                    <img src="{{adminform.form.instance.newsletter_right_image.url}}" alt="">
+                    <button onclick="deleteImage()" type="button">
+                    <img src="/static/images/ic-delete.svg" alt="">
+                    </button>
+                    </li>
+                    {% endif %}
+
+                    </ul>
+                    </div>
+                    </div>
+                    <div class="box-theme-sub-title d-flex ms-1">
+                    <div class="w-50 admin-form">
+                    <div class="box-theme-form-item">
+                    <div class="box-theme-form-item-inline">
+                    <div class="box-theme-form-item-inline-input">
+                    <input name="alt_name_bg_image" id="id_alt_name_bg_image" type="text" value="" placeholder="Enter ALT text" class="form-input">
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="box-theme-form-label">
+                    <span style="position:relative;">
+                    <img src="/static/images/ic-info.svg">
+                    <div class="form-tooltip">
+                    ALT text is important, it improves your image accesibility &amp; SEO.
+                    </div>
+                    </span>
+                    </div>
+                    </div>
+                </div>
+            </div>  
+            <div class="box-theme-form-devider">
+            </div>
+    </div>
+   
+
+    {% comment %} MESSAGE {% endcomment %}
+    <div class = "marketing_messages d-flex">
+        <div class="text_h4"> Message</div>
+        <div>
+            {{adminform.form.marketing_message}}
+        </div>
+        {% comment %} <div>
+            {{adminform.form.marketing_font_color}}
+        </div> {% endcomment %}
+
+    </div>
+    <div class="box-theme-form-devider">
+    </div>
+
+    {% comment %} BUTTONS {% endcomment %}
+    <div class = 'marketing_buttons d-flex'> 
+        <div class="text_h4"> Button</div>
+        <div>
+            {{adminform.form.marketing_button_text}}
+        </div>
+        <div>
+            <div class="box-theme-tab-wrap" id="first-btn-section">
+                <div class="box-theme-tab">
+                <ul class="theme-tab">
+                <li class="btn_style active" data-target="btn_style">Style</li>
+                <li class="btn_color" data-target="btn_color">Color</li>
+                </ul>
+                </div>
+                <div>
+                <div class="box-theme-form-item theme-tab-content style-tab" id="btn_style" style="">
+                <div class="box-theme-tab-wrap admin-form admin-form ">
+                <ul class="theme-button-tab ">
+                <input type="hidden" name="{{adminform.form.marketing_button_style.name}}" id="button_style-1" value="{{adminform.form.marketing_button_style.value|default:'fill'}}">
+                <li class="button_style-1 {% if adminform.form.marketing_button_style.value == 'fill' %} active {% endif %}" onclick="setPrimaryBtnStyle('fill',this)"><button class="btn-theme F2" >Button </button></li>
+                <li class="button_style-1 {% if adminform.form.marketing_button_style.value == 'outline' %} active {% endif %}" onclick="setPrimaryBtnStyle('outline',this)"><button class="btn-theme O2" >Button </button></li>
+                </ul>
+                </div>
+                </div>
+                <div class="box-theme-form-item theme-tab-content color-tab" id="btn_color" style="display: none;">
+                <div class="box-theme-tab-wrap admin-form admin-form ">
+                <input type="hidden" name="{{adminform.form.marketing_button_color.name}}" id="button_color_pattern-1" value="{{adminform.form.marketing_button_color.value|default:'F2'}}">
+                <ul class="theme-button-tab {% if adminform.form.marketing_button_style.value == 'fill' %} {% else%}d-none {% endif %}" id="primary-btn-set1-1">
+                <li class="button_color_pattern-1 {% if adminform.form.marketing_button_color.value == 'F2' %}active{% endif %}" data-value="F2" onclick="selectButtonColor(this, 'F2')"><button class="btn-theme F2">Button</button></li>
+                <li class="button_color_pattern-1 {% if adminform.form.marketing_button_color.value == 'F1' %}active{% endif %}" data-value="F1" onclick="selectButtonColor(this, 'F1')"><button class="btn-theme F1">Button</button></li>
+                <li class="button_color_pattern-1 {% if adminform.form.marketing_button_color.value == 'F4' %}active{% endif %}" data-value="F4" onclick="selectButtonColor(this, 'F4')"><button class="btn-theme F4">Button</button></li>
+                <li class="button_color_pattern-1 {% if adminform.form.marketing_button_color.value == 'F3' %}active{% endif %}" data-value="F3" onclick="selectButtonColor(this, 'F3')"><button class="btn-theme F3">Button</button></li>
+                </ul>
+                <ul class="theme-button-tab {% if adminform.form.marketing_button_style.value == 'outline' %} {% else%}d-none {% endif %}" id="primary-btn-set2-1">
+                <li class="button_color_pattern-1 {% if adminform.form.marketing_button_color.value == 'O2' %}active{% endif %}" data-value="O2" onclick="selectButtonColor(this, 'O2')"><button class="btn-theme O2">Button</button></li>
+                <li class="button_color_pattern-1 {% if adminform.form.marketing_button_color.value == 'O1' %}active{% endif %}" data-value="O1" onclick="selectButtonColor(this, 'O1')"><button class="btn-theme O1">Button</button></li>
+                <li class="button_color_pattern-1 {% if adminform.form.marketing_button_color.value == 'O3' %}active{% endif %}" data-value="O3" onclick="selectButtonColor(this, 'O3')"><button class="btn-theme O3">Button</button></li>
+                <li class="button_color_pattern-1 {% if adminform.form.marketing_button_color.value == 'O4' %}active{% endif %}" data-value="O4" onclick="selectButtonColor(this, 'O4')"><button class="btn-theme O4">Button</button></li>
+                </ul>
+                </div>
+                </div>
+                </div>
+                </div>
+        </div>
+    </div>
+
+    <div class="box-theme-form-devider">
+    </div>
+
+    {% comment %} NOTE POINT {% endcomment %}
+    <div class = "note_point d-flex">
+        <div><img src="{% static 'images/widget_image/newsletter/lucide_info.png' %}" alt=""></div>
+        <div class = "primary1-bold">Completed form submissions will be added to the {MKTLST_NAME} list in the POS.</div>
+    </div>
+    <div class="box-theme-form-devider">
+    </div>
+
+    {% comment %} PREVIEW {% endcomment %}
+    <div class = "marketing_preview">
+        <div class="text_h4 pb-2"> Preview</div>
+        <div class="mb-5">
+            <ul class="theme-tab-layout">
+                <li class="active btn_style_1_layout" data-target="btn_style_1_layout"><img src="/static/images/widget_image/bannerplugin/ph_monitor_enable.svg" alt="">
+                </li><li class="btn_color_1_layout" data-target="btn_color_1_layout"><img src="/static/images/widget_image/bannerplugin/icons8_iphone.svg" alt=""></li>
+            </ul>
+        </div>
+        <div class="desktop-preview desktop-newsletter-preview" id = "btn_style_1_layout">
+           
+        </div>
+        <div class = "mobile-preview mobile-newsletter-preview d-none" id = "btn_color_1_layout">
+           
+        </div>
+    </div>
+    <div class="box-theme-form-devider">
+    </div>
+
+
+
+</div>
+{% block submit_buttons_bottom %} {% submit_row %} {% endblock %}
+</form>
+{% addtoblock 'js' %}
+<script type = "text/javascript">
+
+// to enable or disable the radio option 
+$('input[type = "radio"]').on("click",function(){
+    let x = $(this).val();
+    let div_name = $(this).attr('name')
+    $('.'+div_name).children().addClass('d-none')
+    $('#'+x).removeClass('d-none')
+    previewNewsletter()
+ });
+
+ function SelectMarketingLayout(layoutId,data){
+
+    $("#"+layoutId).click()
+    let me = data
+    //$(me).parents(".mark_email").first().find(".activelayout").removeClass('activelayout')
+    //$(me).addClass('activelayout')
+    ToggleImageFields(layoutId)
+    let selected_layout = $(me).siblings().find('input[type="radio"]').val()
+    if(['layout_1','layout_2','layout_3','layout_4','layout_5'].includes(layoutId)){
+        
+        $(me).parents("#Email").first().find(".activelayout").removeClass('activelayout')
+        $(me).addClass('activelayout')
+        previewNewsletter(radio_choice = null, makt_email = selected_layout)
+       
+    }
+    else{
+        $(me).parents("#SMS").first().find(".activelayout").removeClass('activelayout')
+        $(me).addClass('activelayout')
+        previewNewsletter(radio_choice = null, makt_email = selected_layout)
+    }
+ }
+
+ let selected_email_layout = `{{adminform.form.marketing_layouts_email.value}}`
+ let selected_sms_layout = `{{adminform.form.marketing_layouts_sms.value}}`
+ function ToggleImageFields(layout_val){
+
+    if(['layout_3','layout_4','layout_8','layout_9'].includes(layout_val)){
+        $('#no-image').removeClass('d-none')
+        $('#two_Image').addClass('d-none')
+        $('#one_Image').removeClass('d-none')
+        
+    }
+    else if(['layout_5','layout_10'].includes(layout_val)){
+        $('#no-image').removeClass('d-none')
+        $('#two_Image').removeClass('d-none')
+        $('#one_Image').addClass('d-none')
+        
+    }
+    else{
+        $('#no-image').addClass('d-none')
+    }
+}
+
+function selectButtonColor(btn, colorPattern){
+    $("#" + btn.getAttribute('class')).val(colorPattern);
+    previewNewsletter()
+    }
+
+function setPrimaryBtnStyle(shape,name){
+    let ids = name.getAttribute('class')
+
+    $("#"+ids).val(shape);
+    let no = ids.split('-')[1]
+    if(shape == 'fill'){
+        // below code to toggle the color patterns 
+        $("#primary-btn-set1-"+no).removeClass("d-none")
+        $("#primary-btn-set2-"+no).addClass("d-none")
+ 
+        // below code to hide and show custom button according to the style
+        //$(".row.first-btn-custom-color").children().eq(0).hide()
+        //$(".row.first-btn-custom-color").children().eq(1).show()
+        //$(".row.first-btn-custom-color").children().eq(2).show()
+ 
+        //$(".row.first-btn-custom-color").find('#first_button_outline_color').val('')
+ 
+    } else if(shape == 'outline'){
+        // below code to toggle the color patterns 
+        $("#primary-btn-set1-"+no).addClass("d-none")
+        $("#primary-btn-set2-"+no).removeClass("d-none")
+ 
+        //$(".row.first-btn-custom-color").find('#first_button_fill_color').val('')
+        //$(".row.first-btn-custom-color").find('#first_button_font_color').val('')
+        //$(".row.first-btn-custom-color").children().eq(0).show()
+        //$(".row.first-btn-custom-color").children().eq(1).hide()
+        //$(".row.first-btn-custom-color").children().eq(2).hide()
+ 
+    }
+    
+ }
+
+ $(document).ready(function () {
+    $(".theme-tab li").on("click", function () {
+        var target_box = $(this).data("target");
+        $(this).siblings().removeClass("active");
+        $(this).addClass("active");
+        $(this).parents(".box-theme-tab-wrap").find(".box-theme-form-item").hide();
+        $("#" + target_box).show();
+    })
+
+    $(".theme-button-tab li").on("click", function () {
+        $(this).siblings().removeClass("active");
+        $(this).addClass("active");
+    })
+
+    $(".theme-color-tab li").on("click", function () {
+        $(this).siblings().removeClass("active");
+        $(this).addClass("active");
+        let x = $(this).attr("data-value");
+        if (x){
+            $('#instance1').val(x)
+            $(this).parent().siblings().val(x);
+        }
+        previewNewsletter()
+    })
+})
+
+ // preview switching tabs function
+ $(".theme-tab-layout li").on("click", function () {
+    let target_box = $(this).data("target");
+    $(this).siblings().removeClass("active");
+    $(this).addClass("active");
+    if (target_box == 'btn_style_1_layout'){
+        $(this).children().prop('src','/static/images/widget_image/bannerplugin/ph_monitor_enable.svg')
+        $('.btn_color_1_layout').children().prop('src','/static/images/widget_image/bannerplugin/icons8_iphone.svg')
+        $('#btn_style_1_layout').removeClass('d-none')
+        $('#btn_color_1_layout').addClass('d-none')
+    }
+    else if (target_box == 'btn_color_1_layout'){
+        $(this).children().prop('src','/static/images/widget_image/bannerplugin/icons8_iphone_enable.svg')
+        $('.btn_style_1_layout').children().prop('src','/static/images/widget_image/bannerplugin/ph_monitor.svg')
+        $('#btn_color_1_layout').removeClass('d-none')
+        $('#btn_style_1_layout').addClass('d-none')
+    }
+})
+
+   //newsletter_image
+   var newsletter_image = document.getElementById('{{adminform.form.newsletter_image.name}}');
+   
+   if (newsletter_image) {
+      newsletter_image.addEventListener('dragenter', function (e) {
+           newsletter_image.parentNode.className = 'area dragging';
+       }, false);
+   
+       newsletter_image.addEventListener('dragleave', function (e) {
+           newsletter_image.parentNode.className = 'area';
+       }, false);
+   
+       newsletter_image.addEventListener('dragdrop', function (e) {
+         imageFileUpload(newsletter_image);
+       }, false);
+   
+       newsletter_image.addEventListener('change', function (e) {
+         imageFileUpload(newsletter_image);
+       }, false);
+   }
+
+    //newsletter_left_image
+    var newsletter_left_image = document.getElementById('{{adminform.form.newsletter_left_image.name}}');
+
+    if (newsletter_left_image) {
+        newsletter_left_image.addEventListener('dragenter', function (e) {
+            newsletter_left_image.parentNode.className = 'area dragging';
+        }, false);
+    
+        newsletter_left_image.addEventListener('dragleave', function (e) {
+            newsletter_left_image.parentNode.className = 'area';
+        }, false);
+    
+        newsletter_left_image.addEventListener('dragdrop', function (e) {
+        imageFileUpload(newsletter_left_image);
+        }, false);
+    
+        newsletter_left_image.addEventListener('change', function (e) {
+        imageFileUpload(newsletter_left_image);
+        }, false);
+    }
+
+    //newsletter_right_image
+    var newsletter_right_image = document.getElementById('{{adminform.form.newsletter_right_image.name}}');
+
+    if (newsletter_right_image) {
+        newsletter_right_image.addEventListener('dragenter', function (e) {
+            newsletter_right_image.parentNode.className = 'area dragging';
+        }, false);
+    
+        newsletter_right_image.addEventListener('dragleave', function (e) {
+            newsletter_right_image.parentNode.className = 'area';
+        }, false);
+    
+        newsletter_right_image.addEventListener('dragdrop', function (e) {
+        imageFileUpload(newsletter_right_image);
+        }, false);
+    
+        newsletter_right_image.addEventListener('change', function (e) {
+        imageFileUpload(newsletter_right_image);
+        }, false);
+    }
+    //newsletter_bg_image
+    var newsletter_bg_image = document.getElementById('{{adminform.form.newsletter_bg_image.name}}');
+
+    if (newsletter_bg_image) {
+        newsletter_bg_image.addEventListener('dragenter', function (e) {
+            newsletter_bg_image.parentNode.className = 'area dragging';
+        }, false);
+    
+        newsletter_bg_image.addEventListener('dragleave', function (e) {
+            newsletter_bg_image.parentNode.className = 'area';
+        }, false);
+    
+        newsletter_bg_image.addEventListener('dragdrop', function (e) {
+        imageFileUpload(newsletter_bg_image);
+        }, false);
+    
+        newsletter_bg_image.addEventListener('change', function (e) {
+        imageFileUpload(newsletter_bg_image);
+        }, false);
+    }
+   
+    
+   function imageFileUpload(uploadFile) {
+       var me = this,
+           files = uploadFile.files;
+           let names = uploadFile.name
+           var preview = $('.'+uploadFile.getAttribute('id'))
+           preview.empty()
+           $.each(files, function (i, file) {
+            
+               var img_src = URL.createObjectURL(file);
+               preview.parents(".d-none").addClass("d-none-display").removeClass("d-none");
+               preview.append(`
+                   <li class="banner-image-preview-list"><img src="${img_src}" alt="">
+                     <button onClick="deleteImage('${names}','{{adminform.form.instance.id}}', this)" type="button">
+                        <img src="{% static 'images/ic-delete.svg' %}" alt="">
+                    </button>
+                     </li>
+               `)
+           });
+           previewNewsletter();
+   }
+
+   function previewNewsletter(radio_choice,makt_email,makt_sms, nl_image, l_image, r_image, makt_msg, makt_btn_color, makt_btn_text, back, back_type){
+
+    $('.desktop-newsletter-preview').empty() 
+    $('.mobile-newsletter-preview').empty() 
+
+    let marketing_list = radio_choice || $('input[name = "marketing_list" ]:checked').val() ;
+    let makt_layouts_email = makt_email || $('input[name = "marketing_layouts_email" ]:checked').val() ;
+    let makt_layouts_sms = makt_sms || $('input[name = "marketing_layouts_sms" ]:checked').val() ;
+    let newsletter_image = nl_image || $(".newsletter_image img").attr('src')
+    let newsletter_bg_image = nl_image || $(".newsletter_bg_image img").attr('src')
+    let newsletter_left_image = l_image || $(".newsletter_left_image img").attr('src')
+    let newsletter_right_image = r_image || $(".newsletter_right_image img").attr('src')
+    let marketing_message = makt_msg || $('#id_marketing_message').text()
+    let marketing_button_color = makt_btn_color || $('input[name = "marketing_button_color"]').val()
+    let markt_button_text = makt_btn_text || $('input[name = "marketing_button_text"]').val()
+    let background = back || $('input[name = "background"]:checked').val()
+    let background_type = back_type || $('input[name = "background_type"]:checked').val()
+    let news_bg_color = $('input[name = "bg_color"]').val()
+    //let message_color = $('input[name = "marketing_font_color"]').val()
+
+    // Preview for desktop
+    let dest_data = ''
+   
+        dest_data +=`
+        <div class="subscribe-us-outer">
+            <div class="d-flex newsletter_main_content">`
+                
+                if(marketing_list == "Email"){
+                    dest_data +=`
+                    <div class = "newsletter_left_img ` + ( makt_layouts_email == 'LAYOUT4' || makt_layouts_email == 'LAYOUT5' || makt_layouts_email == 'LAYOUT2' ? '' : 'd-none')+`">`
+                        if (makt_layouts_email == 'LAYOUT5'){
+                            dest_data +=`<img src= `+(newsletter_left_image != '' || newsletter_left_image != null ? newsletter_left_image : '' ) + ` class="img-fluid subscribe-us-image" alt="{% if instance.newsletter_left_image %}{{ instance.glossary.alt_newsletter_left_image }}{% endif %}"/>`
+                        }
+                        else{
+                            dest_data +=`<img src= ` + (newsletter_image != '' || newsletter_image != null ? newsletter_image : '' ) + ` class="img-fluid subscribe-us-image" alt="{% if instance.newsletter_image %}{{ instance.glossary.alt_newsletter_image }}{% endif %}"/>`
+                        }
+            
+                        dest_data +=`</div>`
+                }
+                else{
+
+                    dest_data +=`
+                    <div class = "newsletter_left_img ` + ( makt_layouts_sms == 'LAYOUT9' || makt_layouts_sms == 'LAYOUT10' || makt_layouts_sms == 'LAYOUT7' ? '' : 'd-none')+`">`
+                        if (makt_layouts_sms == 'LAYOUT10'){
+                            dest_data +=`<img src= `+(newsletter_left_image != '' || newsletter_left_image != null ? newsletter_left_image : '' ) + ` class="img-fluid subscribe-us-image" alt="{% if instance.newsletter_left_image %}{{ instance.glossary.alt_newsletter_left_image }}{% endif %}"/>`
+                        }
+                        else{
+                            dest_data +=`<img src= ` + (newsletter_image != '' || newsletter_image != null ? newsletter_image : '' ) + ` class="img-fluid subscribe-us-image" alt="{% if instance.newsletter_image %}{{ instance.glossary.alt_newsletter_image }}{% endif %}"/>`
+                        }
+            
+                        dest_data +=`</div>`
+
+                }
+
+                dest_data +=`
+                    <div class = "newsletter_content">`
+                        if(marketing_list == "Email"){
+                            dest_data +=`<div class = "tsf_container d-flex ` + (makt_layouts_email == 'LAYOUT1' ? 'text_rows' : 'text_columns')+`"> <div class = "marketing_message">` + marketing_message + ` </div> 
+                                <div class = "theme-form"> 
+                                    <div class="row">
+                                        <div class="col-12 col-md-6">
+                                            <input type="text" name="first_name" placeholder="First Name" class="form-control" maxlength="55" id="id_fname">
+                                            
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <input type="text" name="last_name" placeholder="Last Name" class="form-control" maxlength="55"  id="id_lname">
+                                            
+                                        </div>
+                                        
+                                        <div class="col-12 col-md-12 pt-3">
+                                            <input type="email" name="email1" placeholder="Your Email" class="form-control" id="id_email">
+                                            
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                        </div>
+                                        
+                                        <div class="col-12 col-md-6 pt-3">
+                                            <button type="button" class="theme-primary-btn text-nowrap subscribe-btn w-100 `+marketing_button_color+ `">`
+                                                + markt_button_text +`
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div> 
+                            </div>`
+                        }
+                        else{
+                            dest_data +=`<div class = "tsf_container d-flex ` + (makt_layouts_sms == 'LAYOUT6' ? 'text_rows' : 'text_columns')+`"> <div class = "marketing_message">` + marketing_message + ` </div> 
+                                <div class = "theme-form"> 
+                                    <div class="row">
+                                        <div class="col-12 col-md-6">
+                                            <input type="text" name="first_name" placeholder="First Name" class="form-control" maxlength="55" id="id_fname">
+                                            
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <input type="text" name="last_name" placeholder="Last Name" class="form-control" maxlength="55"  id="id_lname">
+                                            
+                                        </div>
+                                        
+                                        <div class="col-12 col-md-12 pt-3">
+                                            <input type="text" name="phone" placeholder="Your telephone number" class="form-control" id="id_email">
+                                            
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                        </div>
+                                        
+                                        <div class="col-12 col-md-6 pt-3">
+                                            <button type="button" class="theme-primary-btn text-nowrap subscribe-btn w-100 `+marketing_button_color+ `">`
+                                                + markt_button_text +`
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div> 
+                            </div>`
+                        }
+                dest_data +=`
+                        </div>`
+
+                if(marketing_list == "Email"){
+                    dest_data +=`
+                    <div class = "newsletter_right_img ` + ( makt_layouts_email == 'LAYOUT3' || makt_layouts_email == 'LAYOUT5' || makt_layouts_email == 'LAYOUT2' ? '' : 'd-none')+`">`
+                        if (makt_layouts_email == 'LAYOUT5'){
+                            dest_data +=`<img src= `+(newsletter_right_image != '' || newsletter_right_image != null ? newsletter_right_image : '' ) + ` class="img-fluid subscribe-us-image" alt="{% if instance.newsletter_left_image %}{{ instance.glossary.alt_newsletter_left_image }}{% endif %}"/>`
+                        }
+                        else{
+                            dest_data +=`<img src= ` + (newsletter_image != '' || newsletter_image != null ? newsletter_image : '' ) + ` class="img-fluid subscribe-us-image" alt="{% if instance.newsletter_image %}{{ instance.glossary.alt_newsletter_image }}{% endif %}"/>`
+                        }
+            
+                        dest_data +=`</div>`
+                }
+                else{
+
+                    dest_data +=`
+                    <div class = "newsletter_right_img ` + ( makt_layouts_sms == 'LAYOUT8' || makt_layouts_sms == 'LAYOUT10' || makt_layouts_sms == 'LAYOUT7' ? '' : 'd-none')+`">`
+                        if (makt_layouts_sms == 'LAYOUT10'){
+                            dest_data +=`<img src= `+(newsletter_right_image != '' || newsletter_right_image != null ? newsletter_right_image : '' ) + ` class="img-fluid subscribe-us-image" alt="{% if instance.newsletter_left_image %}{{ instance.glossary.alt_newsletter_left_image }}{% endif %}"/>`
+                        }
+                        else{
+                            dest_data +=`<img src= ` + (newsletter_image != '' || newsletter_image != null ? newsletter_image : '' ) + ` class="img-fluid subscribe-us-image" alt="{% if instance.newsletter_image %}{{ instance.glossary.alt_newsletter_image }}{% endif %}"/>`
+                        }
+            
+                        dest_data +=`</div>`
+
+                }
+                dest_data +=`
+                        </div>
+                    </div>`
+            $('.desktop-newsletter-preview').append(dest_data)
+
+    
+    // preview for mobile
+    $('.mobile-newsletter-preview').append(dest_data)
+    // set image and color in preview 
+    if (background == 'yes' && background_type == 'Image'){
+        $('.subscribe-us-outer').css({'background-image':"url("+newsletter_bg_image+")",'background-repeat': 'no-repeat', 'background-position': 'center', 'background-size': 'cover'});
+    }
+    else if (background == 'yes' && background_type == 'Color'){
+        $('.subscribe-us-outer').css('background-color',news_bg_color);
+    }
+    else{
+        $('.subscribe-us-outer').attr("style","");
+    }
+
+    // set message color
+    //if (message_color){
+        //$('.marketing_message > *').css("color", message_color)
+    //}
+   }
+   
+   // set message color and background color from custom color
+   $('.custom_color_change').on('blur',function(){
+    let custom = $(this).parents('ul.theme-color-tab').siblings('input[type = "hidden"]').attr('id')
+    $("#"+custom).val($(this).val())
+    previewNewsletter()
+}) 
+
+
+// set the submit button text on key up
+$('input[name = "marketing_button_text"]').on('keyup',function(){
+    $('.subscribe-btn').text($(this).val());
+});
+
+$('input[name = "phone"]').on('keyup',function(){
+    $('.subscribe-btn').text($(this).val());
+})
+
+previewNewsletter()
+
+</script>
+
+{% endaddtoblock %}
+{% endblock content %}

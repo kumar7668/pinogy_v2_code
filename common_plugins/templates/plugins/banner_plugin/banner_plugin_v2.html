@@ -1,0 +1,400 @@
+<style>
+
+    {% if not instance.glossary.x_perc %}
+    @media only screen and (max-width: 632px) {
+
+        .banner-{{ instance.id }} {
+            {% if instance.mobimage %}
+            background-image:  url({{instance.mobimage.url}}) !important;
+            {% endif %} 
+            {% if instance.glossary.parallax == 'True' %}
+            background-attachment: fixed;!important;
+            {% endif %} 
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            height: 500px !important;
+            color:red
+        }
+        }
+    {% endif %}
+        .banner-{{ instance.id }} {
+            {% if instance.glossary.parallax == 'True' %}
+            background-attachment: fixed !important;
+            {% endif %} 
+            background-image: url("{{instance.image.url}}");
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: {% if instance.glossary.x_perc %}{{instance.glossary.x_perc}}% {{instance.glossary.y_perc}}%{% else %}center{% endif %};
+            height: {{ instance.glossary.banner_height|default:505 }}px;
+        }
+   
+    .banner-title-{{ instance.id }} {
+        color: {{instance.glossary.title_text_color}};
+    }
+    .banner-sub-title-{{ instance.id }} {
+        color: {{instance.glossary.sub_title_text_color}};
+        text-transform: none;
+    }
+    .message-font-color-{{instance.id}} > * {
+        color: {{instance.glossary.message_font_color}};
+    }
+    .banner-layout-action-{{ instance.id }} {
+        
+        {% if instance.glossary.button_direction == 'horizontal' and instance.button_data|length > 2 %}
+            display: inline-grid;
+            grid-template-columns: repeat(2, 1fr);
+        {% elif instance.glossary.button_direction == 'horizontal' %}
+            display: inline-flex;
+            flex-direction : row;
+        {% elif instance.glossary.button_direction == 'vertical' %}
+            display: inline-flex;
+            flex-direction : column;
+        {% else %}
+            display: flex;
+            flex-direction : row;
+        {% endif %}
+        gap:20px;
+    }
+
+    {% if instance.glossary.layout == "TEXT 1 BUTTON CENTER" or instance.glossary.layout == "TEXT 2 BUTTONS CENTER" %}
+        .banner-layout-action-{{ instance.id }} {
+            justify-content: center;
+        }
+    {% endif %}
+
+    {% if instance.glossary.layout == "TEXT 1 BUTTON RIGHT" or instance.glossary.layout == "TEXT 2 BUTTONS RIGHT" %}
+        .banner-content-{{ instance.id }} {
+            justify-content: end;
+        }
+        .banner-layout-action-{{ instance.id }} {
+            justify-content: end;
+        }
+    {% endif %}
+
+    {% comment %} for mobile view  {% endcomment %}
+    {% if instance.glossary.mobile_layout == 'mobile_layout_1' %}
+    @media (max-width: 575px) {
+        .banner-content-{{ instance.id }} {
+            display: flex;
+            flex-direction: column;
+            justify-content: end;
+            padding-bottom: 10px;
+        }
+        .banner-title-{{ instance.id }},
+        .banner-sub-title-{{ instance.id }} {
+            text-align: center;
+        }
+        .message-font-color-{{ instance.id }} {
+            text-align: center;
+        }
+        .banner-layout-action-{{ instance.id }} {
+            display : flex;
+            gap : 15px;
+            flex-direction: column;
+            flex-wrap : nowrap;
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .banner_content_block{
+            display : block !important;
+        }
+    }
+    {% elif instance.glossary.mobile_layout == 'mobile_layout_2' %}
+    @media (max-width: 575px) {
+        .banner-content-{{ instance.id }} {
+            display: flex;
+            justify-content: end;
+            padding-bottom: 10px;
+        }
+        .banner-title-{{ instance.id }},
+        .banner-sub-title-{{ instance.id }} {
+            text-align: center;
+        }
+        .message-font-color-{{ instance.id }} {
+            text-align: center;
+        }
+        .banner-layout-action-{{ instance.id }} {
+            display : flex;
+            flex-direction: column;
+            gap : 15px;
+            flex-wrap : nowrap;
+            grid-template-columns: repeat(2, 1fr);
+            align-items : center;
+        }
+        .banner-layout-action-{{ instance.id }} a {
+            width : fit-content;
+        }
+        .banner_content_block{
+            display : block !important;
+        }
+    }
+    {% elif instance.glossary.mobile_layout == 'mobile_layout_3' %}
+    @media (max-width: 575px) {
+        .banner-content-{{ instance.id }} {
+            display: block;
+            padding-bottom: 10px;
+        }
+        .banner-title-{{ instance.id }},
+        .banner-sub-title-{{ instance.id }} {
+            text-align: left;
+        }
+        .message-font-color-{{ instance.id }} {
+            text-align: left;
+        }
+        .banner-layout-action-{{ instance.id }} {
+            display : flex;
+            flex-direction: column;
+            gap : 15px;
+            flex-wrap : nowrap;
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .banner-layout-action-{{ instance.id }} a {
+            width : fit-content;
+        }
+        .banner_content_block{
+            display : block !important;
+        }
+    }
+    {% elif instance.glossary.mobile_layout == 'mobile_layout_4' %}
+        @media (max-width: 575px) {
+            .hero-text-col{
+                display : none;
+            }
+            .banner_content_block{
+                display : none !important;
+            }
+        }
+    {% elif instance.glossary.mobile_layout == 'mobile_layout_5' %}
+    @media (max-width: 575px) {
+        .banner-content-{{ instance.id }}.row {
+            display : block;
+        }
+        .banner-content-{{ instance.id }} {
+            position : relative;
+        }
+        .banner-title-{{ instance.id }},
+        .banner-sub-title-{{ instance.id }},
+        .message-font-color-{{ instance.id }} {
+            text-align: center;
+            top : 0;
+        }
+        .banner-layout-action-{{ instance.id }} {
+            display : flex;
+            flex-direction: column;
+            gap : 15px;
+            flex-wrap : nowrap;
+            position : absolute;
+            bottom : 5%;
+            gap : 15px;
+            width : 93%;
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .banner_content_block{
+            display : block !important;
+        }
+    }
+    
+    {% endif %}
+
+    {% comment %} {% if instance.glossary.content_pos == "TOP" %}
+        @media (max-width: 575px) {
+            .banner-content-{{ instance.id }} {
+                justify-content : flex-start !important;
+            }
+        }
+    {% endif %}
+    {% if instance.glossary.content_pos == "CENTER" %}
+        @media (max-width: 575px) {
+            .banner-content-{{ instance.id }} {
+                justify-content : center !important;
+            }
+        }
+    {% endif %}
+    {% if instance.glossary.content_pos == "BOTTOM" %}
+        @media (max-width: 575px) {
+            .banner-content-{{ instance.id }} {
+                justify-content : end !important;
+            }
+        }
+    {% endif %} {% endcomment %}
+
+    
+    .button_style_fill1{
+        font-family: var(--general-font) !important;
+        font-style: normal !important;
+        font-weight: 700 !important;
+        font-size: 20px !important;
+        line-height: 140% !important;
+        letter-spacing: 0.03em !important;
+        text-transform: capitalize !important;
+        padding: 10px !important;
+        text-decoration: None !important;
+        text-align: center !important;
+        border-radius: 12px;
+        background-color : {{instance.glossary.first_button_fill_color}};
+        color : {{instance.glossary.first_button_font_color}};
+        border : {{instance.glossary.first_button_outline_color}};
+    }
+    .button_style_outline1{
+        font-family: var(--general-font) !important;
+        font-style: normal !important;
+        font-weight: 700 !important;
+        font-size: 20px !important;
+        line-height: 140% !important;
+        letter-spacing: 0.03em !important;
+        text-transform: capitalize !important;
+        padding: 10px !important;
+        text-decoration: None !important;
+        text-align: center !important;
+        border-radius: 12px;
+        background-color : white;
+        color : {{instance.glossary.first_button_outline_color}};
+        border : 1px solid {{instance.glossary.first_button_outline_color}};
+    }
+    .button_style_fill1:hover{
+        background-color : {{instance.glossary.first_button_font_color}};
+        color : {{instance.glossary.first_button_fill_color}};
+    }
+    .button_style_outline1:hover{
+        background-color : {{instance.glossary.first_button_outline_color}};
+        color : white;
+    }
+    .button_style_fill2{
+        font-family: var(--general-font) !important;
+        font-style: normal !important;
+        font-weight: 700 !important;
+        font-size: 20px !important;
+        line-height: 140% !important;
+        letter-spacing: 0.03em !important;
+        text-transform: capitalize !important;
+        padding: 10px !important;
+        text-decoration: None !important;
+        text-align: center !important;
+        border-radius: 12px;
+        background-color : {{instance.glossary.second_button_fill_color}};
+        color : {{instance.glossary.second_button_font_color}};
+        border : {{instance.glossary.second_button_outline_color}};
+    }
+    .button_style_outline2{
+        font-family: var(--general-font) !important;
+        font-style: normal !important;
+        font-weight: 700 !important;
+        font-size: 20px !important;
+        line-height: 140% !important;
+        letter-spacing: 0.03em !important;
+        text-transform: capitalize !important;
+        padding: 10px !important;
+        text-decoration: None !important;
+        text-align: center !important;
+        border-radius: 12px;
+        background-color : white;
+        color : {{instance.glossary.second_button_outline_color}};
+        border : 1px solid {{instance.glossary.second_button_outline_color}};
+    }
+    .button_style_fill2:hover{
+        background-color : {{instance.glossary.second_button_font_color}};
+        color : {{instance.glossary.second_button_fill_color}};
+    }
+    .button_style_outline2:hover{
+        background-color : {{instance.glossary.second_button_outline_color}};
+        color : white;
+    }
+</style>
+{% if instance.glossary.layout == "IMAGE ONLY" and instance.glossary.image_clickable == "True" %}
+    <a href="{% if instance.glossary.img_link_choice_field == 'Internal link' and instance.glossary.img_internallink %}
+            {{ instance.glossary.img_internallink.page_link }}
+            {% elif instance.glossary.img_link_choice_field == 'External link' and instance.glossary.img_first_button_link %}
+            {{ instance.glossary.img_first_button_link }}
+            {% elif instance.glossary.img_link_choice_field == 'Phone link' and instance.glossary.img_phone_link %}
+            tel:{{ instance.glossary.img_phone_link }}
+            {% endif %}" 
+            target="{{ instance.glossary.img_button_target }}">
+        <div class="container-fluid p-0 banner-section-outer banner-{{instance.id}}">
+            
+                <div class="container" style = "display : {% if instance.glossary.layout != "IMAGE ONLY" %} block; {% else %} none; {% endif%} height: 100%; ">
+                    <div style="height: 100%;" class="row banner-content-{{ instance.id }}">
+                        {% if instance.glossary.layout == "TEXT 1 BUTTON CENTER" or instance.glossary.layout == "TEXT 2 BUTTONS CENTER" %}
+                            <div class="col col-12 text-center align-self-center py-4 pt-md-auto {% if instance.glossary.mobile_layout == 'mobile_layout_4'%} hero-text-col {%endif%}">
+                        {% elif instance.glossary.layout == "TEXT 1 BUTTON RIGHT" or instance.glossary.layout == "TEXT 2 BUTTONS RIGHT"%}
+                            <div class="col col-12 text-end align-self-center py-4 pt-md-auto {% if instance.glossary.mobile_layout == 'mobile_layout_4'%} hero-text-col {%endif%}" >   
+                        {% else %} 
+                            <div class="col col-12 col-md-9 align-self-center py-4 pt-md-auto {% if instance.glossary.mobile_layout == 'mobile_layout_4'%} hero-text-col {%endif%}">
+                        {% endif %}
+                        {% if instance.glossary.banner_type == "PRIMARY" %}
+                            {% if instance.glossary.title_text %}
+                                <h1 class="h1-theme-bold banner-title-{{ instance.id }}"> {{instance.glossary.title_text|safe}} </h1>
+                            {% endif %}
+                            {% if instance.glossary.sub_title_text %}
+                                <h2 class="h2-theme-bold banner-sub-title-{{ instance.id }}">{{instance.glossary.sub_title_text|safe}}</h2>
+                            {% endif%}
+                            <div class = "message-font-color-{{instance.id}}">{{instance.glossary.messages|safe}}</div>
+                        {% endif %}
+                        {% if instance.glossary.banner_type == "SECONDARY" %}
+                            {% if instance.glossary.title_text %}
+                                <h1 class="h1-theme-bold banner-title-{{ instance.id }}"> {{instance.glossary.title_text|safe}} </h1>
+                            {% endif %}
+                            {% if instance.glossary.sub_title_text %}
+                                <h2 class="h2-theme-bold banner-sub-title-{{ instance.id }}">{{instance.glossary.sub_title_text|safe}}</h2>
+                            {% endif%}
+                            <div class = "message-font-color-{{instance.id}}">{{instance.glossary.messages|safe}}</div>
+                        {% endif %}
+                            <div class="banner-layout-action-{{ instance.id }} mt-3">
+                                {% for index, value in instance.button_data.items %}
+                                {% if value.button_text and value.id_button_internallink or value.button_link or value.button_phone_link %}
+                                    <a style = "white-space:nowrap" area-label = "send you to {{value.button_text}}" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{% if value.link_choice_field == 'Internal link' %}{{value.id_button_internallink}}{% elif value.link_choice_field == 'External link' %}{{value.button_link}}{% else %}tel:{{value.button_phone_link}}{% endif %}" target="{{ value.id_button_target }}">
+                                        {{value.button_text}}
+                                    </a>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+        </div>
+    </a>
+{% else %}
+    <div class="container-fluid p-0 banner-section-outer banner-{{instance.id}}">
+   
+            <div class="container banner_content_block" style = "display : {% if instance.glossary.layout != "IMAGE ONLY" %} block; {% else %} none; {% endif%} height: 100%; ">
+                <div style="height: 100%;" class="row banner-content-{{ instance.id }}">
+                    {% if instance.glossary.layout == "TEXT 1 BUTTON CENTER" or instance.glossary.layout == "TEXT 2 BUTTONS CENTER" %}
+                        <div class="col col-12 text-center align-self-center py-4 pt-md-auto {% if instance.glossary.mobile_layout == 'mobile_layout_4'%} hero-text-col {%endif%}">
+                    {% elif instance.glossary.layout == "TEXT 1 BUTTON RIGHT" or instance.glossary.layout == "TEXT 2 BUTTONS RIGHT"%}
+                        <div class="col col-12 text-end align-self-center py-4 pt-md-auto {% if instance.glossary.mobile_layout == 'mobile_layout_4'%} hero-text-col {%endif%}" >   
+                    {% else %} 
+                        <div class="col col-12 col-md-9 align-self-center py-4 pt-md-auto {% if instance.glossary.mobile_layout == 'mobile_layout_4'%} hero-text-col {%endif%}">
+                    {% endif %}
+                    {% if instance.glossary.banner_type == "PRIMARY" %}
+                        {% if instance.glossary.title_text %}
+                            <h1 class="h1-theme-bold banner-title-{{ instance.id }}"> {{instance.glossary.title_text|safe}} </h1>
+                        {% endif %}
+                        {% if instance.glossary.sub_title_text %}
+                            <h2 class="h2-theme-bold banner-sub-title-{{ instance.id }}">{{instance.glossary.sub_title_text|safe}}</h2>
+                        {% endif%}
+                        <div class = "message-font-color-{{instance.id}}">{{instance.glossary.messages|safe}}</div>
+                    {% endif %}
+                    {% if instance.glossary.banner_type == "SECONDARY" %}
+                        {% if instance.glossary.title_text %}
+                            <h1 class="h1-theme-bold banner-title-{{ instance.id }}"> {{instance.glossary.title_text|safe}} </h1>
+                        {% endif %}
+                        {% if instance.glossary.sub_title_text %}
+                            <h2 class="h2-theme-bold banner-sub-title-{{ instance.id }}">{{instance.glossary.sub_title_text|safe}}</h2>
+                        {% endif%}
+                        <div class = "message-font-color-{{instance.id}}">{{instance.glossary.messages|safe}}</div>
+                    {% endif %}
+                        <div class="banner-layout-action-{{ instance.id }} mt-3">
+                            {% for index, value in instance.button_data.items %}
+                            {% if value.button_text and value.id_button_internallink or value.button_link or value.button_phone_link %}
+                                <a style = "white-space:nowrap" area-label = "send you to {{value.button_text}}" class="mt-1 {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{% if value.link_choice_field == 'Internal link' %}{{value.id_button_internallink}}{% elif value.link_choice_field == 'External link' %}{{value.button_link}}{% else %}tel:{{value.button_phone_link}}{% endif %}" target="{{ value.id_button_target }}">
+                                    {{value.button_text}}
+                                </a>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    </div>
+{% endif %}

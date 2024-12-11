@@ -1,0 +1,77 @@
+{% extends CMS_TEMPLATE %}
+{% load cms_tags i18n sekizai_tags static %}
+
+{% block main %}
+
+    {% addtoblock "css" %}
+    <style>
+        .carousel-item-box-desc-desc {
+            word-wrap: break-word;
+        }
+
+        .card_tc_image{
+            height: 220px;
+            width: 220px;
+            object-fit: cover;
+            border: 10px solid #FFFFFF;
+            box-shadow: 1px 2px 18px 0px #505E9459;
+        }
+
+        .more_view{
+            font-weight: bold;
+        }
+
+        .pagination li.disabled{
+            display: none;
+        }
+
+        .pagination li.active{
+            text-decoration: underline;
+            color: var(--global-primary-color);
+        }
+
+        .pagination li a{
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+    </style>
+    {% endaddtoblock %}
+
+    <div class="text-center"><h1 class="h1-theme-bold my-4">All Testimonials</h1></div>
+    
+    <div class="testimonials-list container">
+        <div class="row">
+            {% for testimonial in testimonials %}
+                {% include "testimonials_new/includes/testimonial_tile.html" with counter=forloop.counter0%}
+                {#{% include "pinogy_testimonials/includes/testimonial_tile.html" with link=testimonial.get_absolute_url %}#}
+            {% empty %}
+                <p>There are no testimonials available</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+    {# .... **Now the pagination section** .... #}
+    {% if is_paginated %}
+    <div class="d-flex justify-content-center">
+        <ul class="d-flex align-items-center justify-content-center gap-3 pagination">
+            <li class="prev{% if not testimonials.has_previous %} disabled{% endif %}">
+                <a href="{% if not testimonials.has_previous %}#{% else %}?page={{ testimonials.previous_page_number }}{% endif %}">
+                    <span class="fa fa-chevron-left"></span>
+                </a>
+            </li>
+            {% for i in page_range %}
+            <li class="current{% if i == testimonials.number %} active{% endif %}">
+                <a href="?page={{ i }}">{{ i }}</a>
+            </li>
+            {% endfor %}
+            <li class="next{% if not testimonials.has_next %} disabled{% endif %}">
+                <a href="{% if not testimonials.has_next %}#{% else %}?page={{ testimonials.next_page_number }}{% endif %}">
+                    <span class="fa fa-chevron-right"></span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,71 @@
+{% comment %} TODO:This is Deprecated Remove it {% endcomment %}
+{% load static sekizai_tags global_theme_config_tags %}
+
+{% global_theme_object as global_theme_config %}
+
+{% addtoblock "css"  %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/custom-banner.css' %}">
+    <style>
+        .banner-{{instance.id}} .banner-layout-box{
+            {% if instance.image %}
+            background: url({{instance.image.url}});
+            {% else %}
+            background: url({% static 'images/default-placeholder-image.webp' %});
+            {% endif %}
+            height: {{ instance.glossary.banner_height|default:505 }}px;
+        }
+        .banner-{{instance.id}} .banner-layout-title {
+            color: {{instance.glossary.title_text_color}};
+        }
+        .banner-{{instance.id}} .banner-layout-sub-title{
+            color: {{instance.glossary.sub_title_text_color}};
+        }
+        {% if global_theme_config.primary_button_shape %}
+        .banner-{{instance.id}} .first-btn.pill, .banner-{{instance.id}} .second-btn.pill{
+            border-radius: 100px;
+        }
+        .banner-{{instance.id}} .first-btn.rounded, .banner-{{instance.id}} .second-btn.rounded{
+            border-radius: 12px;
+        }
+        .banner-{{instance.id}} .first-btn.rectangle, .banner-{{instance.id}} .second-btn.rectangle{
+            border-radius: 0;
+        }
+        {% endif %}
+    </style>
+{% endaddtoblock  %}
+<div class="banner-preview-section banner-{{instance.id}}">
+    <div class="banner-layout-wrap no-hover">
+        <div class="banner-layout-wrap-inner">
+            <!-- title-left to make the text to left -->
+            <!-- title-right to make the text to right -->
+            <div class="banner-layout-box {% if instance.glossary.layout == "TEXT 1 BUTTON RIGHT" or instance.glossary.layout == "TEXT 2 BUTTONS RIGHT" %}title-right{% else %}title-left{% endif %}"  style="">
+                {% if instance.glossary.layout != "IMAGE ONLY" %}
+                    <div class="banner-layout-content">
+                        <div class="banner-layout-content-inner">
+                            <div class="banner-layout-title">
+                                {{instance.glossary.title_text}}
+                            </div>
+                            <div class="banner-layout-sub-title">
+                                {{instance.glossary.sub_title_text}}
+                            </div>
+                            <div class="banner-layout-action">
+                                {% if instance.glossary.first_button_text %}
+                                    <a class="btn-theme btn-shape-1 btn-style-1 btn-color-1 first-btn {{global_theme_config.primary_button_shape}} {{ instance.glossary.first_button_color_pattern }}" href="{{first_btn_link}}">
+                                        {{instance.glossary.first_button_text}}
+                                    </a>
+                                {% endif %}
+                                {% if instance.glossary.layout == "TEXT 2 BUTTONS LEFT" or instance.glossary.layout == "TEXT 2 BUTTONS RIGHT" %}
+                                    {% if instance.glossary.second_button_text %}
+                                        <a class="btn-theme btn-shape-1 btn-style-1 btn-color-1 second-btn {{global_theme_config.primary_button_shape}} {{ instance.glossary.first_button_color_pattern }}" href="{{second_btn_link}}">
+                                            {{instance.glossary.second_button_text}}
+                                        </a>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

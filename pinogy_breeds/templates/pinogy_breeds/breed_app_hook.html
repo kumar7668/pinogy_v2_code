@@ -1,0 +1,35 @@
+{% extends CMS_TEMPLATE %}
+{% load cms_tags menu_tags i18n sekizai_tags %}
+
+{% block title %} All {{selected_pet_type_slug|default:''}} breeds {% endblock title %}
+{% block meta %}
+    <meta property="url" content="{{ request.scheme }}://{{ request.get_host }}{{  request.path }}" />
+    <meta property="type" content="List"/>
+    <meta name="description" content="All {{selected_pet_type_slug}} breeds. "/>
+    <meta name="keywords" content="All {{selected_pet_type_slug}} breeds">
+{% endblock %}
+{% block canon %}
+    <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{  request.path }}">
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="container pt-5">
+        <div class="row avail-wrap">
+            <div class="col-12 col-md-8 d-none d-md-block">
+                {% show_breadcrumb 0 "pinogy_app/includes/breadcrumb.html" 0 %}
+            </div>
+            <div class="col-12 col-md-4 d-flex justify-content-between justify-content-md-end">
+                {% if selected_pet_type_slug %}
+                    <a href="{% url 'pinogy_breeds:breed_home' %}" class=" theme-secondary-btn me-3 share-title no-underline">All breeds</a>
+                {% endif %}
+                {% include 'plugins/includes/share_page_link.html' %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block main %}
+    {% static_placeholder 'breed_header' %}
+    {% static_placeholder 'breed_body' %}
+    {% static_placeholder 'breed_footer' %}
+{% endblock %}

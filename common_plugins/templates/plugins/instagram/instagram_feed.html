@@ -1,0 +1,174 @@
+{% load cms_tags sekizai_tags %}
+
+{% comment %}
+    Add necessary CSS styles for Instagram feed display.
+{% endcomment %}
+{% addtoblock "css" %}
+<style>
+    .inst-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        justify-content: center;
+    }
+    .inst-image-container {
+        width: 100%;
+        height: 100%;
+        display: none; /* Hide all images initially */
+        position: relative; /* Ensure positioning of overlay */
+    }
+    .inst-image-container img {
+        width: 100%;
+        height: auto;
+        transition: opacity 0.3s; /* Smooth transition for opacity */
+    }
+    .inst-image-container:hover img {
+        opacity: 0.8; /* Change opacity on hover */
+    }
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0; /* Initially hide overlay */
+        background-color: black; /* Semi-transparent black overlay */
+        color: white;
+        transition: opacity 0.3s; /* Smooth transition for opacity */
+    }
+    .inst-image-container:hover .overlay {
+        opacity: 0.8; /* Show overlay on hover */
+    }
+    .inst-image-container:hover .overlay-2 {
+        opacity: 0.5; /* Show overlay on hover */
+    }
+    .caption {
+        text-align: center;
+        padding:10%;
+    }
+    .load-more {
+        text-align: center;
+        margin-top: 30px;
+        margin-bottom: 30px;
+    }
+    .insta-modal {
+        --bs-modal-width: 655px !important;
+    }
+    .insta-modal .modal-dialog {
+        margin-top: 0;
+        margin-bottom:0;
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .insta-modal .modal-content {
+        flex: 1;
+        border: 0;
+        border-radius: 0;
+    }
+    .insta-modal .modal-body {
+        overflow-y: auto;
+    }
+</style>
+{% endaddtoblock %}
+
+<div class="container">
+    <h2 class="text-center my-4">Instagram Feed</h2>
+    <div class="inst-container mx-auto" id="post-container">
+        {% for post in posts %}
+        <div class="inst-image-container">
+            <a href="#" class="image-link" data-post-id="{{ forloop.counter }}" data-toggle="modal" data-target="#exampleModalLong" area-label = "image link">
+                <img src="{{ post.media_url }}" alt="Instagram Image">
+                {% if post.caption %}
+                <div class="overlay">
+                    <div class="caption">{{ post.caption }}</div>
+                </div>
+                {% else %}
+                <div class="overlay">
+                    <div class="caption">No caption</div>
+                </div>
+                {% endif %}
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="load-more">
+        <button id="load-more-btn" class="theme-secondary-btn">Load More</button>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade insta-modal" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body p-0">
+                    {% for post in posts %}
+                    <blockquote class="instagram-media border-0" loading="lazy" data-post-id="{{ forloop.counter }}" data-instgrm-captioned data-instgrm-permalink={{ post.permalink }} data-instgrm-version="1" style=" background:#FFF; box-shadow:0 0 1px 0 rgba(0,0,0,0.5), margin: 1px; padding:0; width:100%;"></blockquote>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% comment %}
+    Add necessary JavaScript for the Instagram feed.
+{% endcomment %}
+{% addtoblock 'js'%}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const posts = document.querySelectorAll('.inst-image-container');
+    let visiblePosts = 10;
+
+    // Function to show next set of posts
+    function showNextPosts() {
+        for (let i = 0; i < visiblePosts; i++) {
+            if (posts[i]) {
+                posts[i].style.display = 'block';
+            }
+        }
+        visiblePosts += 10;
+        if (visiblePosts > posts.length) {
+            document.getElementById('load-more-btn').style.display = 'none'; // Hide button when all posts are shown
+        }
+    }
+
+    showNextPosts(); // Initially show the first set of posts
+
+    // Event listener for load more button
+    document.getElementById('load-more-btn').addEventListener('click', function() {
+        showNextPosts();
+    });
+});
+
+// Functionality for displaying images in modal
+const imageLinks = document.querySelectorAll('.image-link');
+imageLinks.forEach(function(link) {
+    link.addEventListener('click', function(event) {
+        event.preventDefault();
+        const postId = parseInt(link.getAttribute('data-post-id'));
+        const modal = document.querySelector('#exampleModalLong');
+        const modalBody = modal.querySelector('.modal-body');
+        const targetImage = modalBody.querySelectorAll('.instagram-media')[postId-1];
+        
+        // Open the modal
+        const modalInstance = new bootstrap.Modal(modal);
+        modalInstance.show();
+
+        // Scroll to target image after modal is fully shown
+        modal.addEventListener('shown.bs.modal', function() {
+            targetImage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+});
+</script>
+{% endaddtoblock %}

@@ -1,0 +1,52 @@
+
+{% extends 'admin/base_change_form.html' %}
+{% load cms_tags menu_tags sekizai_tags static admin_modify %}
+{% load global_theme_config_tags %}
+{% block content %}
+{% global_theme_object as global_theme_config %}
+{% addtoblock 'css' %}
+<link rel="stylesheet" href='{{global_theme_config.get_themecss_file}}'>
+<link rel="stylesheet" type="text/css" href="{% static 'css/custom-info.css' %}">
+
+<style>
+
+    .unsubscribe-form {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        padding: 40px;
+    }
+
+    .unsubs-form-title {
+        width: 1050px;
+        color: var(--Primary, #003F5A);
+        /* H2 */
+        font-family: "Open Sans";
+        font-size: 40px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 125%; /* 50px */
+        text-transform: capitalize;
+    }
+
+</style>
+
+{% endaddtoblock %}
+<form {% if has_file_field %}enctype="multipart/form-data" {% endif %}{% if form_url %}action="{{ form_url }}" {% endif %}method="post" id="{{ opts.model_name }}_form">
+{% csrf_token %}
+<div class="container unsubscribe-form">
+
+    <div class="unsubs-form-title">UnSubscribe Form</div>
+
+    <div class="unsubs-form-settings">
+        <div>{{ adminform.form.title }}</div>
+        <div class="mt-4">{{ adminform.form.sub_title }}</div>
+    </div>
+
+</div>
+{% block submit_buttons_bottom %} {% submit_row %} {% endblock %}
+</form>
+{% addtoblock 'js' %}
+
+{% endaddtoblock %}
+{% endblock content %}

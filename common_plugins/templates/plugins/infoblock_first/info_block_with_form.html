@@ -1,0 +1,205 @@
+{% load static sekizai_tags %}
+{% addtoblock "css"  %}
+<style>
+
+   {% comment %} {% if instance.glossary.bg_type == 'image' and instance.bg_image %}
+   .infofirst-l5-{{instance.id}}{
+       background-image: url({{ instance.bg_image.url}});
+       background-size: cover;
+       background-repeat: no-repeat;  
+       background-position: center center;
+   }
+
+   @media only screen and (max-width: 500px) {
+
+       .infofirst-l5-{{instance.id}} {
+           {% if instance.mobimage %}
+           background-image:  url({{instance.mobimage.url}}) !important;
+           {% endif %} 
+           background-repeat: no-repeat;
+           background-size: cover;
+           background-position: center center;
+       }
+   } {% endcomment %}
+   {% if instance.bg_image and instance.glossary.bg_type == "image" and instance.glossary.background == "yes" %}
+   {% comment %} .clssss{
+      background-image: url("{{instance.bg_image.url}}");
+      background-repeat: no-repeat;
+      background-size: cover;
+      } {% endcomment %}
+      .infofirst-l5-{{instance.id}}{
+         background-image: url({{ instance.bg_image.url}});
+         background-size: cover;
+         background-repeat: no-repeat;  
+         background-position: center center;
+     }
+      {% endif %}
+
+   
+{% if instance.glossary.bg_color and instance.glossary.bg_type == "color" and instance.glossary.background == "yes" %}
+   .infofirst-l5-{{instance.id}}{
+       background-color: {{ instance.glossary.bg_color }};
+   }
+   {% comment %} .clssss-{{instance.id}}{
+      background: {{ instance.glossary.bg_color }};
+      } {% endcomment %}
+{% endif %}
+
+{% if instance.image and instance.glossary.background == "no" %}
+.infofirst-l5-{{instance.id}}{
+   background-image: url({{ instance.image.url}});
+   background-size: cover;
+   background-repeat: no-repeat;  
+   background-position: center center;
+}
+{% endif %}
+   {% comment %} {% if instance.glossary.bg_color %}
+   .infofirst-l5-{{instance.id}}{
+   background-color: {{ instance.glossary.bg_color }};
+   }
+   {% endif %} {% endcomment %}
+   .infofirst-l5-{{instance.id}} .infofirst-title{
+   color: {{instance.glossary.title_text_color}};
+   }
+   .infofirst-l5-{{instance.id}} .infofirst-sub-title{
+   color: {{instance.glossary.message_text_color}};
+   }
+   .info-block-first-img-l5{
+   width: 100%;
+   height: 100%;
+   max-height: 700px;
+   {% comment %} object-fit: cover; {% endcomment %}
+   {% comment %} object-position: top; {% endcomment %}
+   }
+   .infofirst-l5-{{instance.id}} .info-block-first-content-l5{
+   max-width: 500px;
+   }
+   .formcard{
+   background: #FFFFFF;
+   box-shadow: 0px 1px 8px rgba(11, 24, 29, 0.04), 1px 2px 60px rgba(11, 24, 29, 0.2);
+   border-radius: 40px;
+   }
+   .card_title-{{instance.id}}{
+   font-style: normal;
+   font-weight: 700;
+   font-size: 20px;
+   line-height: 140%;
+   color: var(--global-primary-color); 
+   opacity: 0.9;
+   }
+   .cls_description-{{instance.id}}{
+   font-style: normal;
+   font-weight: 400;
+   font-size: 18px;
+   line-height: 140%;
+   /* or 25px */
+   padding-top:20px;
+   color:{{instance.glossary.message_text_color}}; 
+   opacity: 0.9;
+   }
+   .cls_title-{{instance.id}}{
+   font-style: normal;
+   font-weight: 700;
+   font-size: 40px;
+   line-height: 125%;
+   /* or 50px */
+   text-transform: capitalize;
+   color:{{instance.glossary.title_text_color}};
+   }
+   .clsinfo{
+    margin:auto
+   }
+   .cls_title_mobile-{{instance.id}}{
+      font-style: normal;
+      font-weight: 700;
+      font-size: 32px;
+      line-height: 140%;
+      color: {{instance.glossary.title_text_color}}; 
+      opacity: 0.9;
+      text-align: center;
+   }
+  
+
+   @media (max-width: 770px){
+      .clsdesktop{
+         display:none
+      }
+      .clsmobile{
+         display:block !important;
+      }
+   }    
+   @media (min-width: 770px){
+      .clsdesktop{
+         display:flex;
+      }
+      .clsmobile{
+         display:none !important;
+      }
+   }
+
+   .clsmobile .card_title{
+      text-align: center !important;;
+   }
+</style>
+{% endaddtoblock  %}
+
+<div class="container-fluid p-0 infofirst-l5-{{ instance.id }} clsdesktop">
+   <div class="container">
+   <div class="row clssss-{{instance.id}}">
+      <div class="col-12 col-lg-6 clsinfo">
+         <div style="padding: 40px 0px 0px 40px;">
+            <div class="cls_title-{{instance.id}}">
+               {{instance.glossary.title_text|safe}}
+            </div>
+            <div class="cls_description-{{instance.id}}">
+               {%ifequal 'True' instance.glossary.isdescription%}
+                  {{instance.glossary.message_text|safe}}
+               {%else%}
+               <img src="{{instance.image.url}}" alt = "{{instance.glossary.alt_name_image}}"/>
+               {%endifequal%} 
+            </div>
+         </div>
+      </div>
+      <div class="col-12 col-lg-6" style="padding:50px" >
+         <div class="card formcard" style="padding: 25px;">
+            {% include 'plugins/includes/franchise_form.html' with form=franchise_form form_type='franchise' view=1 id=instance.id %}
+           
+            </div>
+      </div>
+   </div>
+</div>
+</div>
+</div>
+
+{% comment %}  FOR MOBILE VIEW {% endcomment %}
+ <div class="container clsmobile pb-3">
+    <div class="row clssss-{{instance.id}}">
+       <div class="col-12">
+         <br/>
+          <div class="cls_title_mobile-{{instance.id}}">
+             {{instance.glossary.title_text|safe}}
+          </div>
+          <br/>
+       </div>
+       <div class="col-12">
+          <div class="card formcard" style="padding: 25px;">
+            {% include 'plugins/includes/franchise_form.html' with form=franchise_form form_type='franchise' view=2  id=instance.id  %}
+            
+         </div>
+    
+    </div>
+   
+    {%ifequal 'False' instance.glossary.isdescription%}
+       <div class="col-12">
+         <br/>
+          <img src="{{instance.image.url}}" style="height: 200px; width : 100%" alt = "{{instance.glossary.alt_name_image}}"/>
+       </div>
+       {%else%}
+       <br/>
+       {%endifequal%}
+    </div>
+ </div> 
+
+</div> 
+
+

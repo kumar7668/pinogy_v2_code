@@ -1,0 +1,17 @@
+{% autoescape off %}
+<!DOCTYPE html>
+<html>
+    <head>
+        {% if content_head %}
+            {{ content_head }}
+        {% endif %}
+    </head>
+
+    <body>
+        {% if content_body %}
+            {{ content_body }}
+        {% endif %}
+    </body>
+</html>
+
+{% endautoescape %}

@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: collect-static-v2-job
+  namespace: websites-v2
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+                - matchExpressions:
+                  - key: cloud.google.com/gke-nodepool
+                    operator: In
+                    values:
+                      - migration-pool
+      containers:
+        - name: collect-static-v2-job
+          image: us.gcr.io/pinogy-websites/pinogy-new-base:IMAGE_TAG
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              cpu: 800m
+              memory: 768Mi
+              ephemeral-storage: 10Mi
+            requests:
+              cpu: 100m
+              memory: 312Mi
+              ephemeral-storage: 10Mi
+          volumeMounts:
+            - mountPath: /app/static_collected
+              name: static-files
+          envFrom:
+            - secretRef:
+                name: website0995-secret
+          command: ["/bin/sh", "-c"]
+          args: ["python manage.py collectstatic --no-input"]
+      volumes:
+        - name: static-files
+          nfs:
+            path: /customers/v2/prod
+            server: 10.128.0.2

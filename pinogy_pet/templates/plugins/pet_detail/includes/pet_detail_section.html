@@ -1,0 +1,318 @@
+{% load cms_tags sekizai_tags %}
+{% load static %}
+<div class="row">
+    <div class="col-12">
+        <a href="{% url 'pinogy_pet:breeds_pet_type' pet_data.ptype_slug pet_data.pbrd_slug %}" class="pet-name-titlee">
+            <h1 class="pet-name-titlee">
+                <strong>{{ pet_data.pbrd_display_name }}</strong>
+                {% if pet_setting.storecitystate.visible_detail_only %}
+                    <strong>For Sale in {{ pet_data.loc_addr_city }}, {{ pet_data.loc_addr_region_full_name }}</strong>
+                {% endif %}
+                <span class="d-none">{{ pet_data.pet_id }}</span>
+            </h1>
+        </a>
+    </div>
+</div>
+
+<div class="row pt-4">
+    <div class="col-12 col-lg-6 mb-4 custom-padding-lr">
+       <div class="container">
+            <div class="carousel-container position-relative row">
+                <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner pet-main-slider">
+                        {% for item in pet_data.pet_images %}
+                            <div class="carousel-item{% if forloop.first %} active{% endif %}"
+                            data-slide-number="{{item.order}}">
+                                <img src="{{item.image_url}}" class="d-block w-100 slide-img image-shape image-border"
+                                alt="{{item.alt}}" data-type="image" data-toggle="lightbox"
+                                data-gallery="example-gallery">
+                                <div class="pet-status">{{pet_data.sub_pstatus_name}}</div>
+                            </div>
+                        {% endfor %}
+                        {% for item in pet_data.pet_videos %}
+                            <div class="carousel-item{% if forloop.first %} active{% endif %}" data-slide-number="{{item.order}}">
+                                <div class="video-container">
+                                    {{ item | safe }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- Carousel Navigation -->
+                <div id="carousel-thumbs" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="pet-nav-slider row mx-0 mt-2">
+                            {% for item in pet_data.pet_images %}
+                                <div id="carousel-selector-{{item.order}}" class="nav-slide"
+                                data-target="#myCarousel" data-slide-to="{{item.order}}">
+                                    <img src="{{item.image_url}}" class="image-ratio img-fluid image-shape image-border" alt="...">
+                                </div>
+                            {% endfor %}
+                            {% for item in pet_data.pet_videos_thumbnail %}
+                                <div id="carousel-selector-{{item.order}}" class="nav-slide"
+                                data-target="#myCarousel" data-slide-to="{{item.order}}">
+                                    <img src="{{ item }}" class="image-ratio img-fluid image-shape image-border" alt="...">
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-6 mb-4">
+       <!-- Top Button-->
+        {% if top_btn_data %}
+            {% if top_btn_data.button_selector == 'schedule_a_playdate' %}
+                <!-- Logic for 'schedule_a_playdate' -->
+                {% if current_pet_box_visits_schedule %}
+                    <div class="col-12 mb-4">
+                        <div class="{{ top_btn_data.button_color_pattern }} btn-block pet-card-play-date-schedule-button"
+                            id="scheduleplaydate"
+                            data-bs-toggle="modal" 
+                            data-bs-target="#schedule_a_play_date{{petsType.pet_id}}"
+                            data-target=".pet-card-play-date-popup_pet-{{ pet.pet_id }}" 
+                            data-bs-whatever="@mdo"
+                            style="cursor:pointer">
+                            {{ top_btn_data.button_text | default:"Schedule a Play Date" }}
+                        </div>
+                    </div>
+                {% endif %}
+
+            {% elif top_btn_data.button_selector == 'ask_about_me' %}
+                <!-- Logic for 'ask_about_me' -->
+                <div class="col-12 mb-4">
+                    <a class="pet-detail2-footer-btn btn-info btn-block d-block {{ top_btn_data.button_color_pattern }}"
+                        href="{% url 'pinogy_breeds:breed_detail' pet_data.ptype_slug pet_data.pbrd_slug %}"
+                        style="width: 100%; text-align: center;">
+                        About {{ pet_data.pbrd_display_name }}
+                    </a>
+                </div>
+
+            {% elif top_btn_data.button_selector == 'call_now' %}
+                <!-- Logic for 'call_now' -->
+                {% if pet_setting.storephone.visible_detail_only and pet_data.loc_contact_numbers %}
+                    <div class="col-12 mb-4">
+                        <a class="pet-detail2-footer-btn btn-info btn-block d-block {{ top_btn_data.button_color_pattern }}"
+                            id="phonecallclick" 
+                            href="tel:{{ pet_data.phone_number }}" 
+                            style="width: 100%; text-align: center;">
+                            {{ top_btn_data.button_text }}
+                        </a>
+                    </div>
+                {% endif %}
+
+            {% elif top_btn_data.button_selector == 'link' %}
+                <!-- Logic for 'link' -->
+                <div class="col-12 mb-4">
+                    {% if top_btn_data.link_choice_field == 'Internal link' %}
+                        <a class="pet-detail2-footer-btn btn-info btn-block d-block {{ top_btn_data.button_color_pattern }}"
+                            href="{{ top_btn_data.button_internallink }}" style="width: 100%; text-align: center;"
+                            target="{{ top_btn_data.id_button_target }}">
+                            {{ top_btn_data.button_text }}
+                        </a>
+                    {% elif top_btn_data.link_choice_field == 'External link' %}
+                        <a class="pet-detail2-footer-btn btn-info btn-block d-block {{ top_btn_data.button_color_pattern }}"
+                            href="{{ top_btn_data.button_link }}" style="width: 100%; text-align: center;"
+                            target="{{ top_btn_data.id_button_target }}">
+                            {{ top_btn_data.button_text }}
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% endif %}
+
+        {% if pet_data.sub_pstatus_name != "Sold" %}
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <div class="row">
+                        <div class="col-6">
+                            {% if pet_setting.petname.visible_detail_only and pet_data.pet_name %}
+                                <h2 class="petcls">
+                                    {{pet_data.pet_name}}
+                                </h2>
+                           {% endif %}
+                        </div>
+                        {% if pet_setting.sale_price_detail or pet_setting.normal_price_detail %}
+                            <div class="col-6" style="text-align: right;">
+                                {% if pet_data.disabled_price %}
+                                    <span class="discount">${{ pet_data.disabled_price }}</span>
+                                    <br />
+                                {% endif %}
+                                <span class="price">${{ pet_data.actual_price }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            
+                {% comment %} Pet Status and Gender Section {% endcomment %}
+                <div class="col-12 pet-detail-sg mb-4">
+                    <div class="row w-100">
+                        <div class="col-6">
+                            {% if pet_data.sub_pstatus_name %}
+                                <div class="status-gender">
+                                    <div class="sg-heading">Availability</div>
+                                    <div class="sg-text">{{ pet_data.sub_pstatus_name }}</div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-6">
+                            {% if pet_setting.sex.visible_detail_only %}
+                                <div class="status-gender">
+                                    <div class="sg-heading">Sex</div>
+                                    <div class="sg-text">{{ pet_data.pet_gender }}</div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% comment %} Pet Badges {% endcomment %}
+            {% if pet_data.pet_badges_data %}
+                <div class="row pet-detail-badges mb-4">
+                    {% for badge in pet_data.pet_badges_data %}
+                        <img src="{{ badge.image_url }}" class="img-fluid" alt="{{ badge.alt }}" style="height: 100%; width: 119px" />
+                    {% endfor %}
+                </div>
+            {% endif %}
+       {% endif %}
+
+       <!-- Buttons -->
+        <div class="row">
+            {% for index, value in btn_data.items %}
+                {% if value.button_selector == 'schedule_a_playdate' %}
+                    <!-- Logic for 'schedule_a_playdate' -->
+                    {% if current_pet_box_visits_schedule %}
+                        <div class="{% if value.button_width == 'true' %} col-12 {% else %} col-12 col-lg-6 col-xl-6 {% endif %} mb-3">
+                        <div class="{{ value.button_color_pattern }} btn-block pet-card-play-date-schedule-button"
+                            id="scheduleplaydate"
+                            data-bs-toggle="modal" 
+                            data-bs-target="#schedule_a_play_date{{petsType.pet_id}}"
+                            data-target=".pet-card-play-date-popup_pet-{{ pet.pet_id }}" 
+                            data-bs-whatever="@mdo"
+                            style="cursor:pointer">
+                            {{ value.button_text | default:"Schedule a Play Date" }}
+                        </div>
+                        </div>
+                    {% endif %}
+                {% elif value.button_selector == 'ask_about_me' %}
+                    <!-- Logic for 'ask_about_me' -->
+                    <div class="{% if value.button_width == 'true' %} col-12 {% else %} col-12 col-lg-6 col-xl-6 {% endif %} mb-3">
+                        <a class="pet-detail2-footer-btn btn-info btn-block d-block {{ value.button_color_pattern }}"
+                        href="{% url 'pinogy_breeds:breed_detail' pet_data.ptype_slug pet_data.pbrd_slug %}"
+                        style="width: 100%;text-align: center;">
+                        About {{ pet_data.pbrd_display_name }}
+                        </a>
+                    </div>
+                {% elif value.button_selector == 'call_now' %}
+                    <!-- Logic for 'call_now' -->
+                    {% if pet_setting.storephone.visible_detail_only and pet_data.loc_contact_numbers %}
+                        <div class="{% if value.button_width == 'true' %} col-12 {% else %} col-12 col-lg-6 col-xl-6 {% endif %} mb-3">
+                        <a class="pet-detail2-footer-btn btn-info btn-block d-block {{ value.button_color_pattern }}"
+                            id="phonecallclick" 
+                            href="tel:{{ pet_data.phone_number }}" 
+                            style="width: 100%;text-align: center;">
+                            {{ value.button_text }}
+                        </a>
+                        </div>
+                    {% endif %}
+                {% elif value.button_selector == 'link' %}
+                    <!-- Logic for 'link' -->
+                    <div class="{% if value.button_width == 'true' %} col-12 {% else %} col-12 col-lg-6 col-xl-6 {% endif %} mb-3">
+                        {% if value.link_choice_field == 'Internal link' %}
+                            <a class="pet-detail2-footer-btn btn-info btn-block d-block {{ value.button_color_pattern }}"
+                            href="{{ value.button_internallink }}" style="width: 100%;text-align: center;"
+                            target="{{ value.id_button_target }}">
+                            {{ value.button_text }}
+                            </a>
+                        {% elif value.link_choice_field == 'External link' %}
+                            <a class="pet-detail2-footer-btn btn-info btn-block d-block {{ value.button_color_pattern }}"
+                            href="{{ value.button_link }}" style="width: 100%;text-align: center;"
+                            target="{{ value.id_button_target }}">
+                            {{ value.button_text }}
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        
+       <!-- Promo Banner Section -->
+       {% if instance.glossary.promotion_banner == 'true' %}
+            <div class="row">
+                <div class="col-12 mb-3">
+                    {% if instance.promob_image %}
+                        <div class="promo-banner-image-container">
+                            <img src="{{ instance.promob_image.url }}"
+                                class="img-fluid card-img-top card-img-bottom w-100 h-100"
+                                alt="{{ instance.glossary.alt_name_promob_image }}"
+            
+                                {% if instance.glossary.button_type == 'schedule_a_playdate' and current_pet_box_visits_schedule %}
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#schedule_a_play_date{{ petsType.pet_id }}"
+                                    data-target=".pet-card-play-date-popup_pet-{{ pet.pet_id }}"
+                                    data-bs-whatever="@mdo"
+                                    style="cursor:pointer"
+                                
+                                {% elif instance.glossary.button_type == 'take_me_home' %}
+                                    onclick="showAdoptMePopup()"
+                                    style="cursor:pointer"
+            
+                                {% elif instance.glossary.button_type == 'ask_about_me' %}
+                                    onclick="window.location.href='{% url 'pinogy_breeds:breed_detail' pet_data.ptype_slug pet_data.pbrd_slug %}'"
+                                    style="cursor:pointer"
+            
+                                {% elif instance.glossary.button_type == 'call_now' and pet_setting.storephone.visible_detail_only and pet_data.loc_contact_numbers %}
+                                    onclick="window.location.href='tel:{{ pet_data.phone_number }}'"
+                                    style="cursor:pointer"
+            
+                                {% elif instance.glossary.button_type == 'make_an_offer' %}
+                                    onclick="document.getElementById('general_collection_form_outer_{{ pet_data.pet_id }}').scrollIntoView({ behavior: 'smooth' });"
+                                    style="cursor:pointer"
+            
+                                {% elif instance.glossary.button_type == 'other' %}
+                                    {% if instance.glossary.btn_type_link_choice == 'Internal link' %}
+                                        onclick="window.location.href='{{ instance.glossary.btn_type_internal_link.link_path }}'"
+                                        style="cursor:pointer"
+                                    {% elif instance.glossary.btn_type_link_choice == 'External link' %}
+                                        onclick="window.location.href='{{ instance.glossary.btn_type_external_link }}'"
+                                        style="cursor:pointer"
+                                    {% endif %}
+                                {% endif %}
+                            />
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+       {% endif %}
+
+       {% comment %} If pet status is Sold {% endcomment %}
+       {% if pet_data.sub_pstatus_name == "Sold" %}
+            <div class="row card pet-card-section m-0">
+                <div class="col-12 p-0">
+                    <div class="pet-form-div card-img-top">
+                        <div class="pet-collection-form-title">Adopted! Let's Help You Find Your Next Pet</div>
+                        <div class="breed-paw-icon">
+                        <div class="pet-form-icon"><img src="{% static 'images/breed_detail/paw1.png'%}" alt="pet left paw"></div>
+                        <div class="pet-form-icon"><img src="{% static 'images/breed_detail/paw2.png' %}" alt="pet right paw"></div>
+                        </div>
+                    </div>
+                    <div class="pet-collection-form-outer card-img-bottom">
+                        <div class="pet-collection-form-title mt-2" style="color:var(--global-primary-color); font-size: 18px; line-height: 140%;">We're sorry, but {{pet_data.pet_name}} has been adopted. BUT don't worry,
+                        we can still help you find your next fur baby! Let us know what we can do to help.</div>
+                        {% include 'plugins/includes/general_collection_form.html' with unique_id=pet_data.pet_id|stringformat:"s"|add:"_sold_pet" form=collection_form form_type='sold_pet' location_id=pet_data.pet_loc_entity_id location_name=pet_data.loc_receipt_name pet_id=pet_data.pet_id pet_gender=pet_data.pet_gender breed_name=pet_data.pbrd_display_name breed_slug=pet_data.pbrd_slug btn_style=instance.glossary.petform_button_style %}
+                    </div>
+                </div>
+            </div>
+       {%endif%}
+       {% if pet_data.isShowList %}
+            {% for plugin in instance.child_plugin_instances %}
+                {% render_plugin plugin %}
+            {% endfor %}
+       {%endif%}
+    </div>
+</div>

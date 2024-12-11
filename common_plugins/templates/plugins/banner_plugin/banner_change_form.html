@@ -1,0 +1,2672 @@
+{% extends 'admin/base_change_form.html' %}
+
+{% load cms_tags menu_tags sekizai_tags static admin_modify %}
+{% load global_theme_config_tags %}
+
+{% block content %}
+    {% global_theme_object as global_theme_config %}
+
+    {% addtoblock 'css' %}
+    <link rel="stylesheet" href='{{global_theme_config.get_themecss_file}}'>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/custom-plugin.css' %}">
+        <style>
+            {% if global_theme_config.primary_color and global_theme_config.secondary_color %}
+                :root {
+                    --primary-element: {{global_theme_config.primary_color}};
+                    --secondary-element: {{global_theme_config.secondary_color}};
+                }
+            {% endif %}
+
+            .dev_colorpicker_preview .clr-field {
+                opacity: 0;
+                cursor: pointer;
+            }
+
+            .banner-layout-wrap-inner img{
+            }
+            #first-btn-section .rectangle,
+            #second-btn-section .rectangle,
+            .banner-layout-action .rectangle {
+                border-radius: 0px;
+            }
+
+            #first-btn-section .rounded,
+            #second-btn-section .rounded,
+            .banner-layout-action .rounded {
+                border-radius: 12px;
+            }
+
+            #first-btn-section .pill,
+            #second-btn-section .pill,
+            .banner-layout-action .pill {
+                border-radius: 100px;
+            }
+
+            .buck-absolute{
+                position:absolute;
+            }
+
+            /* Django admin style override */
+            ul > li {
+                list-style-type: none;
+            }
+            #marker{
+                position: absolute; 
+                width: 20px; 
+                height: 20px; 
+                background-color: rgba(65, 65, 65, 0.5); 
+                border-radius: 50%; 
+                border: 1px solid white; 
+                display: none;
+            }
+            #btn_color_1_layout{
+                width: 60%;
+            }#id_banner_height{
+                width: 23px;
+            }
+            #id_banner_height::after{
+                content: 'px';
+            }
+            .admin-form.horizontal-checkbox {
+                gap: 12px;
+                padding : 15px 0 15px 0;
+            }
+        </style>
+        <style>
+            {% if global_theme_config.primary_color and global_theme_config.secondary_color %}
+            :root {
+                --primary-element: {{global_theme_config.primary_color}};
+                --secondary-element: {{global_theme_config.secondary_color}};
+            }
+            .btn-fill-1{
+                background-color : var(--secondary-element);
+                color : white;
+                border : none;
+            }
+            .btn-fill-2{
+                background-color : var(--primary-element);
+                color : white;
+                border : none;
+            }
+            .btn-fill-3{
+                background-color : white;
+                color : var(--secondary-element);
+                border : none;
+            }
+            .btn-fill-4{
+                background-color : white;
+                color : var(--primary-element);
+                border : none;
+            }
+            .btn-outline-1{
+                background-color : white;
+                border : 1px solid var(--primary-element);
+                color : var(--primary-element);
+            }
+            .btn-outline-2{
+                background-color : white;
+                border : 1px solid var(--secondary-element);
+                color : var(--secondary-element);
+            }
+            .btn-outline-3{
+                background-color : white;
+                border : 1px solid black;
+                color : black;
+            }
+            .btn-outline-4{
+                background-color : F2F5F6;
+                border : 1px solid white;
+                color : white;
+            }
+            .button-style-fill {
+                background-color: var(--secondary-element);
+                color: white;
+                border : none;
+            }
+            .button-style-outline{
+                border : 1px solid var(--secondary-element);
+                color : var(--secondary-element);
+                background-color : white;
+            }
+        
+        {% endif %}
+        </style>
+        <style>
+
+            .F2{
+                background-color : var(--secondary-element);
+                color : white;
+                border : none;
+            }
+            .F1{
+                background-color : var(--primary-element);
+                color : white;
+                border : none;
+            }
+            .F4{
+                background-color : white;
+                color : var(--secondary-element);
+                border : none;
+            }
+            .F3{
+                background-color : white;
+                color : var(--primary-element);
+                border : none;
+            }
+            .O1{
+                background-color : white;
+                border : 1px solid var(--primary-element);
+                color : var(--primary-element);
+            }
+            .O2{
+                background-color : white;
+                border : 1px solid var(--secondary-element);
+                color : var(--secondary-element);
+            }
+            .O3{
+                background-color : white;
+                border : 1px solid black;
+                color : black;
+            }
+            .O4{
+                background-color : F2F5F6;
+                border : 1px solid white;
+                color : white;
+            }
+
+            .btn_fill_fn{
+                background-color : {{adminform.form.first_button_fill_color.value}};
+                color : {{adminform.form.first_button_font_color.value}};
+                border : {{adminform.form.first_button_fill_color.value}};
+            }
+            .btn_fill_fn2{
+                background-color : {{adminform.form.second_button_fill_color.value}};
+                color : {{adminform.form.second_button_font_color.value}};
+                border : {{adminform.form.second_button_fill_color.value}};
+            }
+            .btn_outline_fn{
+                background-color : white;
+                color : {{adminform.form.first_button_outline_color.value}};
+                border :1px solid {{adminform.form.first_button_outline_color.value}};
+            }
+            .btn_outline_fn2{
+                background-color : white;
+                color : {{adminform.form.second_button_outline_color.value}};
+                border :1px solid {{adminform.form.second_button_outline_color.value}};
+            }
+            .button-style-fill {
+                background-color: var(--secondary-element);
+                color: white;
+                border : none;
+            }
+            .button-style-outline{
+                border : 1px solid var(--secondary-element);
+                color : var(--secondary-element);
+                background-color : white;
+            }
+            {% comment %} .box-theme-form-item-inline .box-theme-form-item-inline-input{
+                min-width : 94%;
+            } {% endcomment %}
+            .box-theme-form-item-inline.Btn_textbox{
+                width : 94%;
+            }
+
+            .activelayout {
+                padding: 10px;
+                border-radius: 12px;
+                border: 2px dashed #12BBD2;
+                background: rgba(18, 187, 210, 0.05);
+            }
+            .box-theme-sub-title.d-flex{
+                justify-content: space-between;
+                width: 94%;
+            }
+            .checkcontainer{
+                text-wrap : nowrap;
+            }
+            #bannerpluginmodel_form .banner-layout-wrap{
+                margin-bottom : 0;
+            }
+            #bannerpluginmodel_form .w-50{
+                width : 510px!important;
+            }
+            #bannerpluginmodel_form .box-theme-form-item:not(.box-theme-form-item.background){
+                padding-bottom: 0;
+            }
+
+            .btn-type-section .banner-layout-box-control{
+                padding-left: 0;
+            }
+            #text-section .box-theme-form-item{
+                padding-bottom : 0;
+            }
+            #text-section .primary-label{
+                margin-bottom : 20px;
+            }
+            #text-section .secondary-label{
+                margin-bottom : 16px;
+            }
+            .del-anchor{
+                text-decoration : none;
+                color: #12BBD2!important;
+                font-size : 18px;
+                font-weight : 400;
+             }
+             .ml-2{
+                margin-left : 8px!important;
+             }
+
+             #banner_mobile_view{
+                max-width : 320px;
+             }
+             #banner_mobile_view .container{
+                padding-left : 12px;
+             }
+             #banner_mobile_view .align-self-center{
+                align-self : initial!important;
+             }
+             #banner_mobile_view .row.banner-content{
+                flex-direction : column;
+                position : relative;
+             }
+            .margin-text{
+                margin : 24px 12px 24px 12px;
+                width : 92%;
+            }
+            #main-section-btn .theme-button-tab {
+                margin-bottom : 8px;
+            }
+            #id_add_btn.box-theme-sub-title{
+                margin : 40px 0 0 0 ;
+            }
+        </style>
+      
+    {% endaddtoblock %}
+
+    <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}{% if form_url %}action="{{ form_url }}" {% endif %}method="post" id="{{ opts.model_name }}_form" novalidate onsubmit="save_changes()">
+        {% csrf_token %}
+        {{adminform.form.errors}}
+        <input type="hidden" value="" id = "{{adminform.form.button_data.name}}" name = "{{adminform.form.button_data.name}}">
+        <div class="box-theme">
+            <div class="box-theme-title">
+                Layout
+            </div>
+            <div class="box-theme-help-text">
+                Choose the layout that will apply for desktop and a separate layout for mobile.
+            </div>
+
+            <div class="box-theme-tab-wrap-layout" id="first-btn-section">
+                <div class="box-theme-tab">
+                    <ul class="theme-tab-layout">
+                        <li class="active btn_style_1_layout" data-target="btn_style_1_layout"><img src="{% static 'images/widget_image/bannerplugin/ph_monitor_enable.svg'%}" alt=""></li>
+                        <li class="btn_color_1_layout" data-target="btn_color_1_layout"><img src="{% static 'images/widget_image/bannerplugin/icons8_iphone.svg'%}" alt=""></li>
+                    </ul>
+                </div>
+                <!-- for desktop view -->
+                <div class="box-theme-form-item theme-tab-content style-tab" id="btn_style_1_layout">
+                    <div class="box-theme-form-item">
+                        <div class="banner-layout-types">
+                            <div class="banner-layout-wrap">
+                                <div class="banner-layout-wrap-inner txt-1-btn-left layout_1 {% if adminform.form.layout.value == 'TEXT 1 BUTTON LEFT' %} activelayout {% endif %}" onclick="SelectBannerLayout('layout_1')">
+                                    <div class="banner-layout-box title-left ">
+                                        <div class="banner-layout-content">
+                                            <div class="banner-layout-content-inner">
+                                                <div class="banner-layout-title">
+                                                    Find Your Perfect Pet
+                                                </div>
+                                                <div class="banner-layout-action">
+                                                    <button disabled class="btn-theme btn-shape-1 btn-style-1 btn-color-1 preview_button_1">
+                                                        Button
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="banner-layout-content-img">
+                                            <img src="{% static 'images/widget_image/bannerplugin/p_1.svg'%}" alt="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="banner-layout-box-control">
+                                    <label class="checkcontainer" id="layout_1">Text and button(s) on the left
+                                        <input type="radio" onclick="SelectBannerLayout('layout_1')" value="TEXT 1 BUTTON LEFT" id="layout_group" name="{{adminform.form.layout.name}}" {% if adminform.form.layout.value == 'TEXT 1 BUTTON LEFT' %} checked {% endif %} >
+                                        <span class="radiobtn"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="banner-layout-wrap">
+                                <div class="banner-layout-wrap-inner txt-1-btn-right layout_2 {% if adminform.form.layout.value == 'TEXT 1 BUTTON RIGHT' %} activelayout {% endif %}" onclick="SelectBannerLayout('layout_2')">
+                                    <div class="banner-layout-box title-right">
+                                        <div class="banner-layout-content">
+                                            <div class="banner-layout-content-inner">
+                                                <div class="banner-layout-title">
+                                                    Find Your Perfect Pet
+                                                </div>
+                                                <div class="banner-layout-action">
+                                                    <button disabled class="btn-theme btn-shape-1 btn-style-1 btn-color-1 preview_button_1">
+                                                        Button
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="banner-layout-content-img">
+                                            <img src="{% static 'images/widget_image/bannerplugin/p_2.svg'%}" alt="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="banner-layout-box-control">
+                                    <label class="checkcontainer" id="layout_2">Text and button(s) on the right
+                                        <input type="radio" onclick="SelectBannerLayout('layout_2')" value="TEXT 1 BUTTON RIGHT" id="layout_group" name="{{adminform.form.layout.name}}" {% if adminform.form.layout.value == 'TEXT 1 BUTTON RIGHT' %} checked {% endif %} >
+                                        <span class="radiobtn"></span>
+                                    </label>
+                                </div>
+                            </div>
+        
+                            <div class="banner-layout-wrap">
+                                <div class="banner-layout-wrap-inner txt-1-btn-center layout_6 {% if adminform.form.layout.value == 'TEXT 1 BUTTON CENTER' %} activelayout {% endif %}" onclick="SelectBannerLayout('layout_6')">
+                                   <div class="banner-layout-box title-center">
+                                      <div class="banner-layout-content">
+                                         <div class="banner-layout-content-inner text-center mw-100">
+                                            <div class="banner-layout-title mw-100">
+                                               Find Your Pet
+                                            </div>
+                                            <div class="banner-layout-action">
+                                               <button disabled class="btn-theme btn-shape-1 btn-style-1 btn-color-1 preview_button_1">
+                                               Button
+                                               </button>
+                                            </div>
+                                         </div>
+                                      </div>
+                                      <div class="banner-layout-content-img">
+                                         <img src="{% static 'images/widget_image/bannerplugin/p_5.svg'%}" alt="">
+                                      </div>
+                                   </div>
+                                </div>
+                                <div class="banner-layout-box-control">
+                                   <label class="checkcontainer" id="layout_6">Text and button(s) centered
+                                   <input type="radio" onclick="SelectBannerLayout('layout_6')" value="TEXT 1 BUTTON CENTER" id="layout_group" name="{{adminform.form.layout.name}}" {% if adminform.form.layout.value == 'TEXT 1 BUTTON CENTER' %} checked {% endif %} >
+                                   <span class="radiobtn"></span>
+                                   </label>
+                                </div>
+                            </div>
+                            <div class="banner-layout-wrap">
+                                <div class="banner-layout-wrap-inner img-only layout_5  {% if adminform.form.layout.value == 'IMAGE ONLY' %} activelayout {% endif %}" onclick="SelectBannerLayout('layout_5')">
+                                    <div class="banner-layout-box title-right">
+                                        <div class="banner-layout-content-img">
+                                            <img src="{% static 'images/widget_image/bannerplugin/p_5.svg'%}" alt="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="banner-layout-box-control">
+                                    <label class="checkcontainer" id="layout_5">Image only
+                                        <input type="radio" onclick="SelectBannerLayout('layout_5')" value="IMAGE ONLY" id="layout_group" name="{{adminform.form.layout.name}}" {% if adminform.form.layout.value == 'IMAGE ONLY' %} checked {% endif %} >
+                                        <span class="radiobtn"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            {% if adminform.form.layout.errors %}
+                                {% for error in adminform.form.layout.errors  %}
+                                    <div class="alert alert-danger error-block" role="alert">
+                                        {{error}}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <!-- for mobile view -->
+                <div class="box-theme-form-item theme-tab-content color-tab" id="btn_color_1_layout" style="display: none;">
+                    <div class="box-theme-form-item">
+                        <div class="banner-layout-types-mobile">
+                            <div class = "d-flex"> 
+                                <div class="banner-layout-wrap">
+                                    <div class="banner-layout-wrap-inner txt-1-btn-left layout_1_mob {% if adminform.form.mobile_layout.value == 'mobile_layout_1' %} activelayout {% endif %}" onclick="SelectBannerLayoutMobile('layout_1_mob')">
+                                        <img src="{% static 'images/widget_image/bannerplugin/mob_layout1.png'%}" alt="">
+                                    </div>
+                                    <div class="banner-layout-box-control">
+                                        <label class="checkcontainer" id="layout_1_mob">Content on the bottom 
+                                            <input type="radio" onclick="SelectBannerLayoutMobile('layout_1_mob')" value="mobile_layout_1" id="layout_group" name="{{adminform.form.mobile_layout.name}}" {% if adminform.form.mobile_layout.value == 'mobile_layout_1' %} checked {% endif %} >
+                                            <span class="radiobtn"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="banner-layout-wrap">
+                                    <div class="banner-layout-wrap-inner txt-1-btn-right layout_2_mob {% if adminform.form.mobile_layout.value == 'mobile_layout_2' %} activelayout {% endif %}" onclick="SelectBannerLayoutMobile('layout_2_mob')">
+                                        <img src="{% static 'images/widget_image/bannerplugin/mob_layout2.png'%}" alt="">
+                                    </div>
+                                    <div class="banner-layout-box-control">
+                                        <label class="checkcontainer" id="layout_2_mob">Content centered
+                                            <input type="radio" onclick="SelectBannerLayoutMobile('layout_2_mob')" value="mobile_layout_2" id="layout_group" name="{{adminform.form.mobile_layout.name}}" {% if adminform.form.mobile_layout.value == 'mobile_layout_2' %} checked {% endif %} >
+                                            <span class="radiobtn"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class = "d-flex"> 
+                                <div class="banner-layout-wrap">
+                                    <div class="banner-layout-wrap-inner txt-2-btn-left layout_3_mob {% if adminform.form.mobile_layout.value == 'mobile_layout_3' %} activelayout {% endif %}" onclick="SelectBannerLayoutMobile('layout_3_mob')">
+                                        <img src="{% static 'images/widget_image/bannerplugin/mob_layout3.png'%}" alt="">
+                                    </div>
+                                    <div class="banner-layout-box-control">
+                                        <label class="checkcontainer" id="layout_3_mob">Content on the top
+                                            <input type="radio" onclick="SelectBannerLayoutMobile('layout_3_mob')" value="mobile_layout_3" id="layout_group" name="{{adminform.form.mobile_layout.name}}" {% if adminform.form.mobile_layout.value == 'mobile_layout_3' %} checked {% endif %} >
+                                            <span class="radiobtn"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="banner-layout-wrap">
+                                    <div class="banner-layout-wrap-inner txt-2-btn-right layout_4_mob {% if adminform.form.mobile_layout.value == 'mobile_layout_4' %} activelayout {% endif %}" onclick="SelectBannerLayoutMobile('layout_4_mob')">
+                                        <img src="{% static 'images/widget_image/bannerplugin/mob_layout4.png'%}" alt="">
+                                    </div>
+                                    <div class="banner-layout-box-control">
+                                        <label class="checkcontainer" id="layout_4_mob">Image only
+                                            <input type="radio" onclick="SelectBannerLayoutMobile('layout_4_mob')" value="mobile_layout_4" id="layout_group" name="{{adminform.form.mobile_layout.name}}" {% if adminform.form.mobile_layout.value == 'mobile_layout_4' %} checked {% endif %} >
+                                            <span class="radiobtn"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="banner-layout-wrap">
+                                    <div class="banner-layout-wrap-inner txt-2-btn-right layout_5_mob {% if adminform.form.mobile_layout.value == 'mobile_layout_5' %} activelayout {% endif %}" onclick="SelectBannerLayoutMobile('layout_5_mob')">
+                                        <img src="{% static 'images/widget_image/bannerplugin/mob_layout5.png'%}" alt="">
+                                    </div>
+                                    <div class="banner-layout-box-control">
+                                        <label class="checkcontainer" id="layout_5_mob">Text on the top and button on the bottom
+                                            <input type="radio" onclick="SelectBannerLayoutMobile('layout_5_mob')" value="mobile_layout_5" id="layout_group" name="{{adminform.form.mobile_layout.name}}" {% if adminform.form.mobile_layout.value == 'mobile_layout_5' %} checked {% endif %} >
+                                            <span class="radiobtn"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if adminform.form.layout.errors %}
+                                {% for error in adminform.form.layout.errors  %}
+                                    <div class="alert alert-danger error-block" role="alert">
+                                        {{error}}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="box-theme-formplugn-divider">
+            </div>
+            <div class="box-theme-title">
+                Image
+            </div>
+            <div class="box-theme-form-item">
+                <div class="form-upload">
+                    <p>Upload your .JPG, .PNG, .SVG, .WEBP or .GIF files here or drag the image</p>
+                    <button class="btn-theme btn-shape-1 btn-style-1 btn-color-1" style="background:#12BBD2;">Upload Image</button>
+                    <div class="area">
+                        <input type="file" name="{{adminform.form.image.name}}" id="{{adminform.form.image.name}}" value = "{{adminform.form.image.value}}"/>
+                    </div>
+                </div>
+                {% comment %} <ul class="list-inline list-unstyled">
+                    <li> <label class="checkcontainer">Auto resize image
+                            <input type="checkbox" checked="checked">
+                Image
+
+                            <span class="checkmark"></span>
+                        </label></li>
+                    <li><a href="#">Set Focus Point</a></li>
+                </ul> {% endcomment %}
+            </div>
+            {% if adminform.form.image.errors %}
+                {% for error in adminform.form.image.errors  %}
+                    <div class="alert alert-danger error-block" role="alert">
+                        {{error}}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <div class="">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="box-theme-preview-list" >
+                            <ul id="background-img-preview-section">
+                                {% if adminform.form.image.value%}
+                                    <li class="banner-image-preview-list active">
+                                        <img id="banner-img" src="{{adminform.form.instance.image.url}}" onclick="showCoords(event)" style="cursor:crosshair;" alt="">
+                                        <div id="marker"></div>
+                                        <button onClick="deleteImage()" type="button">
+                                            <img src="{% static 'images/ic-delete.svg' %}" alt="">
+                                        </button>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-6 d-none">
+                        <div class="box-theme-sub-title pb-4">
+                            Image Focus - Mark Coordinates
+                            <button class="btn btn-sm btn-info text-white float-end" onClick="clearCoords()">Clear</button>
+                        </div>
+                        <div class="alert alert-info">
+                            <div id="d1">X : 0, Y : 0</div>
+                            <div id="d2">X% : 0, Y% : 0</div>
+                            <input type="hidden" name="{{adminform.form.x_perc.name}}" id="{{adminform.form.x_perc.name}}" value="{{adminform.form.x_perc.value}}" class="" onChange="" style="">
+                            <input type="hidden" name="{{adminform.form.y_perc.name}}" id="{{adminform.form.y_perc.name}}" value="{{adminform.form.y_perc.value}}" class="" onChange="" style="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class = 'd-flex'>
+            {{ adminform.form.alt_name }}
+            <div class="box-theme-form-label">
+                <span style="position:relative;">
+                <img src="/static/images/ic-info.svg">
+                <div class="form-tooltip">
+                ALT text is important, it improves your image accesibility &amp; SEO.
+                </div>
+                </span>
+                </div>
+            </div>
+            <div class="box-theme-formplugn-divider"></div>
+            <div>
+                {{ adminform.form.parallax }}
+            </div>
+            <div class="box-theme-formplugn-divider"></div>
+            <div class="box-theme-sub-title"> Banner Type </br></div>
+            <div>
+                <div class="btn-type-section">
+                    <div class="row d-flex">
+                        <div class="col-4 ">
+                            <div class="banner-layout-box-control">
+                                <label class="checkcontainer" id="type_1">PRIMARY
+                                    <input type="radio" value="PRIMARY" id="type_group" name="{{adminform.form.banner_type.name}}" {% if adminform.form.banner_type.value == 'PRIMARY' %} checked {% endif %}>
+                                    <span class="radiobtn"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-4 ">
+                            <div class="banner-layout-box-control">
+                                <label class="checkcontainer" id="type_2">SECONDARY
+                                    <input type="radio" value="SECONDARY" id="type_group" name="{{adminform.form.banner_type.name}}" {% if adminform.form.banner_type.value == 'SECONDARY' %} checked {% endif %}>
+                                    <span class="radiobtn"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                        
+            <div class="box-theme-formplugn-divider"></div>
+            {% comment %} <div class="box-theme-sub-title"> Banner Content Position (Mobile View) </br></div> {% endcomment %}
+            <div class = "d-none">
+                <div class="container">
+                    <div class="row d-flex">
+                        <div class="col-4 ">
+                            <div class="banner-layout-box-control">
+                                <label class="checkcontainer" id="position_1">TOP
+                                    <input type="radio" value="TOP" id="position_group" name="{{adminform.form.content_pos.name}}" {% if adminform.form.content_pos.value == 'TOP' %} checked {% endif %}>
+                                    <span class="radiobtn"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-4 ">
+                            <div class="banner-layout-box-control">
+                                <label class="checkcontainer" id="position_2">CENTER
+                                    <input type="radio" value="CENTER" id="position_group" name="{{adminform.form.content_pos.name}}" {% if adminform.form.content_pos.value == 'CENTER' %} checked {% endif %}>
+                                    <span class="radiobtn"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-4 ">
+                            <div class="banner-layout-box-control">
+                                <label class="checkcontainer" id="position_3">BOTTOM
+                                    <input type="radio" value="BOTTOM" id="position_group" name="{{adminform.form.content_pos.name}}" {% if adminform.form.content_pos.value == 'BOTTOM' %} checked {% endif %}>
+                                    <span class="radiobtn"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid">
+            <div class="row">    
+            <div class="col-6">    
+            <div class="box-theme-title">
+                Mobile Image
+            </div>
+            <div class="box-theme-form-item">
+                <div class="form-upload">
+                    <p>Upload your .JPG, .PNG, .SVG, .WEBP or .GIF files here or drag the image</p>
+                    <button class="btn-theme btn-shape-1 btn-style-1 btn-color-1" style="background:#12BBD2;">Upload Mobile Image</button>
+                    <div class="area">
+                        <input type="file" name="{{adminform.form.mobimage.name}}" id="{{adminform.form.mobimage.name}}" />
+                    </div>
+                </div>
+            </div>
+            </div>
+            
+            {% if adminform.form.mobimage.errors %}
+                {% for error in adminform.form.mobimage.errors  %}
+                    <div class="alert alert-danger error-block" role="alert">
+                        {{error}}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <div class="col-6">
+            <div class="box-theme-sub-title">
+                Preview Mobile Image
+            </div>
+            <div class="box-theme-preview-list" >
+                <ul id="background-mobimg-preview-section">
+                    {% if adminform.form.mobimage.value %}
+                    <li class="banner_mob active">
+                        <img id="banner-mob-img" src="{{adminform.form.instance.mobimage.url}}" alt="">
+                        <button onClick="deletemobImage()" type="button">
+                            <img src="{% static 'images/ic-delete.svg' %}" alt="">
+                        </button>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            </div>
+            </div>
+            </div>
+
+
+            <div class="box-theme-sub-title">
+                Banner Height
+            </div>
+            <div class="box-theme-help-text">
+                Set your preferred banner height. Recommended height is between 500-700px.
+            </div>
+            {{ adminform.form.banner_height }}
+            {% if adminform.form.banner_height.errors %}
+                {% for error in adminform.form.banner_height.errors  %}
+                    <div class="alert alert-danger error-block" role="alert">
+                        {{error}}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="box-theme-formplugn-divider">
+            </div>
+
+
+            <div class="box-theme-title banner-text-layout">
+                Text
+            </div>
+            <div class="banner-edit-section banner-text-layout">
+                <div id = 'text-section' class = "d-flex flex-column flex-gap">
+                    <div class = 'd-flex flex-column flex-gap-20'>
+                        <div class="box-theme-form-item">
+                            {{adminform.form.title_text}}
+                        </div>
+                        <div class="box-theme-tab-wrap sb50">
+                            {{adminform.form.title_text_color}}
+                        </div>
+                    </div>
+
+                    {% if adminform.form.title_text.errors %}
+                        {% for error in adminform.form.title_text.errors  %}
+                            <div class="alert alert-danger error-block" role="alert">
+                                {{error}}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    {% if adminform.form.title_text_color.errors %}
+                        {% for error in adminform.form.title_text_color.errors  %}
+                            <div class="alert alert-danger error-block" role="alert">
+                                {{error}}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <div class = 'd-flex flex-column flex-gap-20'>
+                        <div class="box-theme-form-item">
+                            {{adminform.form.sub_title_text}}
+                        </div>
+                        <div class="box-theme-tab-wrap sb50">
+                            {{adminform.form.sub_title_text_color}} 
+                        </div>
+                    </div>
+                    {% if adminform.form.sub_title_text.errors %}
+                        {% for error in adminform.form.sub_title_text.errors  %}
+                            <div class="alert alert-danger error-block" role="alert">
+                                {{error}}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    {% if adminform.form.sub_title_text_color.errors %}
+                        {% for error in adminform.form.sub_title_text_color.errors  %}
+                            <div class="alert alert-danger error-block" role="alert">
+                                {{error}}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div>
+                    <div class="banner-layout-wrap no-hover d-none">
+                        {% comment %} <div class="banner-layout-wrap-inner">
+                            <div class="banner-layout-box title-left" style="background-size: cover" >
+                                <div class="banner-layout-content">
+                                    <div class="banner-layout-content-inner">
+                                        <div class="banner-layout-title title-text">
+                                            Find Your Perfect Pet
+                                        </div>
+                                        <div class="banner-layout-subtitle subtitle-text">
+
+                                        </div>
+                                        <div class="banner-layout-action">
+                                            <button class="btn-theme btn-shape-1 btn-style-1 btn-color-1">
+                                                Button
+                                            </button>
+                                            <button class="btn-theme btn-shape-1 btn-style-2 btn-color-1">
+                                                Button
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="banner-layout-content-img">
+                                    <img src="/static/images/widget_image/bannerplugin/p_3.svg" alt="">
+                                </div>
+                            </div>
+                        </div> {% endcomment %}
+                        <div class="banner-layout-wrap no-hover">
+                            <div class="banner-layout-wrap-inner">
+                                <img src="/static/images/widget_image/bannerplugin/banner-view2.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-theme-formplugn-divider">
+            </div>
+            {% comment %} messages box and messages font color  {% endcomment %}
+            <div class="box-theme-sub-title">
+                Messages
+            </div>
+            <div class="box-theme-help-text">
+                Recommended title format - H1. Recommended text format - Primary1.
+            </div>
+            {{adminform.form.messages}}
+
+            {% if adminform.form.messages.errors %}
+                {% for error in adminform.form.messages.errors  %}
+                    <div class="alert alert-danger error-block" role="alert">
+                        {{error}}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% comment %} {{adminform.form.message_font_color}} {% endcomment %}
+            {% comment %} {% if adminform.form.message_font_color.errors %}
+                {% for error in adminform.form.message_font_color.errors  %}
+                    <div class="alert alert-danger error-block" role="alert">
+                        {{error}}
+                    </div>
+                {% endfor %}
+            {% endif %} {% endcomment %}
+            {% comment %} end messages box and messages font color   {% endcomment %}
+
+            <div class="box-theme-formplugn-divider button-layout"></div>
+
+             {% comment %} image clickable option {% endcomment %}
+
+            <div class="box-theme-sub-title img-clickable mt-4 {% if adminform.form.layout.value != "IMAGE ONLY" %} d-none {% endif %}">
+                <div>{{ adminform.form.image_clickable.label }}</div>
+                {{ adminform.form.image_clickable }}
+                <div class="box-theme-form-item background {% if adminform.form.image_clickable.value == 'False' %}d-none{% endif %}" id="toggleImgClickableDiv" style="margin-left: 27px;">
+                    <div class="box-theme-form-item-inline Btn_textbox">
+                        <div class="box-theme-form-item-inline-input">
+                            <div class="double20">
+                                <div class="admin-form horizontal-checkbox">
+                                    <div class="form-check radio-outer d-flex align-items-center p-0">
+                                        <input class="form-check-input custom-radio m-0" type="radio" name="{{adminform.form.img_link_choice_field.name}}" onclick="selectRadioOption2(this)" id="link_choice_field_1-1" value="Internal link" {% if adminform.form.img_link_choice_field.value == 'Internal link'%} checked {%endif%}>
+                                        <label class="form-check-label custom-radio-label ml-2" for="link_choice_field_1-1">Internal link</label>
+                                        <div class="box-theme-form-label">
+                                            <span style="position:relative; margin-right: 20px;">
+                                                <img src="/static/images/ic-info.svg" class="abs_meg_icon">
+                                                <div class="form-tooltip">
+                                                    An internal link is a link to an existing page on your website. When an internal link button is clicked, the page will open in the same tab.
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                
+                                    <div class="form-check radio-outer d-flex align-items-center p-0">
+                                        <input class="form-check-input custom-radio m-0" type="radio" name="{{adminform.form.img_link_choice_field.name}}" onclick="selectRadioOption2(this)" id="link_choice_field_2-1" value="External link" {% if adminform.form.img_link_choice_field.value == 'External link'%} checked {%endif%}>
+                                        <label class="form-check-label custom-radio-label ml-2" for="{{adminform.form.img_link_choice_field.name}}">External link</label>
+                                        <div class="box-theme-form-label">
+                                            <span style="position:relative; margin-right: 20px;">
+                                                <img src="/static/images/ic-info.svg" class="abs_meg_icon">
+                                                <div class="form-tooltip">
+                                                    An external link is a link that directs users away from your website. When an external link button is clicked, the page will open in a new window or tab.
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                
+                                    <div class="form-check radio-outer d-flex align-items-center p-0">
+                                        <input class="form-check-input custom-radio m-0" type="radio" name="{{adminform.form.img_link_choice_field.name}}" onclick="selectRadioOption2(this)" id="link_choice_field_3-1" value="Phone link" {% if adminform.form.img_link_choice_field.value == 'Phone link'%} checked {%endif%}>
+                                        <label class="form-check-label custom-radio-label ml-2" for="{{adminform.form.img_link_choice_field.name}}">Phone link</label>
+                                        <div class="box-theme-form-label">
+                                            <span style="position:relative; margin-right: 20px;">
+                                                <img src="/static/images/ic-info.svg" class="abs_meg_icon">
+                                                <div class="form-tooltip">
+                                                    On iOS or Android mobile devices, a phone link is a clickable button that users can click to call a phone number. On other devices, a phone number will appear in the button's place, but will not be clickable.
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                
+                            <!-- input fields for internal link, external link, phone link -->
+                            <div class="row">
+                                <div class="col-8">
+                                    <div id="cont_internal_link_btn" style="display: {% if adminform.form.img_link_choice_field.value == 'Internal link' %}block{% else %}none{%endif%}">
+                                        {{adminform.form.img_internallink}}
+                                    </div>
+                                    <div id="cont_external_link_btn" style="display: {% if adminform.form.img_link_choice_field.value == 'External link' %}block{% else %}none{%endif%}">
+                                        <input name="{{ adminform.form.img_first_button_link.name }}" id="button_link-1" type="text" value="{% if adminform.form.img_first_button_link.value %}{{adminform.form.img_first_button_link.value}}{% endif %}" placeholder="http://" class="form-input">
+                                    </div>
+                                    <div id="cont_phone_link_btn" style="display: {% if adminform.form.img_link_choice_field.value == 'Phone link' %}block{% else %}none{%endif%}">
+                                        <input name="{{ adminform.form.img_phone_link.name }}" id="button_phone_link-1" type="text" value="{% if adminform.form.img_phone_link.value %}{{adminform.form.img_phone_link.value}}{% endif %}" placeholder="(XXX) XXX–XXXX" class="form-input phone-validation" onkeypress="return /[0123456789+-]/i.test(event.key)" oninput="phonelinnkinput(this)">
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <select name="{{ adminform.form.img_button_target.name }}" id="id_button_target-1" class="form-select">
+                                        <option value="_self" {% if adminform.form.img_button_target.value == '_self'%}selected{%endif%}>Current Tab</option>
+                                        <option value="_blank" {% if adminform.form.img_button_target.value == '_blank'%}selected{%endif%}>New Tab</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    {% if adminform.form.img_first_button_link.errors %}
+                        {% for error in adminform.form.img_first_button_link.errors %}
+                            <div class="alert alert-danger error-block" role="alert">
+                                {{error}}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                
+                    {% if adminform.form.img_internallink.errors %}
+                        {% for error in adminform.form.img_internallink.errors %}
+                            <div class="alert alert-danger error-block" role="alert">
+                                {{error}}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                
+                    {% if adminform.form.img_button_target.errors %}
+                        {% for error in adminform.form.img_button_target.errors %}
+                            <div class="alert alert-danger error-block" role="alert">
+                                {{error}}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>             
+
+            <div class="box-theme-title button-layout">
+                Button
+            </div>
+            <div class="box-theme-sub-title d-flex">
+                <div>Button Direction</div>
+            </div> 
+            {{adminform.form.button_direction}}
+            <div class="banner-edit-section button-layout">
+                <div id="main-section-btn"  class = "d-flex flex-column flex-gap-30">
+                    {% comment %} <div id = "section-1">
+                        <div class="box-theme-sub-title d-flex" id="headline_color">
+                            <div>First Button</div>
+                        </div>
+                        <div class="box-theme-form-item">
+                            <div class="box-theme-form-item-inline Btn_textbox">
+                                <div class="box-theme-form-item-inline-input">
+
+                              
+                                    <input name="button_text-1" id="button_text-1" type="text" value="{% if adminform.form.button_text_1.value %}{{adminform.form.first_button_text.value}}{% endif %}" placeholder="Button's text" class="form-input mb-2">
+
+                                    <div class="admin-form  horizontal-checkbox ">
+        
+                                        <div class="form-check radio-outer d-flex align-items-center gap-2 p-0">
+                                            <input class="form-check-input custom-radio m-0" type="radio" name="link_choice_field-1" onclick = "selectRadioOption(this)" id="link_choice_field_1-1" value="Internal link" checked="">
+                                            <label class="form-check-label custom-radio-label m-0" for="link_choice_field_1-1">
+                                                Internal link
+                                            </label>
+                                        </div>
+                                    
+                                        <div class="form-check radio-outer d-flex align-items-center gap-2 p-0">
+                                            <input class="form-check-input custom-radio m-0" type="radio" name="link_choice_field-1" onclick = "selectRadioOption(this)" id="link_choice_field_2-1" value="External link">
+                                            <label class="form-check-label custom-radio-label m-0" for="link_choice_field_2-1">
+                                                External link
+                                            </label>
+                                        </div>
+                                    
+                                        <div class="form-check radio-outer d-flex align-items-center gap-2 p-0">
+                                            <input class="form-check-input custom-radio m-0" type="radio" name="link_choice_field-1" onclick = "selectRadioOption(this)" id="link_choice_field_3-1" value="Phone link">
+                                            <label class="form-check-label custom-radio-label m-0" for="link_choice_field_3-1">
+                                                Phone link
+                                            </label>
+                                        </div>
+                                    
+                                    </div>
+                                    
+                                    <div class="row">    
+                                        <div class="col-8">                    
+                                            <div id="cont_internal_link_btn_1">
+                                                {{adminform.form.button_internallink_1}}
+                                            </div>
+                                            <div id="cont_external_link_btn_1" style="display: {% if adminform.form.link_choice_field_btn1.value == 'External link' %}block{% else %}none{%endif%} ">
+                                                <input name="button_link-1" id = "button_link-1" type="text" value="{% if adminform.form.first_button_link.value %}{{adminform.form.first_button_link.value}}{% endif %}" placeholder="http://" class="form-input">
+                                            </div>
+                                            <div id="cont_phone_link_btn_1" style="display: {% if adminform.form.link_choice_field_btn1.value == 'Phone link' %}block{% else %}none{%endif%} ">
+                                                <input name="button_phone_link-1" id = "button_phone_link-1" type="text" value="{% if adminform.form.button_phone_link.value %}{{adminform.form.first_button_phone_link.value}}{% endif %}" placeholder="(XXX) XXX–XXXX" class="form-input" onkeypress="return /[0123456789+-]/i.test(event.key)">
+                                            </div>
+                                            
+                                        </div>
+                                        <div class="col-4">
+                                            <select name="button_target-1" id="id_button_target-1">
+                                                <option value="_self" selected="">Same Window</option>
+                                                
+                                                <option value="_blank">New Window</option>
+                                                
+                                            </select>
+                                        </div>
+                                    </div>
+                                
+                                </div>
+                            </div>
+                            {% if adminform.form.first_button_text.errors %}
+                                {% for error in adminform.form.first_button_text.errors  %}
+                                    <div class="alert alert-danger error-block" role="alert">
+                                        {{error}}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            {% if adminform.form.first_button_link.errors %}
+                                {% for error in adminform.form.first_button_link.errors  %}
+                                    <div class="alert alert-danger error-block" role="alert">
+                                        {{error}}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            {% if adminform.form.button_internallink_1.errors %}
+                                {% for error in adminform.form.button_internallink_1.errors  %}
+                                    <div class="alert alert-danger error-block" role="alert">
+                                        {{error}}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            {% if adminform.form.first_button_target.errors %}
+                            {% for error in adminform.form.first_button_target.errors  %}
+                                <div class="alert alert-danger error-block" role="alert">
+                                    {{error}}
+                                </div>
+                            {% endfor %}
+                            {% endif %}
+                        </div>
+                        <div class="box-theme-tab-wrap" id="first-btn-section">
+                            <div class="box-theme-tab">
+                                <ul class="theme-tab">
+                                    <li class="active btn_style_1" data-target="btn_style_1">Style</li>
+                                    <li class="btn_color_1" data-target="btn_color_1">Color</li>
+                                </ul>
+                            </div>
+                            <div class="box-theme-form-item theme-tab-content style-tab" id="btn_style_1">
+                                <div class="box-theme-tab-wrap admin-form admin-form ">
+                                    <ul class="theme-button-tab ">
+                                        <input type="hidden" name="button_style-1" id="button_style-1" value="{{adminform.form.first_button_style.value}}"> 
+                                        <li class="button_style-1 {% if adminform.form.first_button_style.value == 'fill' %} active {% endif %}" onclick="setPrimaryBtnStyle('fill',this)"><button class="btn-theme {% if adminform.form.first_button_style.value == 'fill' and adminform.form.first_button_color_pattern.value != '' %} {{adminform.form.first_button_color_pattern.value}} {% elif adminform.form.first_button_style.value == 'fill' and adminform.form.first_button_color_pattern.value == '' and adminform.form.first_button_fill_color.value != '' and adminform.form.first_button_font_color.value != '' %} btn_fill_fn {% else %} button-style-fill {% endif %}">Button </button></li>
+                                        <li class="button_style-1 {% if adminform.form.first_button_style.value == 'outline' %} active {% endif %}" onclick="setPrimaryBtnStyle('outline',this)"><button class="btn-theme {% if adminform.form.first_button_style.value == 'outline' and adminform.form.first_button_color_pattern.value != '' %} {{adminform.form.first_button_color_pattern.value}} {% elif adminform.form.first_button_style.value == 'outline' and adminform.form.first_button_color_pattern.value == '' and adminform.form.first_button_outline_color.value != '' %} btn_outline_fn {% else %} button-style-outline {% endif %}">Button </button></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="box-theme-form-item theme-tab-content color-tab" id="btn_color_1" style="display: none;">
+                                <div class="box-theme-tab-wrap admin-form admin-form ">
+
+                                        <input type="hidden" name="button_color_pattern-1" id="button_color_pattern-1" value="{{adminform.form.first_button_color_pattern.value}}">
+                                        <ul class="theme-button-tab {% if adminform.form.first_button_style.value == 'fill' %} {% else %} d-none {% endif %} " id="primary-btn-set1-1">
+                                            <li class="button_color_pattern-1 {% if adminform.form.first_button_color_pattern.value == 'F2' %}active{% endif %}" data-value = "F2" onclick="selectButtonColor(this, 'F2')"><button class="btn-theme F2">Button</button></li>
+                                            <li class="button_color_pattern-1 {% if adminform.form.first_button_color_pattern.value == 'F1' %}active{% endif %}" data-value = "F1" onclick="selectButtonColor(this, 'F1')"><button class="btn-theme F1">Button</button></li>
+                                            <li class="button_color_pattern-1 {% if adminform.form.first_button_color_pattern.value == 'F4' %}active{% endif %}" data-value = "F4" onclick="selectButtonColor(this, 'F4')"><button class="btn-theme F4">Button</button></li>
+                                            <li class="button_color_pattern-1 {% if adminform.form.first_button_color_pattern.value == 'F3' %}active{% endif %}" data-value = "F3" onclick="selectButtonColor(this, 'F3')"><button class="btn-theme F3">Button</button></li>
+                                        </ul>
+                                        <ul class="theme-button-tab {% if adminform.form.first_button_style.value == 'outline' %} {% else %} d-none {% endif %} " id="primary-btn-set2-1">
+                                            <li class="button_color_pattern-1 {% if adminform.form.first_button_color_pattern.value == 'O1' %}active{% endif %}" data-value = "O1" onclick="selectButtonColor(this, 'O1')"><button class="btn-theme O1">Button</button></li>
+                                            <li class="button_color_pattern-1 {% if adminform.form.first_button_color_pattern.value == 'O2' %}active{% endif %}" data-value = "O2" onclick="selectButtonColor(this, 'O2')"><button class="btn-theme O2">Button</button></li>
+                                            <li class="button_color_pattern-1 {% if adminform.form.first_button_color_pattern.value == 'O3' %}active{% endif %}" data-value = "O3" onclick="selectButtonColor(this, 'O3')"><button class="btn-theme O3">Button</button></li>
+                                            <li class="button_color_pattern-1 {% if adminform.form.first_button_color_pattern.value == '04' %}active{% endif %}" data-value = "O4" onclick="selectButtonColor(this, 'O4')"><button class="btn-theme O4">Button</button></li>
+                                        </ul>
+                                </div>
+                               
+                            </div>
+                        </div>
+                        {% if adminform.form.first_button_style.errors %}
+                            {% for error in adminform.form.first_button_style.errors  %}
+                                <div class="alert alert-danger error-block" role="alert">
+                                    {{error}}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        {% if adminform.form.first_button_outline_color.errors %}
+                            {% for error in adminform.form.first_button_outline_color.errors  %}
+                                <div class="alert alert-danger error-block" role="alert">
+                                    {{error}}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        {% if adminform.form.first_button_fill_color.errors %}
+                            {% for error in adminform.form.first_button_fill_color.errors  %}
+                                <div class="alert alert-danger error-block" role="alert">
+                                    {{error}}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        {% if adminform.form.first_button_font_color.errors %}
+                            {% for error in adminform.form.first_button_font_color.errors  %}
+                                <div class="alert alert-danger error-block" role="alert">
+                                    {{error}}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div> {% endcomment %}
+                </div>
+                <div>
+                    <div class="banner-layout-wrap no-hover d-none">
+                        <div class="banner-layout-wrap-inner">
+                            <img src="{% static 'images/widget_image/bannerplugin/banner-view2.png' %}" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class = "d-flex" style = "gap:12px;">
+                <div id="id_add_btn" class="box-theme-sub-title">
+                    <a href="javascript:void(0);" onclick="AddButtons(mydata = false)"> + Add Button</a>
+                </div>
+            </div>
+
+            <div class="box-theme-formplugn-divider">
+            </div>
+            <div class="box-theme-title d-none">
+                Preview
+            </div>
+            <div class="banner-preview-section d-none">
+                <div class="banner-layout-wrap no-hover">
+                    <div class="banner-layout-wrap-inner" id ="text-preview-img">
+                        <div class="banner-layout-box title-left" style="background-size: cover" >
+                            <div class="banner-layout-content">
+                                <div class="banner-layout-content-inner">
+                                    <div class="banner-layout-title title-text">
+                                        Find Your Perfect Pet
+                                    </div>
+                                    <div class="banner-layout-subtitle subtitle-text">
+
+                                    </div>
+                                    <div class="banner-layout-action">
+                                        <button disabled id="preview_button_1" class="btn-theme btn-shape-1 btn-style-1 btn-color-1 prev-first-btn">
+                                            Button
+                                        </button>
+                                        <button disabled id="preview_button_2" class="btn-theme btn-shape-1 btn-style-2 btn-color-1 prev-second-btn">
+                                            Button
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="banner-layout-content-img">
+                                <img src="/static/images/widget_image/bannerplugin/p_3.svg" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% comment %} Preview section  {% endcomment %}
+            <div>
+                <div class="box-theme-title puthere">
+                    Preview
+                </div>
+                <div class="d-flex" style="justify-content : space-between;">
+                   
+                  <div class="col-6">
+                   <ul class="theme-tab-layout preview">
+                        <li class="active btn_style_layout" data-target="btn_style_layout"><img src="{% static 'images/widget_image/bannerplugin/ph_monitor_enable.svg'%}" alt="">
+                        <li class="btn_color_layout" data-target="btn_color_layout"><img src="{% static 'images/widget_image/bannerplugin/icons8_iphone.svg'%}" alt=""></li>
+                   </ul>
+                  </div> 
+                  <div class="col-6 d-flex" style="justify-content : end;gap: 12px;">
+                  </div>
+                </div>
+            </div>
+            <div id = "btn_style_layout" class = "mt-40">
+                <div id = "banner_desktop_view"></div>
+            </div>
+            <div id = "btn_color_layout" class="mt-40 d-none">
+                <div id = "banner_mobile_view"></div>
+            </div>
+            </div>
+        {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+    </form>
+
+    {% addtoblock 'js' %}
+
+    <script type="text/javascript">
+        
+        // Image Focus
+        function showCoords(event) {
+            var x = event.offsetX;
+            var y = event.offsetY;
+            var img_element = document.getElementById("banner-img");
+            var h = img_element.offsetHeight;
+            var w = img_element.offsetWidth;
+            var percX = parseFloat((x*100)/w).toFixed(2);
+            var percY = parseFloat(100-((y*100)/h)).toFixed(2);
+            
+            $("#{{adminform.form.x_perc.name}}").val(percX);
+            $("#{{adminform.form.y_perc.name}}").val(percY);
+            
+            $('#d1').html("X : " + x + ", Y : " + y )
+            $('#d2').html("X% : " + percX + ", Y% : " + percY )
+
+            // Show the marker at the clicked position
+            var marker = document.getElementById("marker");
+            marker.style.left = (x) + "px"; 
+            marker.style.top = (y+20) + "px"; 
+            marker.style.display = "block";
+        }
+        function clearCoords(){
+            $("#{{adminform.form.x_perc.name}}").val("");
+            $("#{{adminform.form.y_perc.name}}").val("");
+        }
+        // Image Focus- Ends
+
+
+        function bannerBtnColorPreview(color,preview){
+            $('.'+preview).css({"background":color});
+
+            // to show the custom color selection changes on style button 
+
+            if (preview == 'first_button_outline_color'){
+                $('#first_button_style').siblings('li.active').children().css({'background-color' : 'white', 'color' : color, 'border' : '1px solid '+color })
+            }
+            else if (preview == 'first_button_fill_color'){
+                $('#first_button_style').siblings('li.active').children().css('background-color', color)
+            }
+            else if(preview == 'first_button_font_color'){
+                $('#first_button_style').siblings('li.active').children().css('color', color)
+            }
+            if (preview == 'second_button_outline_color'){
+                $('#second_button_style').siblings('li.active').children().css({'background-color' : 'white', 'color' : color, 'border' : '1px solid '+color })
+            }
+            else if (preview == 'second_button_fill_color'){
+                $('#second_button_style').siblings('li.active').children().css('background-color', color)
+            }
+            else if(preview == 'second_button_font_color'){
+                $('#second_button_style').siblings('li.active').children().css('color', color)
+            }
+            SetTextBgImage()
+        }
+
+        function hideShowButtonColorSection(button, style){
+            if(style == 'fill'){
+                $("." + button + "-style1-li").show()
+                $("." + button + "-style2-li").hide()
+            }
+            else if(style == 'outline'){
+                $("." + button + "-style1-li").hide()
+                $("." + button + "-style2-li").show()
+            }
+        }
+
+        // ==========================================================================
+
+        Coloris({
+            el: '.coloris'
+        });
+        Coloris.setInstance('.instance1', {
+            theme: 'default',
+            format: 'hex',
+            // forceAlpha: true,
+        })
+
+        // ==========================================================================
+
+        $(document).ready(function () {
+            // for layout 
+            $(".theme-tab-layout li").on("click", function () {
+                let target_box = $(this).data("target");
+                $(this).siblings().removeClass("active");
+                $(this).addClass("active");
+                $(this).parents(".box-theme-tab-wrap-layout").children('.box-theme-form-item').not("#"+target_box).hide();
+                $("#" + target_box).show();
+                if (target_box == 'btn_style_1_layout'){
+                    $(this).children().prop('src','/static/images/widget_image/bannerplugin/ph_monitor_enable.svg')
+                    $('.btn_color_1_layout').children().prop('src','/static/images/widget_image/bannerplugin/icons8_iphone.svg')
+                }
+                else if (target_box == 'btn_color_1_layout'){
+                    $(this).children().prop('src','/static/images/widget_image/bannerplugin/icons8_iphone_enable.svg')
+                    $('.btn_style_1_layout').children().prop('src','/static/images/widget_image/bannerplugin/ph_monitor.svg')
+                }
+            })
+
+            // preview switching tabs function
+            $(".theme-tab-layout.preview li").on("click", function () {
+                let target_box = $(this).data("target");
+                $(this).siblings().removeClass("active");
+                $(this).addClass("active");
+                if (target_box == 'btn_style_layout'){
+                    $(this).children().prop('src','/static/images/widget_image/bannerplugin/ph_monitor_enable.svg')
+                    $('.btn_color_layout').children().prop('src','/static/images/widget_image/bannerplugin/icons8_iphone.svg')
+                    $('#btn_style_layout').removeClass('d-none')
+                    $('#btn_color_layout').addClass('d-none')
+                }
+                else if (target_box == 'btn_color_layout'){
+                    $(this).children().prop('src','/static/images/widget_image/bannerplugin/icons8_iphone_enable.svg')
+                    $('.btn_style_layout').children().prop('src','/static/images/widget_image/bannerplugin/ph_monitor.svg')
+                    $('#btn_color_layout').removeClass('d-none')
+                    $('#btn_style_layout').addClass('d-none')
+                }
+            })
+            // to change the tab list like style to colors
+            $(document).on("click",".theme-tab li", function () {
+                let target_box = $(this).data("target");
+                $(this).siblings().removeClass("active");
+                $(this).addClass("active");
+                $(this).parents(".box-theme-tab-wrap").find('.box-theme-form-item').hide();
+                $("#" + target_box).show();
+            });
+
+            // this click function is on style two buttons to active and inactive the buttons
+            $(document).on("click",".theme-button-tab li", function () {
+                $(this).siblings().removeClass("active");
+                $(this).addClass("active");
+            });
+
+            if('{{adminform.form.title_text_color.value}}'){
+                $('.title-color-display:first').css({"background":'{{adminform.form.title_text_color.value}}' });
+            }
+            if('{{adminform.form.sub_title_text_color.value}}'){
+                $('.title-color-display:last').css({"background":'{{adminform.form.sub_title_text_color.value}}' });
+            }
+
+
+
+        })
+
+        function setPrimaryBtnStyle(shape,name){
+            let ids = name.getAttribute('class').split(' ')[0]
+            $("#"+ids).val(shape);
+            let no = ids.split('-')[1]
+            if(shape == 'fill'){
+                // below code to toggle the color patterns 
+                $("#primary-btn-set1-"+no).removeClass("d-none")
+                $("#primary-btn-set2-"+no).addClass("d-none")
+                $("#primary-btn-set2-"+no).children('li.active').removeClass('active')
+                if ($("#primary-btn-set1-"+no).children('li.active').length <= 0){
+                    let firstcolor = $("#primary-btn-set1-"+no).children().first()
+                    firstcolor.addClass('active')
+                    $('#button_color_pattern-'+no).val('F2')
+                    $(name).children().removeClass('F1 F2 F3 F4')
+                    $(name).children().addClass($('#primary-btn-set1-'+no+' .button_color_pattern-'+no+'.active').data('value'))
+                }
+                else{
+                  $('#button_color_pattern-'+no).val($('#primary-btn-set1-'+no+' .button_color_pattern-'+no+'.active').data('value'))
+                  $(name).children().removeClass('F1 F2 F3 F4')
+                  $(name).children().addClass($('#primary-btn-set1-'+no+' .button_color_pattern-'+no+'.active').data('value'))
+                }
+         
+            } else if(shape == 'outline'){
+                // below code to toggle the color patterns 
+                $("#primary-btn-set1-"+no).addClass("d-none")
+                $("#primary-btn-set2-"+no).removeClass("d-none")
+                $("#primary-btn-set1-"+no).children('li.active').removeClass('active')
+                if ($("#primary-btn-set2-"+no).children('li.active').length <= 0){
+                    let firstcolor =  $("#primary-btn-set2-"+no).children().eq(1)
+                    firstcolor.addClass('active')
+                    $('#button_color_pattern-'+no).val('O2')
+                    $(name).children().removeClass('O1 O2 O3 O4')
+                    $(name).children().addClass($('#primary-btn-set2-'+no+' .button_color_pattern-'+no+'.active').data('value'))
+                }
+                else{
+                  $('#button_color_pattern-'+no).val($('#primary-btn-set2-'+no+' .button_color_pattern-'+no+'.active').data('value'))
+                  $(name).children().removeClass('O1 O2 O3 O4')
+                  $(name).children().addClass($('#primary-btn-set2-'+no+' .button_color_pattern-'+no+'.active').data('value'))
+                }
+         
+            }
+            display_buttons()
+            
+         }
+
+        // ==========================================================================
+
+        var upload2 = document.getElementById('{{adminform.form.image.name}}');
+
+        {% comment %} function bannerImageSet(uploadFile) {
+            var me = this,
+                file = uploadFile.files[0];
+        } {% endcomment %}
+
+        if (upload2) {
+            upload2.addEventListener('dragenter', function (e) {
+                upload2.parentNode.className = 'area dragging';
+            }, false);
+
+            upload2.addEventListener('dragleave', function (e) {
+                upload2.parentNode.className = 'area';
+            }, false);
+
+            upload2.addEventListener('dragdrop', function (e) {
+                bgImageFile(upload2);
+            }, false);
+
+            upload2.addEventListener('change', function (e) {
+                bgImageFile(upload2);
+            }, false);
+        }
+        function deleteImage(){
+            document.getElementById('banner-img').src = "/static/images/default-placeholder-image.webp";
+            clearCoords();
+        }
+        function deletemobImage(){ 
+            document.getElementById('banner-mob-img').src = "/static/images/default-placeholder-image.webp";
+        }
+        function bgImageFile(uploadFile) {
+            var me = this,
+                files = uploadFile.files;
+                var preview = $('#background-img-preview-section')
+                preview.empty()
+                $.each(files, function (i, file) {
+                    var img_src = URL.createObjectURL(file);
+                    preview.append(`
+                        <li class="banner-image-preview-list"><img id="banner-img" src="${img_src}" onclick="showCoords(event)" style="cursor:crosshair;" alt=""><div id="marker"></div><button onClick="deleteImage()" type="button"><img src="{% static 'images/ic-delete.svg' %}" alt=""></button></li>
+                    `)
+                    $("#text-preview-img .banner-layout-box").css('background-image', 'url(' + $("#background-img-preview-section img").attr('src') + ')');
+                    $('#text-preview-img .banner-layout-box .banner-layout-content-img').hide()
+                });
+            clearCoords();
+            setbannerPreview()
+        }
+
+        var upload3 = document.getElementById('{{adminform.form.mobimage.name}}');
+      
+	    if (upload3) {
+    	    upload3.addEventListener('dragenter', function (e) {
+        	    upload3.parentNode.className = 'area dragging';
+    	    }, false);
+
+    	    upload3.addEventListener('dragleave', function (e) {
+        	    upload3.parentNode.className = 'area';
+   	        }, false);
+
+    	    upload3.addEventListener('dragdrop', function (e) {
+        	    mobbgImageFile(upload3);
+ 	        }, false);
+
+    	    upload3.addEventListener('change', function (e) {
+        	    mobbgImageFile(upload3);
+    	    }, false);
+	    }
+
+	    function mobbgImageFile(uploadFile) {
+    	    var me = this,
+        	    files = uploadFile.files;
+                var preview = $('#background-mobimg-preview-section')
+                preview.empty()
+                $.each(files, function (i, file) {
+                    var img_src = URL.createObjectURL(file);
+                    preview.append(`
+                        <li class="banner_mob"><img id="banner-mob-img" src="${img_src}" alt=""><button onClick="deletemobImage()" type="button"><img src="{% static 'images/ic-delete.svg' %}" alt=""></button></li>
+                    `)
+                    $("#text-preview-img .banner-layout-box").css('background-image', 'url(' + $("#background-mobimg-preview-section img").attr('src') + ')');
+                    $('#text-preview-img .banner-layout-box .banner-layout-content-img').hide()
+                });
+            clearCoords();
+            setbannerPreview()
+	    }
+
+        // ============================ title - subtitle =================================
+
+        $("#id_title, #id_subtitle, #title_text_color, #sub_title_text_color, #{{adminform.form.first_button_text.name}}, #{{adminform.form.second_button_text.name}}").keyup(function(){
+            SetTextBgImage()
+        });
+        function SetTextBgImage(){
+            var banner_title = $("#id_title").val()
+            var banner_subtitle = $("#id_subtitle").val()
+            var title_text_color = $('#title_text_color').val()
+            var sub_title_text_color = $('#sub_title_text_color').val()
+
+            $('.title-text').text(banner_title);
+            $('.title-text').css('color', title_text_color);
+            $('.subtitle-text').text(banner_subtitle);
+            $('.subtitle-text').css('color', sub_title_text_color);
+
+            // button code
+
+            // remove this btn_text1 comment after changes
+            //var btn_text1 = $("#{{adminform.form.first_button_text.name}}").val();
+            var btn_text1 = ''
+            if(btn_text1 != ''){
+                $("#preview_button_1").text(btn_text1)
+
+                // var btn1_border_color = $("#{{adminform.form.first_button_outline_color.name}}").val()
+                // var btn1_bg_color = $("#{{adminform.form.first_button_fill_color.name}}").val()
+                // var btn1_text_color = $("#{{adminform.form.first_button_font_color.name}}").val()
+
+                //var btn1_style = $("#{{adminform.form.first_button_style.name}}").val();
+                let data = $("#{{adminform.form.first_button_style.name}}").siblings('li.active').children().attr('class')
+                $('#preview_button_1').removeClass()
+                $('#preview_button_1').addClass(data)
+                $('.preview_button_1').removeClass(':not(preview_button_1)')
+                $('.preview_button_1').addClass(data)
+                // if(btn1_style == 'fill'){
+                //    $('#preview_button_1').css({'color':btn1_text_color,'border-color':btn1_bg_color,'background':btn1_bg_color,});
+                // }else{
+                //    $('#preview_button_1').css({'color':btn1_border_color,'border-color':btn1_border_color,'background':'#fff',});
+                // }
+            }
+            //var btn_text2 = $("#{{adminform.form.second_button_text.name}}").val();
+            var btn_text2 = ''
+            if(btn_text2 != ''){
+                $("#preview_button_2").text(btn_text2)
+
+                let data = $("#{{adminform.form.second_button_style.name}}").siblings('li.active').children().attr('class')
+                $('#preview_button_2').removeClass()
+                $('#preview_button_2').addClass(data)
+                $('.preview_button_2').removeClass(':not(preview_button_2)')
+                $('.preview_button_2').addClass(data)
+                // var btn2_border_color = $("#{{adminform.form.second_button_outline_color.name}}").val()
+                // var btn2_bg_color = $("#{{adminform.form.second_button_fill_color.name}}").val()
+                // var btn2_text_color = $("#{{adminform.form.second_button_font_color.name}}").val()
+
+                // var btn2_style = $("#{{adminform.form.second_button_style.name}}").val();
+                // if(btn2_style == 'fill'){
+                //     $('#preview_button_2').css({'color':btn2_text_color,'border-color':btn2_border_color,'background':btn2_bg_color,});
+                // }else{
+                //     $('#preview_button_2').css({'color':btn2_text_color,'border-color':btn2_border_color,'background':'#fff',});
+                // }
+            }
+
+        }
+        SetTextBgImage()
+
+        // ============================ title - subtitle =================================
+
+        function SetBgImage(bgImgURL=null){
+            var selectedLayout = document.querySelector('input[id="layout_group"]:checked').value
+
+            if (selectedLayout == "TEXT 1 BUTTON LEFT"){
+                var layoutHTML = $(".txt-1-btn-left").html()
+                var layoutClass = "title-left"
+                $(".title-text").show()
+                $(".subtitle-text").show()
+                $("#preview_button_1").show()
+                $("#preview_button_2").hide()
+            }else if (selectedLayout == "TEXT 1 BUTTON RIGHT"){
+                var layoutHTML = $(".txt-1-btn-right").html()
+                var layoutClass = "title-right"
+                $(".title-text").show()
+                $(".subtitle-text").show()
+                $("#preview_button_1").show()
+                $("#preview_button_2").hide()
+            }else if (selectedLayout == "TEXT 2 BUTTONS LEFT"){
+                var layoutHTML = $(".txt-2-btn-left").html()
+                var layoutClass = "title-left"
+                $(".title-text").show()
+                $(".subtitle-text").show()
+                $("#preview_button_1").show()
+                $("#preview_button_2").show()
+            }else if (selectedLayout == "TEXT 2 BUTTONS RIGHT"){
+                var layoutHTML = $(".txt-2-btn-right").html()
+                var layoutClass = "title-right"
+                $(".title-text").show()
+                $(".subtitle-text").show()
+                $("#preview_button_1").show()
+                $("#preview_button_2").show()
+            }else if (selectedLayout == "TEXT 1 BUTTON CENTER"){
+                var layoutHTML = $(".txt-1-btn-center").html()
+                var layoutClass = "title-center"
+                $(".title-text").show()
+                $(".subtitle-text").show()
+                $("#preview_button_1").show()
+                $("#preview_button_2").hide()
+            }else if (selectedLayout == "TEXT 2 BUTTONS CENTER"){
+                var layoutHTML = $(".txt-2-btn-center").html()
+                var layoutClass = "title-center"
+                $(".title-text").show()
+                $(".subtitle-text").show()
+                $("#preview_button_1").show()
+                $("#preview_button_2").show()
+            }else{
+                var layoutHTML = $(".img-only").html()
+                var layoutClass = ""
+                $(".title-text").hide()
+                $(".subtitle-text").hide()
+                $("#preview_button_1").hide()
+                $("#preview_button_2").hide()
+            }
+
+            $("#text-preview-img .banner-layout-box").css('background-image', 'url(' + $("#background-img-preview-section img").attr('src') + ')');
+            //$("#text-preview-img .banner-layout-box").css('background-image', 'url(' + $("#background-mobimg-preview-section img").attr('src') + ')');
+            $('#text-preview-img .banner-layout-box').removeClass("title-left");
+            $('#text-preview-img .banner-layout-box').removeClass("title-right");
+            //$('#text-preview-img .banner-layout-box').removeClass("title-center");
+            $('#text-preview-img .banner-layout-box').addClass(layoutClass);
+
+        }
+        SetBgImage()
+
+        // ========================= Buttons =======================================
+        var style1ButtonColors = {
+            "F1" : ["btn-color-1"],
+            "F2" : ["btn-color-2"],
+            "F3" : ["btn-color-3"],
+            "F4" : ["btn-color-4"],
+        }
+
+        var style2ButtonColors = {
+            "O1" : ["btn-style-2", "btn-color-1"],
+            "O2" : ["btn-style-2", "btn-color-2"],
+            "O3" : ["btn-style-2", "btn-color-3"],
+            "O4" : ["btn-style-2", "btn-color-4"],
+        }
+
+
+        var upload2 = document.getElementById('{{adminform.form.image.name}}');
+
+        function bannerImageSet(uploadFile) {
+            var me = this,
+                file = uploadFile.files[0];
+        }
+
+        if (upload2) {
+            upload2.addEventListener('dragenter', function (e) {
+                upload2.parentNode.className = 'area dragging';
+            }, false);
+
+            upload2.addEventListener('dragleave', function (e) {
+                upload2.parentNode.className = 'area';
+            }, false);
+
+            upload2.addEventListener('dragdrop', function (e) {
+                bannerImageSet(upload2);
+            }, false);
+
+            upload2.addEventListener('change', function (e) {
+                bannerImageSet(upload2);
+            }, false);
+        }
+
+        var upload3 = document.getElementById('{{adminform.form.mobimage.name}}');
+
+        function bannermobImageSet(uploadFile) {
+            var me = this,
+                file = uploadFile.files;
+        }
+
+        if (upload3) {
+            upload3.addEventListener('dragenter', function (e) {
+                upload3.parentNode.className = 'area dragging';
+            }, false);
+
+            upload3.addEventListener('dragleave', function (e) {
+                upload3.parentNode.className = 'area';
+            }, false);
+
+            upload3.addEventListener('dragdrop', function (e) {
+                bannermobImageSet(upload3);
+            }, false);
+
+            upload3.addEventListener('change', function (e) {
+                bannermobImageSet(upload3);
+            }, false);
+        }
+
+
+        // select the layout when click on layout image
+        function SelectBannerLayout(layoutId){
+            $('.banner-layout-types').children().find('.activelayout').removeClass('activelayout')
+            $('.'+layoutId).addClass("activelayout")
+            $("#"+layoutId).click()
+            $('.img-clickable').addClass("d-none")
+            if(layoutId == 'layout_5'){
+                SelectBannerLayoutMobile('layout_4_mob')
+                $('.img-clickable').removeClass("d-none")
+                
+            }
+            else if($('input[name = "mobile_layout"]:checked').val() == 'mobile_layout_4'){
+                SelectBannerLayoutMobile('layout_1_mob') 
+            }
+            setbannerPreview()
+        }
+        function SelectBannerLayoutMobile(layoutId){
+            $('.banner-layout-types-mobile').children().find('.activelayout').removeClass('activelayout')
+            $('.'+layoutId).addClass("activelayout")
+            $("#"+layoutId).click()
+            setbannerPreview()
+        }
+
+        $("input[id='layout_group']").change(function() {
+            SetLayoutOptionView()
+            SetBgImage()
+        });
+
+        function SetLayoutOptionView(){
+            var selectedLayout = document.querySelector('input[id="layout_group"]:checked').value
+            if (jQuery.inArray(selectedLayout, ['TEXT 2 BUTTONS LEFT', 'TEXT 2 BUTTONS RIGHT', 'TEXT 2 BUTTONS CENTER']) > -1){
+                $(".button-layout").show()
+                $(".second-button-layout").show()
+                $(".banner-text-layout").show()
+            } else if (selectedLayout == 'IMAGE ONLY') {
+                $(".button-layout").hide()
+                $(".second-button-layout").hide()
+                $(".banner-text-layout").hide()
+            } else {
+                $(".banner-text-layout").show()
+                $(".button-layout").show()
+                $(".second-button-layout").hide()
+            }
+        }
+
+        var first_button_fill_color = "{{adminform.form.first_button_fill_color.value}}";
+        var form_id = "{{adminform.form.instance.id}}";
+        if (form_id != "None"){
+            var fillColor = "{{adminform.form.first_button_fill_color.value}}";
+            var fontColor = "{{adminform.form.first_button_font_color.value}}";
+            var borderColor = "{{adminform.form.first_button_outline_color.value}}";
+
+        }
+
+        function selectButtonColor(btn, colorPattern){
+            $("#" + btn.getAttribute('class')).val(colorPattern);
+            let no = $(btn).attr('class').split('-')[1]
+            let myclasses = $('.button_style-'+no+'.active button')
+            let myclass= $('.button_style-'+no+'.active button').attr('class').split(' ');
+            update_btn_color(no,myclass,myclasses,colorPattern)
+            display_buttons()
+         }
+         function update_btn_color(num,class_names,my_class_names,color_pattern){
+            class_names.forEach(function(number){
+         
+               if(['F1','F2','F3','F4'].includes(number)){
+                  my_class_names.removeClass(number)
+                  $('.button_style-'+num+'.active button').addClass(`btn-theme `+color_pattern)
+               }
+               else{
+                  my_class_names.removeClass(number)
+                  $('.button_style-'+num+'.active button').addClass(`btn-theme `+color_pattern)
+               }
+            }) 
+         }
+
+        function toggleCustomColorSection(btn){
+            $("." + btn).toggle()
+
+            // this code will make active selected color buttons to unactive and its value is none
+            if(btn == 'first-btn-custom-color'){
+                $('#first_button_color_pattern').nextAll('.theme-button-tab:not(.d-none)').find($('li.active')).removeClass("active")
+                $('#first_button_color_pattern').val('')
+                if($(".first-btn-custom-color").find('.col-12.col-sm-4').css('display') == 'none'){
+                    let secondary_element = $(':root').css('--secondary-element')
+                    $("#{{adminform.form.first_button_fill_color.name}}").val(secondary_element);
+                    $("#{{adminform.form.first_button_font_color.name}}").val("#ffffffff");
+                    $("#{{adminform.form.first_button_outline_color.name}}").val("");
+                    
+                    $(".{{adminform.form.first_button_font_color.name}}").css("background",'#ffffffff');
+                    $(".{{adminform.form.first_button_fill_color.name}}").css("background",secondary_element);
+                    $(".{{adminform.form.first_button_outline_color.name}}").css("background","");
+                }
+    
+            }
+            else if( btn == 'second-btn-custom-color'){
+                $('#second_button_color_pattern').nextAll('.theme-button-tab:not(.d-none)').find($('li.active')).removeClass("active")
+                $('#second_button_color_pattern').val('')
+            }
+            
+            // if(btn=="first-btn-custom-color"){
+            //     // $(".first-btn-custom-color").hide()
+            //     $("#{{adminform.form.first_button_fill_color.name}}").val("");
+            //     $("#{{adminform.form.first_button_font_color.name}}").val("");
+            //     $("#{{adminform.form.first_button_outline_color.name}}").val("");
+            // } else {
+            //     // $(".second-btn-custom-color").hide()
+            //     $("#{{adminform.form.second_button_fill_color.name}}").val("");
+            //     $("#{{adminform.form.second_button_font_color.name}}").val("");
+            //     $("#{{adminform.form.second_button_outline_color.name}}").val("");
+            // }
+        }
+        // $('#primary-btn-set1').find('li.active').val()
+        // $('#primary-btn-set1 li').on("click",function(){
+        //     console.log($(this).prevUntil('first_button_color_pattern'))
+        //     if(btn=="first-btn-custom-color"){
+        //         // $(".first-btn-custom-color").hide()
+        //         $("#{{adminform.form.first_button_fill_color.name}}").val("");
+        //         $("#{{adminform.form.first_button_font_color.name}}").val("");
+        //         $("#{{adminform.form.first_button_outline_color.name}}").val("");
+        //     } else {
+        //         // $(".second-btn-custom-color").hide()
+        //         $("#{{adminform.form.second_button_fill_color.name}}").val("");
+        //         $("#{{adminform.form.second_button_font_color.name}}").val("");
+        //         $("#{{adminform.form.second_button_outline_color.name}}").val("");
+        //     }
+        // });
+
+        function setButtonColor(){
+            var primary_button_color_pattern = "{{global_theme_config.primary_button_color_pattern}}";
+            var secondary_button_color_pattern = "{{global_theme_config.secondary_button_color_pattern}}";
+
+
+            if($("#first_button_color_pattern").val() != "None") {
+                primary_button_color_pattern = $("#first_button_color_pattern").val();
+            }
+            if($("#second_button_color_pattern").val() != "None") {
+                secondary_button_color_pattern = $("#second_button_color_pattern").val();
+            }
+
+
+            if(($("#first_button_color_pattern").val() != "None" && $("#first_button_color_pattern").val() != "")  || form_id == "None"){
+                if(jQuery.inArray(primary_button_color_pattern, ['F1', 'F2', 'F3', 'F4']) > -1){
+                    var arrayLength = style1ButtonColors[primary_button_color_pattern].length;
+                    $("#first-btn-section .style-tab .btn-style-1").removeClass("btn-color-1 btn-color-2 btn-color-3 btn-color-4");
+                    $("#first-btn-section .style-tab .btn-style-1").css({"background-color": "", "color": "", "border-color": ""});
+                    for (var i = 0; i < arrayLength; i++) {
+                        $("#first-btn-section .style-tab .btn-style-1").addClass(style1ButtonColors[primary_button_color_pattern][i]);
+                    }
+                } else if (jQuery.inArray(primary_button_color_pattern, ['O1', 'O2', 'O3', 'O4']) > -1){
+                    var arrayLength = style2ButtonColors[primary_button_color_pattern].length;
+                    $("#first-btn-section .style-tab .btn-style-2").removeClass("btn-color-1 btn-color-2 btn-color-3 btn-color-4");
+                    $("#first-btn-section .style-tab .btn-style-2").css({"background-color": "", "color": "", "border-color": ""});
+                    for (var i = 0; i < arrayLength; i++) {
+                        $("#first-btn-section .style-tab .btn-style-2").addClass(style2ButtonColors[primary_button_color_pattern][i]);
+                    }
+                }
+            } else {
+                if($("#{{adminform.form.first_button_style.name}}").val() == 'fill'){
+                    $("#first-btn-section .style-tab .btn-style-1").css({
+                        "background-color": "{{adminform.form.first_button_fill_color.value}}",
+                        "color": "{{adminform.form.first_button_font_color.value}}",
+                        "border-color": "{{adminform.form.first_button_outline_color.value}}",
+                    });
+                } else if($("#{{adminform.form.first_button_style.name}}").val() == 'outline'){
+                    $("#first-btn-section .style-tab .btn-style-2").css({
+                        "background-color": "{{adminform.form.first_button_fill_color.value}}",
+                        "color": "{{adminform.form.first_button_font_color.value}}",
+                        "border-color": "{{adminform.form.first_button_outline_color.value}}",
+                    });
+                }
+            }
+
+            if(($("#second_button_color_pattern").val() != "None" && $("#second_button_color_pattern").val() != "") || form_id == "None"){
+                if(jQuery.inArray(secondary_button_color_pattern, ['F1', 'F2', 'F3', 'F4']) > -1){
+                    var arrayLength = style1ButtonColors[secondary_button_color_pattern].length;
+                    $("#second-btn-section .style-tab .btn-style-1").removeClass("btn-color-1 btn-color-2 btn-color-3 btn-color-4");
+                    $("#second-btn-section .style-tab .btn-style-1").css({ "background-color": "", "color": "", "border-color": "" });
+                    for (var i = 0; i < arrayLength; i++) {
+                        $("#second-btn-section .style-tab .btn-style-1").addClass(style1ButtonColors[secondary_button_color_pattern][i]);
+                    }
+                } else if (jQuery.inArray(secondary_button_color_pattern, ['O1', 'O2', 'O3', 'O4']) > -1){
+                    var arrayLength = style2ButtonColors[secondary_button_color_pattern].length;
+                    $("#second-btn-section .style-tab .btn-style-2").removeClass("btn-color-1 btn-color-2 btn-color-3 btn-color-4");
+                    $("#second-btn-section .style-tab .btn-style-2").css({ "background-color": "", "color": "", "border-color": "" });
+                    for (var i = 0; i < arrayLength; i++) {
+                        $("#second-btn-section .style-tab .btn-style-2").addClass(style2ButtonColors[secondary_button_color_pattern][i]);
+                    }
+                }
+            } else {
+                if($("#{{adminform.form.second_button_style.name}}").val() == 'fill'){
+                    $("#second-btn-section .style-tab .btn-style-1").css({
+                        "background-color": "{{adminform.form.second_button_fill_color.value}}",
+                        "color": "{{adminform.form.second_button_font_color.value}}",
+                        "border-color": "{{adminform.form.second_button_outline_color.value}}",
+                    });
+                } else if($("#{{adminform.form.second_button_style.name}}").val() == 'outline'){
+                    $("#second-btn-section .style-tab .btn-style-2").css({
+                        "background-color": "{{adminform.form.second_button_fill_color.value}}",
+                        "color": "{{adminform.form.second_button_font_color.value}}",
+                        "border-color": "{{adminform.form.second_button_outline_color.value}}",
+                    });
+                }
+            }
+        }
+
+        function InitView(){
+
+            $("#first-btn-section button").addClass('{{global_theme_config.primary_button_shape}}');
+            $("#second-btn-section button").addClass('{{global_theme_config.primary_button_shape}}');
+            $(".banner-layout-action button").addClass('{{global_theme_config.primary_button_shape}}');
+
+            var selectedLayout = '{{adminform.form.layout.value}}';
+            $("input[name='layout'][value='" + selectedLayout + "']").prop('checked', true);
+            SetLayoutOptionView()
+            setButtonColor()
+            hideShowButtonColorSection("btn1", "{{adminform.form.first_button_style.value}}")
+            hideShowButtonColorSection("btn2", "{{adminform.form.second_button_style.value}}")
+        }
+        InitView()
+
+        {% comment %} $("input[id='layout_group']").change(function() {
+
+        }); {% endcomment %}
+
+        // ==========================================================================
+        // $('[name = "link_choice_field_btn1"] ').change(function(){
+        //     let link_value = $(this).val()
+        //     console.log("kjslfe",link_value)
+        //     if (link_value == 'Internal link'){
+        //         $('#cont_internal_link').show()
+        //         $("#cont_external_link").hide()
+        //         $("#cont_phone_link").hide()
+        //     }
+        //     else if (link_value == 'External link'){
+        //         $("#cont_external_link").show()
+        //         $('#cont_internal_link').hide()
+        //         $('#cont_phone_link').hide()
+        //     }
+        //     else if(link_value == 'Phone link'){
+        //         $("#cont_external_link").hide()
+        //         $('#cont_internal_link').hide()
+        //         $('#cont_phone_link').show()
+        //     }
+        // });
+
+
+        {% comment %} these function is to change the button link for custom button {% endcomment %}
+        function selectRadioOption(data){
+            let id = data.id
+            let index = id.split('-')[1]
+            if (id == 'link_choice_field_1-'+index){
+                $('#cont_internal_link_btn_'+index).show()
+                $("#cont_external_link_btn_"+index).hide()
+                $("#cont_phone_link_btn_"+index).hide()
+            }
+            else if (id == 'link_choice_field_2-'+index){
+                $('#cont_internal_link_btn_'+index).hide()
+                $("#cont_external_link_btn_"+index).show()
+                $("#cont_phone_link_btn_"+index).hide()
+            }
+            else if (id == 'link_choice_field_3-'+index){
+                $('#cont_internal_link_btn_'+index).hide()
+                $("#cont_external_link_btn_"+index).hide()
+                $("#cont_phone_link_btn_"+index).show()
+            }
+        }
+    
+        $(".theme-color-tab li").on("click", function () {
+                $(this).siblings().removeClass("active");
+                $(this).addClass("active");
+                let x = $(this).attr("data-value");
+                $('#instance1').val(x)
+                $(this).siblings().last().find('.clr-field').css({'color':x});
+                
+                if ($(this).parent().attr('data-id') == 'id_title_text_color'){
+                    $('.title-color-display:first').css({"background":x});
+                }
+                else if (($(this).parent().attr('data-id') == 'id_sub_title_text_color')){
+                    $('.title-color-display:last').css({"background":x});
+                }
+                
+                setbannerPreview()
+            })
+
+            $('#id_title_text_color').nextAll().find('.color-selector').on('blur',function(){
+                
+                $('.title-color-display:first').css({"background":$(this).val()});
+                
+                setbannerPreview()
+            });
+            $('#id_sub_title_text_color').nextAll().find('.color-selector').on('blur',function(){
+                $('.title-color-display:last').css({"background":$(this).val()});
+                setbannerPreview()
+            });
+
+
+            // ON CHANGE OF TITLE AND SUBTITLE TEXT ITS CHANGE WILL REFLECT IN PREVIEW
+            $("#id_title_text, #id_sub_title_text").on('keyup', function(){
+            
+                setbannerPreview()
+            })
+    </script>
+    <script>
+  // onready load all the buttons that is saved
+  $(document).ready(function(){
+    let btn_data = {{adminform.form.button_data.value|safe}}
+    let n = Object.keys(btn_data)
+    
+    for(let i = 1;i<=n.length;i++){
+            AddButtons(mydata = true)
+            $('#button_text-'+i).val(btn_data['btn'+i]['button_text'])
+            $('[name = "link_choice_field-'+i+'"][value = "'+btn_data['btn'+i]['link_choice_field']+'"]').prop('checked',true)
+ 
+            // check which button is saved like internal link, external link, or phone link
+            if (btn_data['btn'+i]['link_choice_field'] == 'Internal link'){
+                $('#cont_internal_link_btn_'+i).show()
+                $('#cont_external_link_btn_'+i).hide()
+                $('#cont_phone_link_btn_'+i).hide()
+            }
+            else if(btn_data['btn'+i]['link_choice_field'] == 'External link'){
+                $('#cont_internal_link_btn_'+i).hide()
+                $('#cont_external_link_btn_'+i).show()
+                $('#cont_phone_link_btn_'+i).hide()
+            }
+            else if(btn_data['btn'+i]['link_choice_field'] == 'Phone link'){
+                $('#cont_internal_link_btn_'+i).hide()
+                $('#cont_external_link_btn_'+i).hide()
+                $('#cont_phone_link_btn_'+i).show()
+            }
+            $('[name = "button_internallink_'+i+'"]').val(btn_data['btn'+i]['internallink_id'])
+            $('[name = "button_link-'+i+'"]').val(btn_data['btn'+i]['button_link'])
+            $('[name = "button_phone_link-'+i+'"]').val(btn_data['btn'+i]['button_phone_link'])
+            $('[name = "button_target-'+i+'"]').val(btn_data['btn'+i]['id_button_target'])
+            $('[name = "button_style-'+i+'"]').val(btn_data['btn'+i]['button_style'])
+            $('[name = "button_color_pattern-'+i+'"]').val(btn_data['btn'+i]['button_color_pattern'])
+ 
+            if (btn_data['btn'+i]['button_style'] == 'fill'){
+                $('[name = "button_style-'+i+'"]').siblings('li.button_style-'+i+':first').addClass('active')
+                $('#primary-btn-set1-'+i).removeClass('d-none')
+                $('#primary-btn-set2-'+i).addClass('d-none')
+                $('#primary-btn-set1-'+i+' li').each(function(){
+                    if(btn_data['btn'+i]['button_color_pattern'] == $(this).data('value')){
+                        $(this).addClass('active')
+                    } 
+                });
+            }
+            else if (btn_data['btn'+i]['button_style'] == 'outline'){
+                $('[name = "button_style-'+i+'"]').siblings('li.button_style-'+i+':last').addClass('active')
+                //$('[name = "button_style-'+i+'"]').siblings('li.button_style-'+i+':last').children().removeClass('button-style-outline').addClass(btn_data['btn'+i]['button_color_pattern'])
+                $('#primary-btn-set2-'+i).removeClass('d-none')
+                $('#primary-btn-set1-'+i).addClass('d-none')
+                $('#primary-btn-set2-'+i+' li').each(function(){
+                    if(btn_data['btn'+i]['button_color_pattern'] == $(this).data('value')){
+                        $(this).addClass('active')
+                    } 
+                });
+            }
+ 
+    }
+    for(let i = 1;i<=n.length;i++){
+       $('.button_style-'+i+'.active button').removeClass().addClass(`btn-theme `+btn_data['btn'+i]['button_color_pattern'])
+    }
+    // default button style and pattern
+ 
+    if(n.length == 0){
+       $('.button_style-1').eq(0).addClass('active')
+       $('#primary-btn-set1-1').removeClass('d-none')
+       $('#primary-btn-set1-1').children().first().addClass('active')
+    }
+ });
+ 
+
+ function addFirstBtn(){
+    $("#main-section-btn").append(
+       `<div id = "section-1">
+          <div class="box-theme-sub-title d-flex" id="headline_color">
+              <div>First Button</div>
+              <a id = "delAnchor-1" class = "del-anchor" href = "javascript:void(0);" onclick = "DeleteButton(this)"> <svg width="24" height="24" viewBox="2 2 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                 <path d="M10 6H14C14 5.46957 13.7893 4.96086 13.4142 4.58579C13.0391 4.21071 12.5304 4 12 4C11.4696 4 10.9609 4.21071 10.5858 4.58579C10.2107 4.96086 10 5.46957 10 6ZM8 6C8 4.93913 8.42143 3.92172 9.17157 3.17157C9.92172 2.42143 10.9391 2 12 2C13.0609 2 14.0783 2.42143 14.8284 3.17157C15.5786 3.92172 16 4.93913 16 6H21C21.2652 6 21.5196 6.10536 21.7071 6.29289C21.8946 6.48043 22 6.73478 22 7C22 7.26522 21.8946 7.51957 21.7071 7.70711C21.5196 7.89464 21.2652 8 21 8H20.118L19.232 18.34C19.1468 19.3385 18.69 20.2686 17.9519 20.9463C17.2137 21.6241 16.2481 22.0001 15.246 22H8.754C7.75191 22.0001 6.78628 21.6241 6.04815 20.9463C5.31002 20.2686 4.85318 19.3385 4.768 18.34L3.882 8H3C2.73478 8 2.48043 7.89464 2.29289 7.70711C2.10536 7.51957 2 7.26522 2 7C2 6.73478 2.10536 6.48043 2.29289 6.29289C2.48043 6.10536 2.73478 6 3 6H8ZM15 12C15 11.7348 14.8946 11.4804 14.7071 11.2929C14.5196 11.1054 14.2652 11 14 11C13.7348 11 13.4804 11.1054 13.2929 11.2929C13.1054 11.4804 13 11.7348 13 12V16C13 16.2652 13.1054 16.5196 13.2929 16.7071C13.4804 16.8946 13.7348 17 14 17C14.2652 17 14.5196 16.8946 14.7071 16.7071C14.8946 16.5196 15 16.2652 15 16V12ZM10 11C10.2652 11 10.5196 11.1054 10.7071 11.2929C10.8946 11.4804 11 11.7348 11 12V16C11 16.2652 10.8946 16.5196 10.7071 16.7071C10.5196 16.8946 10.2652 17 10 17C9.73478 17 9.48043 16.8946 9.29289 16.7071C9.10536 16.5196 9 16.2652 9 16V12C9 11.7348 9.10536 11.4804 9.29289 11.2929C9.48043 11.1054 9.73478 11 10 11ZM6.76 18.17C6.8026 18.6694 7.03117 19.1346 7.40044 19.4735C7.76972 19.8124 8.25278 20.0003 8.754 20H15.246C15.7469 19.9998 16.2294 19.8117 16.5983 19.4728C16.9671 19.134 17.1954 18.6691 17.238 18.17L18.11 8H5.89L6.762 18.17H6.76Z" fill="#12BBD2"/>
+                 </svg>Delete</a>
+ 
+          </div>
+          <div class="box-theme-form-item background">
+              <div class="box-theme-form-item-inline Btn_textbox">
+                  <div class="box-theme-form-item-inline-input">
+ 
+                      <!-- input the button1 name -->
+                      <div class = "btn_text_main">
+                          <input name="button_text-1" id="button_text-1" type="text" value="{% if adminform.form.button_text_1.value %}{{adminform.form.first_button_text.value}}{% endif %}" placeholder="Button name" class="form-input btn-text" onblur = "textChange(this)">
+                          <div class = 'l_button_text-1 word_count'>0/25</div>  
+                      </div>    
+                      <div class = "double20">   
+                      <div class="admin-form  horizontal-checkbox ">
+ 
+                          <div class="form-check radio-outer d-flex align-items-center p-0">
+                              <input class="form-check-input custom-radio m-0" type="radio" name="link_choice_field-1" onclick = "selectRadioOption(this)" id="link_choice_field_1-1" value="Internal link" checked="">
+                              <label class="form-check-label custom-radio-label ml-2" for="link_choice_field_1-1">
+                                  Internal link
+                              </label>
+                              <div class="box-theme-form-label">
+                               <span style="position:relative; margin-right: 20px;">
+                                  <img src="/static/images/ic-info.svg" class="abs_meg_icon">
+                                  <div class="form-tooltip">
+                                     An internal link is a link to an existing page on your website. When an internal link button is clicked, the page will open in the same tab.
+                                  </div>
+                               </span>
+                            </div>
+                          </div>
+                      
+                          <div class="form-check radio-outer d-flex align-items-center p-0">
+                              <input class="form-check-input custom-radio m-0" type="radio" name="link_choice_field-1" onclick = "selectRadioOption(this)" id="link_choice_field_2-1" value="External link">
+                              <label class="form-check-label custom-radio-label ml-2" for="link_choice_field_2-1">
+                                  External link
+                              </label>
+                              <div class="box-theme-form-label">
+                               <span style="position:relative; margin-right: 20px;">
+                                  <img src="/static/images/ic-info.svg" class = "abs_meg_icon">
+                                  <div class="form-tooltip">
+                                     An external link is a link that directs users away from your website. When an external link button is clicked, the page will open in a new window or tab.
+                                  </div>
+                               </span>
+                            </div>
+                          </div>
+                      
+                          <div class="form-check radio-outer d-flex align-items-center p-0">
+                              <input class="form-check-input custom-radio m-0" type="radio" name="link_choice_field-1" onclick = "selectRadioOption(this)" id="link_choice_field_3-1" value="Phone link">
+                              <label class="form-check-label custom-radio-label ml-2" for="link_choice_field_3-1">
+                                  Phone link
+                              </label>
+                              <div class="box-theme-form-label">
+                               <span style="position:relative; margin-right: 20px;">
+                                  <img src="/static/images/ic-info.svg" class = "abs_meg_icon">
+                                  <div class="form-tooltip">
+                                     On iOS or Android mobile devices, a phone link is a clickable button that users can click to call a phone number. On other devices, a phone number will appear in the button's place, but will not be clickable.
+                                  </div>
+                               </span>
+                            </div>
+                          </div>
+                      
+                      </div>
+                      </div>
+                      
+                      <!-- input fields for internal link, external link, phone link  -->
+                      <div class="row">    
+                          <div class="col-8">                    
+                              <div id="cont_internal_link_btn_1">
+                                  {{adminform.form.button_internallink_1}}
+                              </div>
+                              <div id="cont_external_link_btn_1" style="display: {% if adminform.form.link_choice_field_btn1.value == 'External link' %}block{% else %}none{%endif%} ">
+                                  <input name="button_link-1" id = "button_link-1" type="text" value="{% if adminform.form.first_button_link.value %}{{adminform.form.first_button_link.value}}{% endif %}" placeholder="http://" class="form-input">
+                              </div>
+                              <div id="cont_phone_link_btn_1" style="display: {% if adminform.form.link_choice_field_btn1.value == 'Phone link' %}block{% else %}none{%endif%} ">
+                                  <input name="button_phone_link-1" id = "button_phone_link-1" type="text" value="{% if adminform.form.button_phone_link.value %}{{adminform.form.first_button_phone_link.value}}{% endif %}" placeholder="(XXX) XXX–XXXX" class="form-input phone-validation" onkeypress="return /[0123456789+-]/i.test(event.key)" oninput = "phonelinnkinput(this)">
+                                </div>
+                              
+                          </div>
+                          <div class="col-4">
+                              <select name="button_target-1" id="id_button_target-1" class = "form-select">
+                                  <option value="_self" selected="">Current Tab</option>
+                                  
+                                  <option value="_blank">New Tab</option>
+                                  
+                              </select>
+                          </div>
+                      </div>
+                  
+                  </div>
+              </div>
+              {% if adminform.form.first_button_text.errors %}
+                  {% for error in adminform.form.first_button_text.errors  %}
+                      <div class="alert alert-danger error-block" role="alert">
+                          {{error}}
+                      </div>
+                  {% endfor %}
+              {% endif %}
+              {% if adminform.form.first_button_link.errors %}
+                  {% for error in adminform.form.first_button_link.errors  %}
+                      <div class="alert alert-danger error-block" role="alert">
+                          {{error}}
+                      </div>
+                  {% endfor %}
+              {% endif %}
+              {% if adminform.form.button_internallink_1.errors %}
+                  {% for error in adminform.form.button_internallink_1.errors  %}
+                      <div class="alert alert-danger error-block" role="alert">
+                          {{error}}
+                      </div>
+                  {% endfor %}
+              {% endif %}
+              {% if adminform.form.first_button_target.errors %}
+              {% for error in adminform.form.first_button_target.errors  %}
+                  <div class="alert alert-danger error-block" role="alert">
+                      {{error}}
+                  </div>
+              {% endfor %}
+              {% endif %}
+          </div>
+          <div class="box-theme-tab-wrap" id="first-btn-section">
+              <div class="box-theme-tab">
+                  <ul class="theme-tab">
+                      <li class="active btn_style_1" data-target="btn_style_1">Style</li>
+                      <li class="btn_color_1" data-target="btn_color_1">Color</li>
+                  </ul>
+              </div>
+              <div>
+              <div class="box-theme-form-item theme-tab-content style-tab" id="btn_style_1">
+                  <div class="box-theme-tab-wrap admin-form admin-form ">
+                      <ul class="theme-button-tab ">
+                          <input type="hidden" name="button_style-1" id="button_style-1" value="{{adminform.form.first_button_style.value|default:'fill'}}"> 
+                          <li class="button_style-1 {% if adminform.form.button_data.value|length > 0 %} {%else%}active {%endif%}" onclick="setPrimaryBtnStyle('fill',this)"><button class="btn-theme F2">Button </button></li>
+                          <li class="button_style-1" onclick="setPrimaryBtnStyle('outline',this)"><button class="btn-theme O2">Button </button></li>
+                      </ul>
+                  </div>
+              </div>
+              <div class="box-theme-form-item theme-tab-content color-tab" id="btn_color_1" style="display: none;">
+                  <div class="box-theme-tab-wrap admin-form admin-form ">
+ 
+                          <input type="hidden" name="button_color_pattern-1" id="button_color_pattern-1" value="{{adminform.form.first_button_color_pattern.value|default:'F2'}}">
+                          <ul class="theme-button-tab" id="primary-btn-set1-1">
+                              <li class="button_color_pattern-1{% if adminform.form.first_button_color_pattern.value == 'F2' %}active{% endif %}" data-value = "F2" onclick="selectButtonColor(this, 'F2')"><button class="btn-theme F2">Button</button></li>
+                              <li class="button_color_pattern-1{% if adminform.form.first_button_color_pattern.value == 'F1' %}active{% endif %}" data-value = "F1" onclick="selectButtonColor(this, 'F1')"><button class="btn-theme F1">Button</button></li>
+                              <li class="button_color_pattern-1{% if adminform.form.first_button_color_pattern.value == 'F4' %}active{% endif %}" data-value = "F4" onclick="selectButtonColor(this, 'F4')"><button class="btn-theme F4">Button</button></li>
+                              <li class="button_color_pattern-1{% if adminform.form.first_button_color_pattern.value == 'F3' %}active{% endif %}" data-value = "F3" onclick="selectButtonColor(this, 'F3')"><button class="btn-theme F3">Button</button></li>
+                          </ul>
+                          <ul class="theme-button-tab {% if adminform.form.first_button_style.value == 'outline' %} {% else %} d-none {% endif %} " id="primary-btn-set2-1">
+                              <li class="button_color_pattern-1{% if adminform.form.first_button_color_pattern.value == 'O1' %}active{% endif %}" data-value = "O1" onclick="selectButtonColor(this, 'O1')"><button class="btn-theme O1">Button</button></li>
+                              <li class="button_color_pattern-1{% if adminform.form.first_button_color_pattern.value == 'O2' %}active{% endif %}" data-value = "O2" onclick="selectButtonColor(this, 'O2')"><button class="btn-theme O2">Button</button></li>
+                              <li class="button_color_pattern-1{% if adminform.form.first_button_color_pattern.value == 'O3' %}active{% endif %}" data-value = "O3" onclick="selectButtonColor(this, 'O3')"><button class="btn-theme O3">Button</button></li>
+                              <li class="button_color_pattern-1{% if adminform.form.first_button_color_pattern.value == '04' %}active{% endif %}" data-value = "O4" onclick="selectButtonColor(this, 'O4')"><button class="btn-theme O4">Button</button></li>
+                          </ul>
+                  </div>
+              </div>
+              </div>
+          </div>
+          {% if adminform.form.first_button_style.errors %}
+              {% for error in adminform.form.first_button_style.errors  %}
+                  <div class="alert alert-danger error-block" role="alert">
+                      {{error}}
+                  </div>
+              {% endfor %}
+          {% endif %}
+          {% if adminform.form.first_button_outline_color.errors %}
+              {% for error in adminform.form.first_button_outline_color.errors  %}
+                  <div class="alert alert-danger error-block" role="alert">
+                      {{error}}
+                  </div>
+              {% endfor %}
+          {% endif %}
+          {% if adminform.form.first_button_fill_color.errors %}
+              {% for error in adminform.form.first_button_fill_color.errors  %}
+                  <div class="alert alert-danger error-block" role="alert">
+                      {{error}}
+                  </div>
+              {% endfor %}
+          {% endif %}
+          {% if adminform.form.first_button_font_color.errors %}
+              {% for error in adminform.form.first_button_font_color.errors  %}
+                  <div class="alert alert-danger error-block" role="alert">
+                      {{error}}
+                  </div>
+              {% endfor %}
+          {% endif %}
+      </div>
+       `
+    )
+    // this code to make the drop down icon of the internal link as per the figma
+    $('#id_button_internallink_1').addClass('form-select')
+ }
+
+
+ // TO DISPLAY THE BUTTONS IN PREVIEW
+ var display_buttons;
+ $(document).ready(function(){
+    display_buttons = function() {
+       $('.btnpreviewdesk').empty();
+       //$('#btnpreview').empty();
+       
+      // dynamic button preview
+        $("#main-section-btn").children().each(function(index, element) {
+          
+           let btn_text = $('#button_text-'+(index+1)).val()
+           let btn_color_parrern = $('[name = "button_color_pattern-'+(index+1)+'"]').val()
+           let button_internallink = $('[name = "button_internallink_'+(index+1)+'"]').val()
+           let button_link = $('[name = "button_link-'+(index+1)+'"]').val()
+           let button_phone_link = $('[name = "button_phone_link-'+(index+1)+'"]').val()
+           let link_choice_field = $('[name = "link_choice_field-'+(index+1)+'"]:checked').val()
+           if(btn_text != ''){
+             if ((link_choice_field == 'Internal link' && button_internallink == '') || (link_choice_field == 'External link' && button_link == '') || (link_choice_field == 'Phone link' && button_phone_link == '')){
+                //do nothing
+             }
+             else{
+                $('.btnpreviewdesk').append(`<a class = '${btn_color_parrern}' >${btn_text}</a>`)
+                //$('#btnpreview').append(`<a class = '${btn_color_parrern}' >${btn_text}</a>`)
+             }
+             
+           }
+           $('[name = "button_internallink_'+(index+1)+'"').on('change',function(){
+             display_buttons();
+           })
+           $('[name = "button_link-'+(index+1)+'"').on('blur',function(){
+             display_buttons();
+           })
+           $('[name = "button_phone_link-'+(index+1)+'"').on('blur',function(){
+             display_buttons();
+           })
+           $('[name = "link_choice_field-'+(index+1)+'"').on('change',function(){
+             display_buttons();
+           })
+        });
+    }
+    display_buttons();
+  });
+
+   // functionality to linit the charecter in button text
+   $('#main-section-btn').on('keyup','.btn-text',function(){
+    if($(this).val().length > 25){
+       $(this).val($(this).val().substring(0,25));
+    }
+    else{
+       $(this).siblings().text($(this).val().length+'/25')
+    }
+   })
+
+  // THIS FUNCTION WILL SHOW THE NUMBER OF LETTER IN THE ENTERED IN THE TEXT
+  $(document).ready(function(){
+    $('#main-section-btn .btn-text').each(function(index,element){
+     $(element).siblings().text($(element).val().length+"/25")
+    })
+   })
+
+  function textChange(data){
+    display_buttons()
+  }
+        // for adding multiple buttons
+        const btn_list = {1:'First Button',2:'Second Button',3:"Third Button",4:"Fourth Button",5:"Fifth Button",6:"Sixth Button"};
+        function AddButtons(mydata){
+
+            let no_of_btns = $("#main-section-btn").children().length;
+            // check if no of buttons not less than 1
+            if(no_of_btns == 0){
+               addFirstBtn();
+               return false
+            }
+            let x = $("#main-section-btn").children().last().clone()
+         
+            // ADD THE DELETE BUTTON 
+            x.find(`#delAnchor-`+no_of_btns).attr('id','delAnchor-'+(no_of_btns + 1))
+         
+            // change the id of the section
+            x.attr('id','section-'+(no_of_btns+1))
+         
+            // change the title and delete btn class
+            x.find('.box-theme-sub-title.d-flex').children().eq(0).text(btn_list[no_of_btns+1])
+            //x.find('.box-theme-sub-title.d-flex').children().eq(1).removeClass().addClass('section-'+(no_of_btns+1))
+            
+            // change the text of the button (also change the name and id)
+            x.find('#button_text-'+no_of_btns).attr('name','button_text-'+(no_of_btns+1))
+            x.find('#button_text-'+no_of_btns).attr('id','button_text-'+(no_of_btns+1))
+            x.find('.l_button_text-'+no_of_btns).removeClass('l_button_text-'+no_of_btns).addClass('l_button_text-'+(no_of_btns+1))
+         
+            // change the name and id of the buttons link 
+            x.find('#link_choice_field_1-'+no_of_btns).attr({'id':'link_choice_field_1-'+(no_of_btns+1),'name' : 'link_choice_field-'+(no_of_btns+1)})
+            x.find('#link_choice_field_2-'+no_of_btns).attr({'id':'link_choice_field_2-'+(no_of_btns+1),'name' : 'link_choice_field-'+(no_of_btns+1)})
+            x.find('#link_choice_field_3-'+no_of_btns).attr({'id':'link_choice_field_3-'+(no_of_btns+1),'name' : 'link_choice_field-'+(no_of_btns+1)})
+         
+            // hide and show the link field using the below code 
+            x.find('#cont_internal_link_btn_'+no_of_btns).attr('id','cont_internal_link_btn_'+(no_of_btns+1))
+            x.find('#cont_external_link_btn_'+no_of_btns).attr('id','cont_external_link_btn_'+(no_of_btns+1))
+            x.find('#cont_phone_link_btn_'+no_of_btns).attr('id','cont_phone_link_btn_'+(no_of_btns+1))
+         
+            // change the name id tag of the dropdown for internal link
+            x.find('#id_button_internallink_'+no_of_btns).attr({'id':'id_button_internallink_'+(no_of_btns+1),'name' : 'button_internallink_'+(no_of_btns+1)})
+         
+            // change the id and name of the external link 
+            x.find('#button_link-'+no_of_btns).attr({'id':'button_link-'+(no_of_btns+1),'name' : 'button_link-'+(no_of_btns+1)})
+            
+            // change the id and name of the phone link 
+            x.find('#button_phone_link-'+no_of_btns).attr({'id':'button_phone_link-'+(no_of_btns+1),'name' : 'button_phone_link-'+(no_of_btns+1)})
+            
+            // change the id and name of the Window selection
+            x.find('#id_button_target-'+no_of_btns).attr({'id':'id_button_target-'+(no_of_btns+1),'name' : 'button_target-'+(no_of_btns+1)})
+         
+            // change the class of the tab for style and color
+            x.find(".btn_style_"+no_of_btns).attr({'class':'btn_style_'+(no_of_btns+1),'data-target':'btn_style_'+(no_of_btns+1)})
+            x.find(".btn_color_"+no_of_btns).attr({'class':'btn_color_'+(no_of_btns+1),'data-target':'btn_color_'+(no_of_btns+1)})
+            x.find("#btn_style_"+no_of_btns).attr('id','btn_style_'+(no_of_btns+1))
+            x.find("#btn_color_"+no_of_btns).attr('id','btn_color_'+(no_of_btns+1))
+            //x.find(".btn_style_"+no_of_btns).attr('class','btn_style_'+(no_of_btns+1))
+            //x.find(".btn_color_"+no_of_btns).attr('class','btn_color_'+(no_of_btns+1))
+         
+            // below code to change the id of the hidden field of the style of the button
+            x.find("#button_style-"+no_of_btns).attr({'id':'button_style-'+(no_of_btns+1),'name':'button_style-'+(no_of_btns+1)})
+            x.find(".button_style-"+no_of_btns).attr('class','button_style-'+(no_of_btns+1))
+         
+            // hide and show the custom color set options
+            x.find('#primary-btn-set1-'+no_of_btns).attr("id","primary-btn-set1-"+(no_of_btns+1))
+            x.find('#primary-btn-set2-'+no_of_btns).attr("id","primary-btn-set2-"+(no_of_btns+1))
+         
+            //change the id and name of the input field for color patterns
+            x.find("#button_color_pattern-"+no_of_btns).attr({'id':'button_color_pattern-'+(no_of_btns+1),'name':'button_color_pattern-'+(no_of_btns+1)})
+            x.find(".button_color_pattern-"+no_of_btns).attr('class','button_color_pattern-'+(no_of_btns+1))
+         
+            // add each button at the end of the last button 
+            $("#main-section-btn").append(x);
+            
+            // empty the value of each field of the button
+            $('#button_text-'+(no_of_btns+1)).val('')
+            $('input[name = "link_choice_field-'+(no_of_btns+1)+'"][value = "Internal link"]').prop('checked',true)
+            $('#cont_internal_link_btn_'+(no_of_btns+1)).css('display','block')
+            $('#cont_external_link_btn_'+(no_of_btns+1)).css('display','none')
+            $('#cont_phone_link_btn_'+(no_of_btns+1)).css('display','none')
+            $('#id_button_internallink_'+(no_of_btns+1)).val('')
+            $('#button_link-'+(no_of_btns+1)).val('')
+            $('#button_phone_link-'+(no_of_btns+1)).val('')
+            $('#id_button_target-'+(no_of_btns+1)).val('_self')
+            $('.l_button_text-'+(no_of_btns+1)).text("0/25")
+         
+            // make style tab active and color tab inactive
+         
+            x.find('.btn_style_'+(no_of_btns+1)).addClass('active')
+            x.find('.btn_color_'+(no_of_btns+1)).removeClass('active')
+            x.find('#btn_style_'+(no_of_btns+1)).show()
+            x.find('#btn_color_'+(no_of_btns+1)).hide()
+            if (mydata == false){
+               x.find('.button_style-'+(no_of_btns+1)).first().addClass("active")
+               x.find('.button_style-'+(no_of_btns+1)).first().children().removeClass()
+               x.find('.button_style-'+(no_of_btns+1)).first().children().addClass("btn-theme F2")
+               x.find('.button_style-'+(no_of_btns+1)).last().removeClass("active")
+               x.find('.button_style-'+(no_of_btns+1)).last().children().removeClass()
+               x.find('.button_style-'+(no_of_btns+1)).last().children().addClass("btn-theme O2")
+               x.find('#primary-btn-set1-'+(no_of_btns+1)).removeClass("d-none")
+               x.find('#primary-btn-set2-'+(no_of_btns+1)).addClass("d-none")
+               x.find('#button_style-'+(no_of_btns+1)).val('fill')
+         
+               let colors = x.find('#button_color_pattern-'+(no_of_btns+1)).siblings('ul').children()
+               colors.removeClass('active')
+               colors.first().addClass('active')
+               x.find('#button_color_pattern-'+(no_of_btns+1)).val('F2')
+            }
+         
+            
+         
+            if (no_of_btns == 5) {
+                $('#id_add_btn').hide()
+                return false
+            }
+            
+         }
+        // to delete the generated buttons
+        {% comment %} $(document).ready(function(){
+            $('.section_class').each(function(index){
+                $(this).on('click',function(){
+                    alert("isjlef " + index);
+                });
+            }); 
+        }); {% endcomment %}
+        // delete Buttons for now
+        function DeleteButton(data){
+            let ids = data.id.split('-')[1]
+         
+            // THIS WILL DELETE THE SECTION
+               
+            let remain_btn = $("#main-section-btn").children()
+            for (let no_of_btns = (parseInt(ids)); no_of_btns <= remain_btn.length; no_of_btns++){
+               
+                  // ADD THE DELETE BUTTON 
+                  let btn_val = no_of_btns+1
+                  $(remain_btn[no_of_btns]).find(`#delAnchor-`+btn_val).attr('id','delAnchor-'+(no_of_btns))
+         
+                  // change the id of the section
+                  $(remain_btn[no_of_btns]).attr('id','section-'+(no_of_btns))
+         
+                  // change the title and delete btn class
+                  $(remain_btn[no_of_btns]).find('.box-theme-sub-title.d-flex').children().eq(0).text(btn_list[no_of_btns])
+                  //x.find('.box-theme-sub-title.d-flex').children().eq(1).removeClass().addClass('section-'+(no_of_btns+1))
+                  
+                  // change the text of the button (also change the name and id)
+                  $(remain_btn[no_of_btns]).find('#button_text-'+btn_val).attr('name','button_text-'+(no_of_btns))
+                  $(remain_btn[no_of_btns]).find('#button_text-'+btn_val).attr('id','button_text-'+(no_of_btns))
+         
+                  $(remain_btn[no_of_btns]).find('.l_button_text-'+btn_val).removeClass('l_button_text-'+no_of_btns).addClass('l_button_text-'+(no_of_btns))
+                  // change the name and id of the buttons link 
+                  $(remain_btn[no_of_btns]).find('#link_choice_field_1-'+btn_val).attr({'id':'link_choice_field_1-'+(no_of_btns),'name' : 'link_choice_field-'+(no_of_btns)})
+                  $(remain_btn[no_of_btns]).find('#link_choice_field_2-'+btn_val).attr({'id':'link_choice_field_2-'+(no_of_btns),'name' : 'link_choice_field-'+(no_of_btns)})
+                  $(remain_btn[no_of_btns]).find('#link_choice_field_3-'+btn_val).attr({'id':'link_choice_field_3-'+(no_of_btns),'name' : 'link_choice_field-'+(no_of_btns)})
+         
+                  // hide and show the link field using the below code 
+                  $(remain_btn[no_of_btns]).find('#cont_internal_link_btn_'+btn_val).attr('id','cont_internal_link_btn_'+(no_of_btns))
+                  $(remain_btn[no_of_btns]).find('#cont_external_link_btn_'+btn_val).attr('id','cont_external_link_btn_'+(no_of_btns))
+                  $(remain_btn[no_of_btns]).find('#cont_phone_link_btn_'+btn_val).attr('id','cont_phone_link_btn_'+(no_of_btns))
+         
+                  // change the name id tag of the dropdown for internal link
+                  $(remain_btn[no_of_btns]).find('#id_button_internallink_'+btn_val).attr({'id':'id_button_internallink_'+(no_of_btns),'name' : 'button_internallink_'+(no_of_btns)})
+         
+                  // change the id and name of the external link 
+                  $(remain_btn[no_of_btns]).find('#button_link-'+btn_val).attr({'id':'button_link-'+(no_of_btns),'name' : 'button_link-'+(no_of_btns)})
+                  
+                  // change the id and name of the phone link 
+                  $(remain_btn[no_of_btns]).find('#button_phone_link-'+btn_val).attr({'id':'button_phone_link-'+(no_of_btns),'name' : 'button_phone_link-'+(no_of_btns)})
+                  
+                  // change the id and name of the Window selection
+                  $(remain_btn[no_of_btns]).find('#id_button_target-'+btn_val).attr({'id':'id_button_target-'+(no_of_btns),'name' : 'button_target-'+(no_of_btns)})
+         
+                  // change the class of the tab for style and color
+                  
+                  let btn_style = $(remain_btn[no_of_btns]).find(".btn_style_"+btn_val)
+                  btn_style.attr({'data-target':'btn_style_'+(no_of_btns)})
+                  btn_style.addClass('btn_style_'+(no_of_btns)).removeClass("btn_style_"+btn_val)
+                  let btn_color = $(remain_btn[no_of_btns]).find(".btn_color_"+btn_val)
+                  btn_color.attr({'data-target':'btn_color_'+(no_of_btns)})
+                  btn_color.addClass('btn_color_'+(no_of_btns)).removeClass("btn_color_"+btn_val)
+         
+                  $(remain_btn[no_of_btns]).find("#btn_style_"+btn_val).attr('id','btn_style_'+(no_of_btns))
+                  $(remain_btn[no_of_btns]).find("#btn_color_"+btn_val).attr('id','btn_color_'+(no_of_btns))
+         
+                  // below code to change the id of the hidden field of the style of the button
+                  $(remain_btn[no_of_btns]).find("#button_style-"+btn_val).attr({'id':'button_style-'+(no_of_btns),'name':'button_style-'+(no_of_btns)})
+                  let button_style = $(remain_btn[no_of_btns]).find(".button_style-"+btn_val)
+                  button_style.addClass('button_style-'+(no_of_btns)).removeClass('button_style-'+(btn_val))
+         
+                  // hide and show the custom color set options
+                  $(remain_btn[no_of_btns]).find('#primary-btn-set1-'+btn_val).attr("id","primary-btn-set1-"+(no_of_btns))
+                  $(remain_btn[no_of_btns]).find('#primary-btn-set2-'+btn_val).attr("id","primary-btn-set2-"+(no_of_btns))
+         
+                  //change the id and name of the input field for color patterns
+                  $(remain_btn[no_of_btns]).find("#button_color_pattern-"+btn_val).attr({'id':'button_color_pattern-'+(no_of_btns),'name':'button_color_pattern-'+(no_of_btns)})
+                  let button_color_pattern = $(remain_btn[no_of_btns]).find(".button_color_pattern-"+btn_val)
+                  button_color_pattern.addClass('button_color_pattern-'+(no_of_btns)).removeClass('button_color_pattern-'+(btn_val))
+                  
+         
+            }
+            $('#section-'+ids).remove()
+            $('#id_add_btn').show()
+         
+            display_buttons()
+         }
+
+        function save_changes(){
+            let no_of_btns = $("#main-section-btn").children().length;
+            let custom_btn_data = {};
+            $("#main-section-btn").children().each(function(index, element) {
+                custom_btn_data['btn'+(index+1)] = {}
+                custom_btn_data['btn'+(index+1)]['button_text'] = $('#button_text-'+(index+1)).val()
+                custom_btn_data['btn'+(index+1)]['link_choice_field'] = $('[name = "link_choice_field-'+(index+1)+'"]:checked').val()
+                custom_btn_data['btn'+(index+1)]['id_button_internallink'] = $('[name = "button_internallink_'+(index+1)+'"').val()
+                custom_btn_data['btn'+(index+1)]['button_link'] = $('[name = "button_link-'+(index+1)+'"').val()
+                custom_btn_data['btn'+(index+1)]['button_phone_link'] = $('[name = "button_phone_link-'+(index+1)+'"').val()
+                custom_btn_data['btn'+(index+1)]['id_button_target'] = $('[name = "button_target-'+(index+1)+'"').val()
+                custom_btn_data['btn'+(index+1)]['button_style'] = $('[name = "button_style-'+(index+1)+'"').val()
+                custom_btn_data['btn'+(index+1)]['button_color_pattern'] = $('[name = "button_color_pattern-'+(index+1)+'"').val()
+            });
+            let string_data = JSON.stringify(custom_btn_data)
+            $('#{{adminform.form.button_data.name}}').val(string_data)
+        }
+    // functionality to hide and show the font color tab
+    $('.title-color-display:first').on('click',function(){
+        $('.sb50').eq(0).toggle();
+    })
+    $('.title-color-display:last').on('click',function(){
+        $('.sb50').eq(1).toggle();
+    })
+
+
+    function phonelinnkinput(data){
+
+        var input = $(data).val();
+        input = input.replace(/\D/g, ''); // Remove all non-digit characters
+        input = input.substring(0, 10); // Limit to 10 digits
+ 
+        var areaCode = input.substring(0, 3);
+        var centralOfficeCode = input.substring(3, 6);
+        var lineNumber = input.substring(6, 10);
+ 
+        if (input.length > 6) {
+            $(data).val('(' + areaCode + ') ' + centralOfficeCode + '-' + lineNumber);
+        } else if (input.length > 3) {
+            $(data).val('(' + areaCode + ') ' + centralOfficeCode);
+        } else if (input.length > 0) {
+            $(data).val('(' + areaCode);
+        }
+    }
+    $(document).ready(function(){
+         window.setbannerPreview = function(){
+
+            let layout = $('input[name = "layout"]:checked').val()
+            let mobile_layout = $('input[name = "mobile_layout"]:checked').val()
+            let title = $('input[name = "title_text"]').val()
+            let title_color = $('input[name = "title_text_color"]').val() 
+            let subtitle =  $('input[name = "sub_title_text"]').val()  
+            let sub_title_color = $('input[name = "sub_title_text_color"]').val()   
+    
+            let messages = $('#id_messages').val() 
+            let banner_height = $('input[name = "banner_height"]').val() || '400';
+            let images = $('#banner-img').attr('src') 
+            let button_data = $('input[name = "button_data"]').val()
+     
+            let banner_type = $('input[name = "banner_type"]:checked').val()
+            $('#banner_desktop_view').empty()
+            $('#banner_mobile_view').empty()
+
+            let preview = `<div class="container-fluid p-0 banner-section-outer banner_background_image">`
+
+            if (layout != "IMAGE ONLY" || mobile_layout != "mobile_layout_4"){
+                    preview += `<div style="height: 100%;" class="container">
+                        <div style="height: 100%;" class="row banner-content">`
+                            if(layout == '"TEXT 1 BUTTON CENTER"' || layout == 'TEXT 2 BUTTONS CENTER'){
+                                preview += '<div class="col col-12 text-center align-self-center pt-md-auto margin-text p-0">'
+                            }
+                            else if (layout == '"TEXT 1 BUTTON RIGHT' || layout == 'TEXT 2 BUTTONS RIGHT'){
+                                preview += `<div class="col col-12 text-end align-self-center pt-md-auto margin-text p-0" >` 
+                            }
+                            else{
+                                preview +=  ` <div class="col col-12 col-md-9 align-self-center pt-md-auto margin-text p-0">`
+                            }
+                            if(banner_type == 'PRIMARY'){
+                                preview += `<h1 class="h1-theme-bold main_plugin_header banner-title">${title}</h1>
+                                            <h2 class="h2-theme-bold main_plugin_header banner-sub-title">${subtitle}</h2>
+                                            <div class = "banner_message messages">${messages}</div>`
+                            }
+                            if(banner_type == 'SECONDARY'){
+                                preview += `<div class="h2-theme-bold main_plugin_header banner-title">${title}</div>
+                                            <div class="h2-theme-bold main_plugin_header banner-sub-title">${subtitle}</div>
+                                            <div class = "banner_message messages">${messages}</div>`
+                            }
+                            preview += `<div class="banner-layout-action d-flex flex-gap-20 mt-3 btnpreviewdesk" >
+                                    {% for index, value in adminform.form.button_data.value.items %}
+                                    {% if value.button_text and value.id_button_internallink or value.button_link or value.button_phone_link %}
+                                        <a style = "white-space:nowrap" area-label = "send you to {{value.button_text}}" class=" {% if  value.button_color_pattern == '' and button_style == 'fill' %} button_style_fill1 {% elif value.button_color_pattern == '' and value.button_style == 'outline' %} button_style_outline1 {% else %} {{ value.button_color_pattern }}  {% endif %} sw-100" href="{% if value.link_choice_field == 'Internal link' %}{{value.id_button_internallink}}{% elif value.link_choice_field == 'External link' %}{{value.button_link}}{% else %}tel:{{value.button_phone_link}}{% endif %}" target="{{ value.id_button_target }}">
+                                            {{value.button_text}}
+                                        </a>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>`
+            }
+            
+            
+            $('#banner_desktop_view').append(preview)
+            $('#banner_mobile_view').append(preview)
+
+             // check for selected desktop Layout
+             if(layout == 'TEXT 1 BUTTON LEFT'){
+                $('#banner_desktop_view .row.banner-content').css({'text-align' : 'start'})
+                $('#banner_desktop_view .banner-layout-action').css({"justify-content" : "start"})
+            }
+            else if(layout == 'TEXT 1 BUTTON RIGHT'){
+                $('#banner_desktop_view .row.banner-content').css({'text-align' : 'end'})
+                $('#banner_desktop_view .banner-layout-action').css({"justify-content" : "end"})
+            }
+            else if(layout == 'TEXT 1 BUTTON CENTER'){
+                $('#banner_desktop_view .row.banner-content').css({'text-align' : 'center'})
+                $('#banner_desktop_view .banner-layout-action').css({"justify-content" : "center"})
+            }
+            else if(layout == 'IMAGE ONLY'){
+                $('#banner_desktop_view .row.banner-content').css('display', 'none')
+            }
+
+            // check for selected mobile Layout
+            if(mobile_layout == 'mobile_layout_1'){
+                $('#banner_mobile_view .row.banner-content').css({"justify-content" : 'end', 'align-items' : 'center', 'text-align' : 'center'})
+                $('#banner_mobile_view .banner-layout-action').css({"flex-direction" : "column"})
+            }
+            else if (mobile_layout == 'mobile_layout_2'){
+                $('#banner_mobile_view .row.banner-content').css({"justify-content" : 'center', 'align-items' : 'center', 'text-align' : 'center'})
+                $('#banner_mobile_view .banner-layout-action').css({"align-items" : "center", "flex-direction" : "column"})
+            }
+            else if (mobile_layout == 'mobile_layout_3'){
+                $('#banner_mobile_view .row.banner-content').css({"justify-content" : 'start', 'align-items' : 'start', 'text-align' : 'left'})
+                $('#banner_mobile_view .banner-layout-action').css({"flex-direction" : "column", "width" : "fit-content"})
+            }
+            else if (mobile_layout == 'mobile_layout_4'){
+                $('#banner_mobile_view .row.banner-content').css('display', 'none')
+            }
+            else if (mobile_layout == 'mobile_layout_5'){
+                $('#banner_mobile_view .row.banner-content').css({"justify-content" : 'start', 'align-items' : 'center', 'text-align' : 'center'})
+                $('#banner_mobile_view .banner-layout-action').css({"flex-direction" : "column", 'position' : 'absolute', 'bottom' : '5%', 'width' : '92%'})
+            }
+
+            // apply all the css of preview here 
+            $('.banner_background_image').css({'background-image' : `url(${images})`, 'background-repeat': 'no-repeat', 'background-size': 'cover', 'background-position': 'center', 'height':`${banner_height}px`})
+            $('#banner_mobile_view .banner_background_image').css({'background-image' : `url(${images})`, 'background-repeat': 'no-repeat', 'background-size': 'cover', 'background-position': 'center', 'height':`550px`})
+            $('.banner-title').css('color',`${title_color}`)
+            $('.banner-sub-title').css('color',`${sub_title_color}`)
+        }
+
+        setbannerPreview()
+    })
+    </script>
+    <script>
+        function selectRadioOption2(radio) {
+            var selectedValue = radio.value;
+    
+          
+            var internalLinkDiv = document.getElementById('cont_internal_link_btn');
+            var externalLinkDiv = document.getElementById('cont_external_link_btn');
+            var phoneLinkDiv = document.getElementById('cont_phone_link_btn');
+    
+            // Hide all input fields
+            internalLinkDiv.style.display = 'none';
+            externalLinkDiv.style.display = 'none';
+            phoneLinkDiv.style.display = 'none';
+    
+            
+            if (selectedValue === 'Internal link') {
+                internalLinkDiv.style.display = 'block';
+            } else if (selectedValue === 'External link') {
+                externalLinkDiv.style.display = 'block';
+            } else if (selectedValue === 'Phone link') {
+                phoneLinkDiv.style.display = 'block';
+            }
+        }
+    
+        // Call the function on page load to set the correct state based on the selected radio button
+        window.onload = function() {
+            var checkedRadio = document.querySelector('input[name="{{adminform.form.img_link_choice_field.name}}"]:checked');
+            if (checkedRadio) {
+                selectRadioOption2(checkedRadio);
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const enableRadio = document.getElementById('id_image_clickable_0');
+            const disableRadio = document.getElementById('id_image_clickable_1');
+            const toggleDiv = document.getElementById('toggleImgClickableDiv');
+        
+            
+            function toggleVisibility() {
+                if (enableRadio.checked) {
+                    toggleDiv.classList.remove('d-none');
+                } else {
+                    toggleDiv.classList.add('d-none');
+                }
+            }
+        
+            // Add event listeners to radio buttons
+            enableRadio.addEventListener('change', toggleVisibility);
+            disableRadio.addEventListener('change', toggleVisibility);
+        
+            toggleVisibility();
+        });
+    </script>
+    
+    {% endaddtoblock %}
+{% endblock content %}

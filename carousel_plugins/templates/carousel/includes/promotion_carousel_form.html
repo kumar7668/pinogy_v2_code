@@ -1,0 +1,86 @@
+{% load static %}
+{% comment %} Testimonial carousel Layout {% endcomment %}
+
+
+
+<div class="box-theme-title banner-text-layout">
+    Promotion Types
+</div>
+<div class="box-theme-form-item">
+    {{adminform.form.promotions_type}}
+</div>
+
+<div class="box-theme-form-devider button-layout"></div>
+<div class="box-theme-title">
+    Layout
+</div>
+<div class="box-theme-form-item">
+    <div class="banner-layout-types">
+        <div class="banner-layout-wrap">
+            <div class="banner-layout-wrap-inner txt-1-btn-left" onclick="SelectPromotionCarouselLayout('promotionlayout_1')">
+                <img class="img-fluid" src="{% static 'images/promotion_carousel/promotion-layoout1.png' %}">
+            </div>
+            <div class="banner-layout-box-control">
+                <label class="checkcontainer" id="promotionlayout_1">Horizontal
+                <input type="radio" value="carousel/includes/promotion/promotion_horizontal.html" id="layout_group3" name="{{adminform.form.promotion_layout.name}}" {% if adminform.form.promotion_layout.value == 'carousel/includes/promotion/promotion_horizontal.html' %} checked {% endif %} >
+                <span class="radiobtn"></span>
+                </label>
+            </div>
+        </div>
+        <div class="banner-layout-wrap">
+            <div class="banner-layout-wrap-inner txt-1-btn-right" onclick="SelectPromotionCarouselLayout('promotionlayout_2')">
+                <img class="img-fluid" src="{% static 'images/promotion_carousel/promotion-layoout2.png' %}">
+            </div>
+            <div class="banner-layout-box-control">
+                <label class="checkcontainer" id="promotionlayout_2">Vertical
+                <input type="radio" value="carousel/includes/promotion/promotion_vertical.html" id="layout_group3" name="{{adminform.form.promotion_layout.name}}" {% if adminform.form.promotion_layout.value == 'carousel/includes/promotion/promotion_vertical.html' %} checked {% endif %} >
+                <span class="radiobtn"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="box-theme-form-devider"></div>
+<div class="box-theme-title banner-text-layout">
+    Title
+</div>
+<div class="banner-edit-section banner-text-layout">
+    <div>
+        <div class="box-theme-form-item">
+            <div class="box-theme-form-item-inline">
+                <div class="box-theme-form-item-inline-input">
+                    <input name="{{adminform.form.title_text.name}}" id="{{adminform.form.title_text.name}}" type="text" value="{% if adminform.form.title_text.value %}{{adminform.form.title_text.value}}{% endif %}" placeholder="Enter title (For example: FEATURED PROMOTIONS)" class="form-input">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="box-theme-form-devider button-layout"></div>
+<div class="box-theme-title banner-text-layout">
+    Color
+</div>
+<div class="box-theme-sub-title">
+    {{adminform.form.card_text_color}}
+</div>
+
+<div class="box-theme-sub-title">
+    {{adminform.form.card_bg_color}}
+</div>
+{% comment %} Hidden Fields {% endcomment %}
+<input type='hidden' name='{{adminform.form.card_size.name}}' value='SMALL'/>
+<input type='hidden' name='{{adminform.form.blog_layout.name}}' value='carousel/includes/blog/blog_info_layout.html'/>
+<input type='hidden' name='{{adminform.form.pet_layout.name}}' value='carousel/includes/pet/pet_carousel_layout1.html'/>
+<input type='hidden' name='{{adminform.form.testimonial_layout.name}}' value='carousel/includes/testimonial/tc_horizontal.html'/>
+<input type='hidden' name='{{adminform.form.brand_layout.name}}' value='carousel/includes/brand/brand_vertical_layout.html'/>
+
+
+<script type="text/javascript">
+    function setCardTextColor(color){
+        $('.card-text-color-display').css({"background":color});
+        $("#{{adminform.form.card_text_color.name}}").val(color);
+    }
+    function setCardBgColor(color){
+        $('.card-bg-color-display').css({"background":color});
+        $('#{{adminform.form.card_bg_color.name}}').val(color);
+    }
+    </script>

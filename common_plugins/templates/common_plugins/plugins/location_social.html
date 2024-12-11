@@ -1,0 +1,14 @@
+{% if social_links %}
+
+<div class="d-flex align-items-center justify-content-center gap-2 location-social-icons-section">
+    {% for social_name, social_link in social_links.items %}
+        <p class='m-0 location-social-icon-outer'>
+            <a href="{{ social_link }}" target="_blank" style="color: {{ font_color }};" area-label = "social brands {{ social_name }}">
+                {% comment %} social-name should be in lower and should match with fa icon {% endcomment %}
+                <i class="fa-brands fa-{{ social_name }}"></i> 
+            </a>
+        </p>
+    {% endfor %}
+</div>
+
+{% endif %}

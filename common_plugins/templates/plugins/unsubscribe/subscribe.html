@@ -1,0 +1,104 @@
+{% extends CMS_TEMPLATE %}
+{% load cms_tags sekizai_tags %}
+{% load static %} 
+{% block main %}
+
+{% addtoblock 'css' %}
+<style>
+.unsubs-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.unsubs-form-div {
+  display: flex;
+  flex-direction: column;
+}
+
+.unsubs-form {
+  display: flex;
+}
+
+.unsubs-text-div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.success-msg {
+  text-align: center;
+  justify-content: center;
+}
+
+.error-div {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 40px;
+  text-align: center;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
+}
+
+.sub_title {
+  padding-top: 20px;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 28px;
+  text-align: center;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
+}
+
+.clsinfo {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  text-align: center;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
+
+
+}
+
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  box-shadow: 2px 2px 5px #eeeeee;
+  margin: 10px
+}
+</style>
+{% endaddtoblock %}
+{% if id %}
+<div class="row">
+  <div class="col-12 col-md-6 col-sm-12 col-sx-12" style="display: flex; justify-content: center; align-items: center">
+    <div class="" style="padding: 20px; text-align: center">
+      <br />
+      <p class="sub_title">
+        You have been sucessfully subscribed
+      </p>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="unsubs-form-div">
+  <div class="row">
+    <div class="col-12 error">
+      <h6 class="h6-theme-bold" style="    opacity: .8">
+        <strong>Error!</strong> A problem has been occurred please contact admin.
+      </h6>
+    </div>
+  </div>
+</div>
+  {% endif %}
+{% endblock%}

@@ -1,0 +1,258 @@
+{% load sekizai_tags %}
+{% addtoblock "css"  %}
+<style>
+    .h3-info-title{
+        font-style : normal;
+        font-size : 24px;
+        font-weight : 700;
+        line-height : 115%;
+        color : {{instance.glossary.collection_form_title_color}};
+    }
+    .h3-info-subtitle{
+        font-style : normal;
+        font-size : 18px;
+        line-height : 115%;
+        color : {{instance.glossary.collection_form_subtitle_color}};
+    }
+</style>
+{% endaddtoblock  %}
+<div id="general_collection_form_outer">
+    {% if success_message %}
+        <p class="fw-bolder fs-6 label mt-3 mb-0 text-success " id="colletion_form_success_msg">
+            {{ success_message }}
+        </p>
+    {% endif %}
+    {% if form_type == "contact" %}
+    <div class="row">
+        {% if popclose %}sasd
+        {%else%}
+        <div class="col-12">
+            <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            style="float: right; font-size: 15px"
+></button>
+{%endif%}
+        </div>
+    </div>
+    {%endif%}
+    {% comment %} <span class="card_title">Start Engaging with Us Today</span> {% endcomment %}
+    <div class = "h3-info-title pb-2"> 
+        {{instance.glossary.collection_form_title|default:"Start Engaging with Us Today"|safe}}
+    </div>
+    <div class = "h3-info-subtitle py-1"> 
+        {{instance.glossary.collection_form_subtitle|safe}}
+    </div>
+    <form class="theme-form" id="general_collection_form{{id}}{{view}}" method="post" action="{% url 'pinogy_common_ajax:collection_form' %}">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                    <div class="text-danger pt-1">
+                    {% for error in form.first_name.errors %}
+                        {{error}}<br/>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-12 col-lg-6">
+                {{ form.last_name }}
+                {% if form.last_name.errors %}
+                    <div class="text-danger pt-1">
+                    {% for error in form.last_name.errors %}
+                        {{error}}<br/>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="text-danger pt-1">
+                    {% for error in form.email.errors %}
+                        {{error}}<br/>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-12 col-lg-6">
+                {{ form.phone }}
+                {% if form.phone.errors %}
+                    <div class="text-danger pt-1">
+                    {% for error in form.phone.errors %}
+                        {{error}}<br/>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-12 col-lg-6">
+                {{ form.zip }}
+                {% if form.zip.errors %}
+                    <div class="text-danger pt-1">
+                    {% for error in form.zip.errors %}
+                        {{error}}<br/>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {{ form.message }}
+                {% if form.message.errors %}
+                    <div class="text-danger pt-1">
+                    {% for error in form.message.errors %}
+                        {{error}}<br/>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-12">
+               
+                <div class="form-check mt-3"style="display: flex; opacity : 0.4">
+                    <input class="form-check-input" type="checkbox" name="{{ form.sms_okay.name }}" checked>
+                    &nbsp; <label class="pt-0">I acknowledge the initial investment terms.</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row d-none">
+            <div class="col-12">
+                <p class="label mt-3 mb-0">
+                    I agree to receive pet & promotional information via the options selected below.
+                </p>
+                <div class="form-check mt-3">
+                    <input class="form-check-input" type="checkbox" name="{{ form.sms_okay.name }}" checked>
+                    <label class="pt-0">
+                        It's okay to text me.
+                    </label>
+                    {% if form.sms_okay.errors %}
+                        <div class="text-danger pt-1">
+                        {% for error in form.sms_okay.errors %}
+                            {{error}}<br/>
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-check mt-3">
+                    <input class="form-check-input" type="checkbox" name="{{ form.email_me_more.name }}" checked>
+                    <label class="pt-0">
+                        It's okay to email me.
+                    </label>
+                    {% if form.email_me_more.errors %}
+                        <div class="text-danger pt-1">
+                        {% for error in form.email_me_more.errors %}
+                            {{error}}<br/>
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        {{ form.captcha }}
+        {% if form.captcha.errors %}
+            <div class="text-danger pt-1">
+            {% for error in form.captcha.errors %}
+                {{error}}<br/>
+            {% endfor %}
+            </div>
+        {% endif %}
+        <input type="hidden" name="form" value="{{ form_type }}" maxlength="17" id="id_form">
+        {% if form_type == "contact" %}
+        <input type="hidden" name="location_id" value="{{location_id}}" maxlength="55" id="contactus">
+        {% endif%}
+
+        {% comment %} Form Specific Field {% endcomment %}
+        {% if breed %}
+            <input type="hidden" name="breed_name" value="{{ breed.name }}" maxlength="55" id="id_breed_name">
+        {% elif breed_pet_type_slug %}
+            <input type="hidden" name="breed_pet_type_slug" value="{{ breed_pet_type_slug }}" maxlength="55" id="id_breed_pet_type_slug">
+        {% elif pet_type_slug %}
+            <input type="hidden" name="pet_type_slug" value="{{ pet_type_slug }}" maxlength="55" id="id_pet_type_slug">
+        {% elif pet_id %}
+            <input type="hidden" name="pet_id" value="{{ pet_id }}" maxlength="55" id="id_pet_id">
+        {% endif %}
+
+        <div class="row">
+            <div class="col-12">
+              
+                <button type="submit"   
+                id="submit"
+                class="{% if instance.glossary.collection_form_btn == 'outline' %}O2{% else %}F2{% endif %} mt-4" style="float:right">
+                    Submit
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% addtoblock 'js' %}
+{% comment %} <script>
+    function submit_collection_form(){
+        $("#general_collection_form").submit(event => {
+            event.preventDefault();
+
+            const form = document.getElementById("general_collection_form");
+            var formData = new FormData(form);
+
+            var url = event.currentTarget.action
+            fetch(url, {
+                method: "POST",
+                body:formData,
+            })
+                .then(response => {
+                    if(response.status === 201)
+                        window.location.href = '/thank-you/'
+                    else
+                        return response.text()
+                })
+                .then(data => {
+                    $("#general_collection_form_outer").html(data)
+                })
+            
+            return false;
+        })
+    }
+</script> {% endcomment %}
+
+
+<script>
+    $(document).on("click", "#submit", function () {
+      // Do something with `$(this)`.
+  
+      $("#general_collection_form{{id}}{{view}}").submit((event) => {
+        event.preventDefault();
+        const form = document.getElementById(
+          "general_collection_form{{id}}{{view}}"
+        );
+        var formData = new FormData(form);
+  
+        var url = event.currentTarget.action;
+        fetch(url, {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => {
+            if (response.status === 201) {
+              window.location.href = "/thank-you/";
+              //$("#exampleModal{{pet.pet_id}}").modal("hide");
+            } else return response.text();
+          })
+          .then((data) => {
+           console.log("error",data)
+          });
+  
+        return false;
+      });
+    });
+  </script>
+{% endaddtoblock %}

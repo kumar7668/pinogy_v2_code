@@ -1,0 +1,40 @@
+<style>
+    .dashed-border {
+        border: 2px dashed #12BBD2;
+        border-radius: 12px;
+        background: rgba(18, 187, 210, 0.05);
+        padding: 10px;
+    }
+    .layout-img {
+        padding: 10px;
+    }
+</style>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    {% with id=widget.attrs.id %}<div class="row" {% if id %} id="{{ id }}" {% endif %} {% if widget.attrs.class %} class="{{ widget.attrs.class }}" {% endif %}>
+        {% for group, options, index in widget.optgroups %}
+            {% if group %}
+                <li>{{ group }}<ul {% if id %} id="{{ id }}_{{ index }}" {% endif %}>
+                    {% endif %}
+                    {% for option in options %}
+                        <div class="{% if column %}{{column}}{% else %}col-6{% endif %} mt-4">{% include option.template_name with widget=option %}</div>
+                    {% endfor %}
+                    {% if group %}
+                    </ul>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endwith %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function () {
+            $('input[type="radio"]').click(function () {
+                $('img')
+                    .removeClass('dashed-border')
+                    $(this)
+                    .parent()
+                    .find('img')
+                    .addClass('dashed-border')
+            });
+        });
+    </script>

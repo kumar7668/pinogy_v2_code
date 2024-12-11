@@ -1,0 +1,1582 @@
+{% load humanize sekizai_tags thumbnail %}
+
+{% if is_pet_commerce_available %}
+
+{% addtoblock "css" %}
+    <style>
+        #addonModal h2, #addonModal h3, #addonModal p{
+            color: var(--global-primary-color);
+        }
+
+        {% comment %} Timer Css {% endcomment %}
+        .timer-outer {
+            display: inline-block;
+            border-radius: 999px;
+            background: var(--global-secondary-color);
+            padding: 8px 12px;
+            color: #FFF;
+            font-family: var(--heading-font);
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: 140%;
+        }
+    </style>
+{% endaddtoblock %}
+
+{% addtoblock "css" %}
+    <style>
+        .addon-main-outer > div:first-child{
+            border-top: none !important;
+            padding-top: 0px !important;
+        }
+
+        .product-addon-label{
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: 180%;
+        }
+
+        .addon-detail{
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .custom-checkbox input {
+            padding: 10px;
+            border: 1px solid var(--global-primary-color);
+        }
+
+        .custom-checkbox input:checked {
+            background-color: white;
+            border: 1px solid var(--global-primary-color);
+            background-image: var(--checkbox-arrow-primary-color) !important;
+        }
+        
+        .custom-checkbox input:focus, .custom-checkbox input:active{
+            box-shadow: none;
+            background-color: white;
+            border: 1px solid var(--global-primary-color);
+        }
+
+        .addon-price{
+            margin-bottom: 0px;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 140%;
+        }
+
+        .sub-total-label, .sub-total-price{
+            margin-bottom: 10px;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 140%;
+        }
+
+        .total-label, .total-price{
+            margin-bottom: 10px;
+            font-size: 20px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: 140%;
+        }
+
+        .addon-product-desc{
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 140%;
+            opacity: 0.8;
+        }
+
+        .price-outer-section{
+            overflow: hidden;
+            display: flex;
+            justify-content: end;
+            padding-left: 0;
+        }
+
+        .total-section-wrapper{
+            border-top: 2px solid var(--global-primary-color);
+        }
+
+        {% comment %} Deposit button section css {% endcomment %}
+        .deposit-outer{
+            padding: 0;
+            border: 1px solid var(--global-secondary-color);
+            box-sizing: border-box;
+            width: 100%;
+            margin: 10px 0 10px 0;
+            background-color: white;
+            border-radius: 20px;
+        }
+
+        .deposit-block {
+            padding: 0;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: 140%;
+            color: var(--global-secondary-color);
+            border-radius: 18px;
+        }
+
+        .deposit-block label{
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            border-radius: 18px;
+        }
+
+        .deposit-block.active {
+            background: var(--global-secondary-color);
+            color: white;
+        }
+
+        .deposit-block label {
+            cursor: pointer;
+        }
+
+        .deposit-message{
+            background: var(--global-highlight-color) !important;
+            color: white !important;
+            font-size: 16px;
+            font-weight: 600;
+            opacity: 0.8;
+            margin: 0;
+        }
+
+    </style>
+{% endaddtoblock %}
+
+{% addtoblock "css" %}
+    <style>
+        {% comment %} Progress steps {% endcomment %}
+        :root {
+            --line-border-empty: #7d7d7d;
+        }
+
+        .progress-container {
+            display: flex;
+            justify-content: space-around;
+            position: relative;
+            margin-bottom: 30px;
+            max-width: 100%;
+        }
+
+        .step-outer{
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            width: 33.33%;
+            position: relative;
+        }
+
+        .step-outer::before {
+            width: 100%;
+            height: 2px;
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: -50%;
+        }
+
+        .step-outer::after {
+            background: var(--line-border-empty);
+            width: 100%;
+            height: 2px;
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+        }
+
+        .step-outer p{
+            text-align: center;
+            font-size: 20px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 140%;
+            margin: 0px;
+            color: var(--line-border-empty) !important;
+        }
+
+        .step-circle {
+            background-color: #fff;
+            color: #999;
+            border-radius: 50%;
+            height: 40px;
+            width: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 140%;
+            border: 2px solid var(--line-border-empty);
+            z-index: 1;
+        }
+
+        {% comment %} Active step of Progress bar {% endcomment %}
+        .step-outer.active::before {
+            background: var(--global-secondary-color);
+        }
+
+        .step-outer.active .step-circle {
+            border-color: var(--global-secondary-color);
+            color: var(--global-secondary-color);
+        }
+
+        .step-outer.active p{
+            color: var(--global-secondary-color) !important;
+        }
+
+        .step-outer.active:last-child::after {
+            background: var(--global-secondary-color);
+        }
+
+        {% comment %} Completed step of Progress bar {% endcomment %}
+        .step-outer.completed::before {
+            background: var(--global-primary-color);
+        }
+
+        .step-outer.completed .step-circle {
+            border-color: var(--global-primary-color);
+            color: var(--global-primary-color);
+        }
+
+        .step-outer.completed p{
+            color: var(--global-primary-color) !important;
+        }
+
+        .addopt-pet-info-image{
+            width: 100%;        
+        }
+
+        .pet-info-title{
+            margin-bottom: 15px;
+        }
+
+        .pet-info-outer p{
+            margin: 0;
+        }
+
+        #addonPetInfoAccordion .accordion-button::after {
+            background-image: var(--accodian-icon-primary);
+        }
+
+        #addonPetInfoAccordion .accordion-button{
+            border-radius: 0;
+            background-color: transparent;
+            box-shadow: none;
+            padding: 0px !important;
+            color: var(--global-primary-color);
+        }
+    </style>
+{% endaddtoblock %}
+
+{% comment %} Adopt me Button Section {% endcomment %}
+<div class="col-12 p-0">
+    <button class="theme-primary-btn w-100" id="adoptMePopupBtn" onclick="showAdoptMePopup()">{{ section_name }}</button>
+</div>
+
+{% comment %} User Data, Addon Section & Payment form {% endcomment %} 
+<div class="modal fade p-0" id="addonModal" tabindex="-1" aria-label="addonModalLabel" aria-hidden="true" data-bs-keyboard="false" data-bs-backdrop="static"> 
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title h2-theme-bold w-100 text-center" id="addonModalLabel">{{ section_name }}</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="progress-container">
+                <div class="step-outer active" id="progressStep1">
+                    <div class="step-circle"><p>1</p></div>
+                    <p>My Name & Address</p>
+                </div>
+                <div class="step-outer" id="progressStep2">
+                    <div class="step-circle"><p>2</p></div>
+                    <p>Services & Options</p>
+                </div>
+                <div class="step-outer" id="progressStep3">
+                    <div class="step-circle"><p>3</p></div>
+                    <p>Check Out</p>
+                </div>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row" id="petPurchaseBlock">
+                    {% comment %} Pet Info {% endcomment %}
+                    <div class="col-12 col-lg-4">
+                        <div class="accordion accordion-flush" id="addonPetInfoAccordion">
+                            <div class="accordion-item">
+                                <button class="accordion-button pet-info-title small-pet-info-heading" type="button" data-bs-toggle="collapse" data-bs-target="#addon-pet-info-accordion" aria-expanded="false" aria-controls="flush-addon-pet-info-accordion">
+                                    <h3 class="h3-theme-bold m-0">Pet Info</h3>
+                                </button>
+                                <h3 class="h3-theme-bold pet-info-title big-pet-info-heading">Pet Info</h3>
+                                <div id="addon-pet-info-accordion" class="accordion-collapse collapse" aria-label="flush-headingOne" data-bs-parent="#addonPetInfoAccordion">
+                                    <div class="pet-info-section" id="petInfoSection">
+                                        <div class="row m-auto">
+                                            <div class="col-6 col-lg-12 p-0 pe-2 pe-lg-0">
+                                                <img src="{{ pet_data.pet_images.0.image_url }}" alt="{{pet_data.pet_images.0.alt}}" class="addopt-pet-info-image" loading="lazy" />
+                                            </diV>
+                                            <div class="col-6 col-lg-12 p-0 d-flex flex-column">
+                                                <div class="pet-info-outer pt-0 pt-lg-3">
+                                                    {% if pet_setting.petname.visible_detail_only and pet_data.pet_name %}
+                                                        <div class="row">
+                                                            <div class="col-3 pe-0"><p>Name</p></div> 
+                                                            <div class="col-9"><p><b>{{ pet_data.pet_name }}</b></p></div> 
+                                                        </div>
+                                                    {% endif %}
+                                                    {% if pet_setting.sex.visible_detail_only %}
+                                                        <div class="row">
+                                                            <div class="col-3 pe-0"><p>Sex</p></div> 
+                                                            <div class="col-9"><p><b>{{ pet_data.pet_gender }}</b></p></div> 
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% comment %} Purchase Steps {% endcomment %}
+                    <div class="col-12 col-lg-8 pt-4 pt-lg-0">
+
+                        {% comment %} User Info Step {% endcomment %}
+                        <div id="userInfo" class="">
+                            <h3 class="h3-theme-bold mb-0">My Info</h3>
+                            <form class="theme-form needs-validation" id="petPurchaseUserData" novalidate>
+                                <div class="row">
+                                    <div class="col-12 col-lg-6">
+                                        <input type="text" id="first_name_ud" name="first_name" class="form-control" placeholder='First Name *' aria-label="First Name" autocomplete="given-name" required />
+                                        <div class="invalid-feedback" id="first_name_ud_err">Please fill out this field.</div>
+                                    </div>
+                                    <div class="col-12 col-lg-6">
+                                        <input type="text" id="last_name_ud" name="last_name" class="form-control" placeholder='Last Name *' aria-label="Last Name" autocomplete="given-name" required />
+                                        <div class="invalid-feedback" id="last_name_ud_err">Please fill out this field.</div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12 col-lg-6">
+                                        <input type="email" id="email_ud" name="email" class="form-control" placeholder='Email *' aria-label="Email" autocomplete="email" required />
+                                        <div class="invalid-feedback" id="email_ud_err">Please fill out this field.</div>
+                                    </div>
+                                    <div class="col-12 col-lg-6">
+                                        <input type="text" id="phone_ud" name="phone" class="form-control phone-validation" maxlength="17" placeholder="Phone Number *" aria-label="Phone Number" autocomplete="tel" required />
+                                        <div class="invalid-feedback" id="phone_ud_err">Please enter a valid 10-digit number.</div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12 col-lg-6">
+                                        <input type="text" id="address_ud" name="address" class="form-control" placeholder='Address *' aria-label="Address 1" autocomplete="given-name" required />
+                                        <div class="invalid-feedback" id="address_ud_err">Please fill out this field.</div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-lg-6">
+                                        <input type="text" id="address_2_ud" name="address_2" class="form-control" placeholder='Address 2' aria-label="Address 2" autocomplete="given-name"/>
+                                        <div class="invalid-feedback" id="address_2_ud_err">Please fill out this field.</div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12 col-lg-6">
+                                        <input type="text" id="zip_ud" name="zip" class="form-control" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)" placeholder='Zip *' aria-label="Zip Code" autocomplete="postal-code" required />
+                                        <div class="invalid-feedback" id="zip_ud_err">Please fill out this field.</div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12 col-lg-6">
+                                        <input type="text" id="city_ud" name="city" class="form-control" placeholder='City *' aria-label="City" autocomplete="given-name" required />
+                                        <div class="invalid-feedback" id="city_ud_err">Please fill out this field.</div>
+                                    </div>
+                                    <div class="col-12 col-lg-6">
+                                        <select name="state" id="state_ud" class="form-select" placeholder='State *' aria-label="State" autocomplete="given-name" required>
+                                            {% include "pinogy_pets/plugins/includes/states.html" %}
+                                        </select>
+                                        <div class="invalid-feedback" id="state_ud_err">Please fill out this field.</div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <p class="label mt-3 mb-0">
+                                            I agree to receive pet & promotional information via the options selected below.
+                                        </p>
+                                        <div class="form-check mt-3">
+                                            <input class="form-check-input" type="checkbox" name="{{ form.sms_okay.name }}" aria-label="checkbox okay to text me" checked>
+                                            <label class="pt-0">
+                                                It's okay to text me.
+                                            </label>
+                                            {% if form.sms_okay.errors %}
+                                                <div class="text-danger pt-1">
+                                                {% for error in form.sms_okay.errors %}
+                                                    {{error}}<br/>
+                                                {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-check mt-3">
+                                            <input class="form-check-input" type="checkbox" name="{{ form.email_me_more.name }}" aria-label="checkbox okay to email me" checked>
+                                            <label class="pt-0">
+                                                It's okay to email me.
+                                            </label>
+                                            {% if form.email_me_more.errors %}
+                                                <div class="text-danger pt-1">
+                                                {% for error in form.email_me_more.errors %}
+                                                    {{error}}<br/>
+                                                {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12 d-flex justify-content-end">
+                                        <button type="button" class="theme-primary-btn mt-4" id="userFormContinue" onclick="showAddonStep()">
+                                            Continue
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        {% comment %} Addon Selection Step {% endcomment %}
+                        <div id="addonSelection" class="" style="display: none;">
+                            <h3 class="h3-theme-bold pet-info-title">Order Details</h3>
+
+                            <div class="row m-auto">
+
+                                {% comment %} Addon Section {% endcomment %}
+                                <div class="col-12 p-0">
+                                    <!-- start pet addons code -->
+                                    <div class="addon-main-outer">
+
+                                        <!-- variation products -->
+                                        {% for addon in addons %}
+                                            {% if addon.variation_id %}
+                                                <div class="variation-addon-block-outer py-3 border-top">
+                                                    <div class="variation-block">
+                                                        <div class="row ">
+                                                            {% if addon.addon_image %}
+                                                                {% thumbnail addon.addon_image.file_content 100x100 as addon_thumb %}
+                                                                <div class="col-3 col-lg-2 pe-0">
+                                                                    <div class="border text-center p-1">
+                                                                        <img class="img-fluid" src="{{addon_thumb.url}}" loading="lazy"
+                                                                            width="{{addon_thumb.width}}" height="{{addon_thumb.height}}" alt="addon-img" />
+                                                                    </div>
+                                                                </div>
+                                                            {% endif %}
+
+                                                            <div class="{% if addon.addon_image %} col-9 col-lg-10 {% else %} col-12 {% endif %}">
+                                                                <div class="row">
+                                                                    <div class="col-12 col-md-6">
+                                                                        <p class="product-addon-label m-0">{{ addon.variation.long_description|default:addon.name }} {% if addon.is_required %}<sup class="text-success">Required</sup>{% endif %}</p>
+                                                                    </div>
+                                                                    <div class="col-12 col-md-6 pt-2 pt-md-0 theme-form">
+                                                                        <select name="{{product.name|slugify}}" class="form-select variation-drpdwn variation_products" data-variation-id="{{addon.variation_id}}" data-vertical-product-id='{{addon.id}}' class="large gfield_select" tabindex="1" aria-describedby="gfield_description_2_24" aria-required="true" aria-invalid="false" required>
+                                                                            <option value="" selected="selected" data-price='0.00' price="">Choose an option</option>
+                                                                                {% for product in addon.variation.products %}
+                                                                                <option data-product-id="{{product.id}}" data-variation="{{addon.variation_id}}" data-price='{{ product.addon_product_price }}' value={{product.slug|slugify}}>{{product.name}}</option>
+                                                                                {% endfor %}
+                                                                        </select>
+                                                                        <p class="text-end pt-1 m-0 addon-price">
+                                                                            $<span data-price="0.00" class="variation_price variation_price_{{addon.variation_id}}">0.00</span>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            {# variant product description #}
+                                                            {% if addon.variation.web_info %}
+                                                                <div class="col col-12">
+                                                                    <p class="addon-product-desc mb-0">{{ addon.variation.web_info }}</p>
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        <!-- regular and packages products -->
+                                        {% for addon in addons %}
+                                            {% if addon.product.kind == "Regular" or addon.product.child_trees %}
+                                                <div class="addon-block-section py-3 border-top">
+                                                    <div class="addon-block-outer d-flex">
+                                                        <div class="custom-checkbox pe-2">
+                                                            <input type="checkbox"
+                                                                class="form-check-input regular-addon" id="checkid-{{addon.name|slugify}}"
+                                                                value="{{addon.product_id}}"
+                                                                data-vertical-product-id='{{addon.id}}'
+                                                                {% if addon.is_required %} checked disabled {% endif %}
+                                                                {% if  addon.default_is_selected %} checked {% endif %}
+                                                            >
+                                                        </div>
+
+                                                        <div class="row m-auto w-100 addon-detail-block">
+                                                            {% if addon.addon_image %}
+                                                                {% thumbnail addon.addon_image.file_content 100x100 as addon_thumb %}
+                                                                <div class="col-3 col-lg-2 ps-0">
+                                                                    <div class="border text-center p-2">
+                                                                        <img class="img-fluid" src="{{addon_thumb.url}}" loading="lazy"
+                                                                            width="{{addon_thumb.width}}" height="{{addon_thumb.height}}" alt="addon-img" />
+                                                                    </div>
+                                                                </div>
+                                                            {% endif %}
+
+                                                            <div class="{% if addon.addon_image %} col-9 col-lg-10 {% else %} col-12 {% endif %} px-0 addon-detail">
+                                                                <p class="product-addon-label m-0">{{ addon.product.long_description|default:addon.name }} {% if addon.is_required %}<sup class="text-success">Required</sup>{% endif %}</p>
+                                                                <p class="addon-price">${{ addon.addon_product_price }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% if addon.product.marketing_message %}
+                                                        <div class="addon-message-outer">
+                                                            <p class="pt-2 addon-product-desc mb-0">{{ addon.product.marketing_message }}</p>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                    </div>
+                                </div>
+
+                                {% comment %} Total Section {% endcomment %}
+                                <div class="col-12 p-0">
+                                    <!-- start total section -->
+                                    <div class="pt-4 total-section-wrapper">
+                                        <div class="row total-section-outer">
+
+                                            <!-- SubTotal -->
+                                            <div class="col-12 sub-total-outer">
+                                                <div class="row">
+                                                    <div class="col-6 col-md-9">
+                                                        <p class="sub-total-label">Subtotal</p>
+                                                    </div>
+                                                    <div class="col-6 col-md-3">
+                                                        <p class="sub-total-price text-end">
+                                                            $ <span id="subtotal_price">{{ pet_price|intcomma }}</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Options -->
+                                            <div class="col-12 options-outer">
+                                                <div class="row">
+                                                    <div class="col-6 col-md-9">
+                                                        <p class="sub-total-label">Options</p>
+                                                    </div>
+                                                    <div class="col-6 col-md-3">
+                                                        <p class="sub-total-price text-end">
+                                                            $ <span id="option_price">0.00</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Total -->
+                                            <div class="col-12 total-outer">
+                                                <div class="row">
+                                                    <div class="col-6 col-md-9">
+                                                        <p class="total-label">Total</p>
+                                                    </div>
+                                                    <div class="col-6 col-md-3">
+                                                        <p class="total-price text-end">
+                                                            $ <span id="total_price">0.00</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {% comment %} Deposit button {% endcomment %}
+                                {% if both_payment_methods %}
+                                <div class="col-12 p-0">
+                                    <div class="row deposit-outer">
+                                        <div class="col-6 deposit-block">
+                                            <label for="depositAmountButton">
+                                                <input name="is_deposit" class="d-none" type="radio" value="true" id="depositAmountButton" aria-label="deposit amount button">
+                                                Pay $<span class="depositAmount"></span>&nbsp;Deposit
+                                            </label>
+                                        </div>
+                                        <div class="col-6 deposit-block active">
+                                            <label for="fullAmountButton">
+                                                <input name="is_deposit" class="d-none" type="radio" value="false" id="fullAmountButton" aria-label="full amount button" checked>
+                                                Pay Full Amount
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% if deposit_message %}
+                                <div class="col-12 p-0 d-none" id="depositMsgBlock">
+                                    <p class="deposit-message p-2">{{ deposit_message }}</p>
+                                </div>
+                                {% endif %}
+
+                            </div>
+                        </div>
+
+                        {% comment %} Payment Step {% endcomment %}
+                        <div id="paymentInfo" class="" style="display: none;">
+                            <h3 class="h3-theme-bold pet-info-title">Order Details</h3>
+
+                            {% comment %} Timer Section {% endcomment %}
+                            <div class="timer-main-outer">
+                                <div id="timerSection">
+                                    <div class="d-flex gap-2 mb-3 timer-section">
+                                        <div class="timer-outer">
+                                            <span id="minutes">00</span> minutes
+                                        </div>
+                                        <div class="timer-outer">
+                                            <span id="seconds">00</span> seconds
+                                        </div>
+                                    </div>
+                                </div>
+                                {% comment %} Timer Message {% endcomment %}
+                                <div id="timerMessage" style="display: none;">
+                                    <div class="d-flex flex-column gap-2 pb-4">
+                                        <p class="semi-bold m-0">Your checkout has timed out. Would you like to proceed with your purchase?</p>
+                                        <div class="d-flex justify-content-center gap-3 timer-button-outer">
+                                            <button onclick="cancelOrder()" class="theme-secondary-btn" id="timerCancelBtn">Cancel Order</button>
+                                            <button onclick="continuePayment()" class="theme-primary-btn">Continue</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% comment %} Card Info {% endcomment %}
+                            <div class="row m-auto">
+                                <div class="col-12 p-0">
+                                    <div id="error-block" style="color:red;"></div>
+                                    <iframe
+                                        title="CardPointeTokenizer"
+                                        id="tokenFrame"
+                                        name="tokenFrame"
+                                        src="{{ cc_source }}"
+                                        onfocus="ccErrors.clear(); displayErrors();"
+                                        scrolling="yes"
+                                        frameborder="0"
+                                        onLoad="handleTokenEvent()"
+                                        width="100%"
+                                        height="230px">
+                                    </iframe>
+                                </div>
+                            </div>
+
+                            {% comment %} Card method selection {% endcomment %}
+                            <div class="row m-auto">
+                                <div class="col-12 p-0">
+                                    <div class="theme-form" style="max-width: 310px;">
+                                        <select name="method" id="method_id" class="form-select m-0" placeholder='Card Method *' required>
+                                            <option value="">Payment System</option>
+                                            <option value="-9">AMEX</option>
+                                            <option value="-8">DISCOVER</option>
+                                            <option value="-6">JCB</option>
+                                            <option value="-7">MASTERCARD</option>
+                                            <option value="-10">VISA</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% comment %} Total Section {% endcomment %}
+                            <div class="row m-auto">
+                                <div class="col-12 p-0">
+                                    <!-- start total section -->
+                                    <div class="pt-4 total-section-wrapper border-top-0">
+                                        <div class="row total-section-outer">
+
+                                            <!-- SubTotal -->
+                                            <div class="col-12 sub-total-outer">
+                                                <div class="row">
+                                                    <div class="col-6 col-md-9">
+                                                        <p class="sub-total-label">Subtotal</p>
+                                                    </div>
+                                                    <div class="col-6 col-md-3">
+                                                        <p class="sub-total-price text-end">
+                                                            $ <span id="p_subtotal_price">0.00</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Options -->
+                                            <div class="col-12 options-outer">
+                                                <div class="row">
+                                                    <div class="col-6 col-md-9">
+                                                        <p class="sub-total-label">Tax</p>
+                                                    </div>
+                                                    <div class="col-6 col-md-3">
+                                                        <p class="sub-total-price text-end">
+                                                            $ <span id="p_tax_price">0.00</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Total -->
+                                            <div class="col-12 total-outer">
+                                                <div class="row">
+                                                    <div class="col-6 col-md-9">
+                                                        <p class="total-label">Total</p>
+                                                    </div>
+                                                    <div class="col-6 col-md-3">
+                                                        <p class="total-price text-end">
+                                                            $ <span id="p_total_price">0.00</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <hr class="mt-0" />
+                                </div>
+                            </div>
+
+                            {% comment %} Deposit Section {% endcomment %}
+                            <div class="row m-auto mb-2 d-none" id="depositSection">
+
+                                <!-- Today's Deposit -->
+                                <div class="col-12 p-0 today-deposit-outer">
+                                    <div class="row">
+                                        <div class="col-6 col-md-9">
+                                            <p class="sub-total-label">Due today</p>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <p class="sub-total-price text-end">
+                                                $ <span id="p_today_deposit">0.00</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Balance Due -->
+                                <div class="col-12 p-0 balance-due-outer">
+                                    <div class="row">
+                                        <div class="col-6 col-md-9">
+                                            <p class="sub-total-label">Balance</p>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <p class="sub-total-price text-end">
+                                                $ <span id="p_balance_due">0.00</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            {% comment %} Terms of use Checkbox {% endcomment %}
+                            <div class="row m-auto">
+                                <div class="col-12 p-0">
+                                    <div class="form-check theme-form custom-checkbox">
+                                        <input class="form-check-input" type="checkbox" id="toggleTerms">
+                                        <label class="form-check-label p-0 ps-2" for="toggleTerms">
+                                            By checking this box, I understand that all sales are final and understand the 
+                                            <a href="/terms-of-use/" target="_blank">Terms of Sale.</a>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    {% comment %} Error block {% endcomment %}
+                    <div id="errorBlock" class="col-12 col-lg-8 ms-auto" style="display: none;">
+                        <div class="alert alert-danger m-0 mt-2" role="alert">
+                        </div>
+                    </div>
+
+                    {% comment %} Addon Selection Step Buttons {% endcomment %}
+                    <div class="col-12 mt-4" id="addonSelectionButtons" style="display: none;">
+                        <div class="row m-auto">
+                            <div class="col-12 p-0 d-flex justify-content-between">
+                                <button type="button" class="theme-secondary-btn d-flex align-items-center justify-content-center gap-2" onclick="backToUserForm()">
+                                    <i class="fa-solid fa-less-than"></i>
+                                    Back
+                                </button>
+                                <button type="button" class="theme-primary-btn" id="paymentBtnContinue" onclick="submitUserAddonData()">
+                                    Continue
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% comment %} Payment Step Buttons {% endcomment %}
+                    <div class="col-12 mt-4" id="paymentInfoButtons" style="display: none;">
+                        <div class="row m-auto">
+                            <div class="col-12 p-0 d-flex justify-content-between">
+                                <button type="button" class="theme-secondary-btn mt-4  d-flex align-items-center justify-content-center gap-2" onclick="backToAddonSelection()">
+                                    <i class="fa-solid fa-less-than"></i>
+                                    Back
+                                </button>
+                                <button type="button" class="theme-primary-btn mt-4" id="completeBtn" onclick="completePurchase()">
+                                    Complete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                {% comment %} Thank you block {% endcomment %}
+                <div id="thankYouBlock" class="container text-center" style="display: none;">
+                    <h2 class="h2-theme-bold mb-4">Congratulations!!</h2>
+                    <p>You have successfully reserved pet. <br />
+                        We will contact you shortly.</p>
+                    <p class="semi-bold">Thank you!</p>
+                    <p>Your invoice number <span id="invoiceId"></span>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% comment %} TODO: Move js to seprate file and called using defer {% endcomment %}
+{% comment %} Timer JS {% endcomment %}
+{% addtoblock 'js'%}
+<script>
+    const INITIAL_TIMER_MINUTES = 04,
+        INITIAL_TIMER_SECONDS = 60;
+    
+    let minutesLeft, secondsLeft, timerInterval;
+
+    function startTimer() {
+        // start timer again
+        minutesLeft = INITIAL_TIMER_MINUTES;
+        secondsLeft = INITIAL_TIMER_SECONDS;
+        clearInterval(timerInterval);
+
+        // Update the timer immediately
+        updateTimer();
+
+        // Update the timer every second
+        timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+        // Display the remaining time in the "minutes" and "seconds" elements
+        $('#minutes').text(minutesLeft < 10 ? '0' + minutesLeft : minutesLeft);
+        $('#seconds').text(secondsLeft < 10 ? '0' + secondsLeft : secondsLeft);
+
+        if (minutesLeft === 0 && secondsLeft === 0) {
+            clearInterval(timerInterval); // Stop the timer when it reaches 0
+            showTimerMessage();
+        } else {
+            if (secondsLeft === 0) {
+                minutesLeft--;
+                secondsLeft = 59;
+            } else {
+                secondsLeft--;
+            }
+        }
+    }
+
+    function showTimerMessage() {
+        $('#timerSection').hide();
+        $('#timerMessage').show();
+    }
+
+    function showTimerSection() {
+        $('#timerSection').show();
+        $('#timerMessage').hide();
+    }
+
+    function cancelOrder() {
+        startBtnLoading("timerCancelBtn");
+        location.reload();
+    }
+
+    function continuePayment() {
+        showTimerSection();
+        startTimer();
+    }
+</script>
+{% endaddtoblock %}
+
+{% comment %} Common JS {% endcomment %}
+{% addtoblock 'js'%}
+<script>
+
+    const urlCheckZip = "{% url 'pinogy_common_ajax:check-zip' %}?",
+        creatTxn = `{% url "pinogy_pet_purchase:create-pet-txn" %}`,
+        requiredAddon = JSON.parse("{{required_addon}}"),
+        depositAmount = parseFloat({{deposit_amount}});
+
+    {% if only_deposit_payment %}
+        var isDeposit = true;
+        $("#depositSection").removeClass("d-none")
+        $("#depositMsgBlock").removeClass("d-none")
+    {% else %}
+        var isDeposit = false;
+        $("#depositSection").addClass("d-none")
+        $("#depositMsgBlock").addClass("d-none")
+    {% endif %}
+
+    // Show alert message
+    function showAlert(message) {
+        $("#errorBlock .alert").html(message)
+        $("#errorBlock").show();
+    }
+
+    // Hide alert message
+    function hideAlert() {
+        $("#errorBlock .alert").html('')
+        $("#errorBlock").hide();
+    }
+
+    // Add loader to the button
+    function startBtnLoading(btn_id){
+        var btn = document.getElementById(btn_id)
+        btn.style.pointerEvents = "none";
+        btn.innerHTML = `<div class="text-center font-20 px-5"><i class="fas fa-circle-notch fa-spin"></i></div>`
+    }
+
+    // Remove btn loader and set text again on item
+    function stopBtnLoading(btn_id, btn_txt){
+        var btn = document.getElementById(btn_id)
+        btn.innerHTML = btn_txt
+        btn.style.pointerEvents = "auto";
+    }
+
+    // hide and show pet info in small and big screen
+    function togglePetInfoAccordion() {
+        if ($(window).width() < 992) {
+            $('#addon-pet-info-accordion').removeClass('show');
+            $('#addonPetInfoAccordion .accordion-button').attr('aria-expanded', 'false');
+            $('#addonPetInfoAccordion .accordion-button').addClass('collapsed');
+            $('.big-pet-info-heading').addClass("d-none")
+            $('.small-pet-info-heading').removeClass("d-none")
+        } else {
+            $('#addon-pet-info-accordion').addClass('show');
+            $('#addonPetInfoAccordion .accordion-button').attr('aria-expanded', 'true');
+            $('#addonPetInfoAccordion .accordion-button').removeClass('collapsed');
+            $('.small-pet-info-heading').addClass("d-none")
+            $('.big-pet-info-heading').removeClass("d-none")
+        }
+    }
+
+    function changeProgreesStep(stepNumber) {
+        $('.step-outer').removeClass('active completed'); // Remove both "active" and "completed" classes
+        for (let i = 1; i <= stepNumber; i++) {
+            if (i === stepNumber) {
+                $(`#progressStep${i}`).addClass('active'); // Add "active" class for the last step
+            } else {
+                $(`#progressStep${i}`).addClass('completed'); // Add "completed" class for all other steps
+            }
+        }
+    }
+
+    // functions for hide the Addon selection section
+    function hideAddonSelectionSection(){
+        $("#addonSelection").hide();
+        $("#addonSelectionButtons").hide();
+    }
+    
+    // functions for show the Addon selection section
+    function showAddonSelectionSection(){
+        $("#addonSelection").show();
+        $("#addonSelectionButtons").show();
+    }
+
+    // functions for hide the Payment section
+    function hidePaymentInfoSection(){
+        $("#paymentInfo").hide();
+        $("#paymentInfoButtons").hide();
+    }
+    
+    // functions for show the Payment section
+    function showPaymentInfoSection(){
+        startTimer();
+        $("#paymentInfo").show();
+        $("#paymentInfoButtons").show();
+    }
+
+    function showAdoptMePopup(){
+        $("#userInfo").show();
+
+        hideAddonSelectionSection();
+        hidePaymentInfoSection();
+
+        changeProgreesStep(1);
+
+        $("#addonModal").modal("show");
+    }
+
+    // Listen for window resize and update the accordion accordingly
+    $(window).resize(function() {
+        togglePetInfoAccordion();
+    });
+
+    $(window).on('load', function() {
+        togglePetInfoAccordion();
+    });
+</script>
+{% endaddtoblock %}
+
+{% comment %} Step1: User Info Form {% endcomment %}
+{% addtoblock 'js'%}
+<script>
+
+    var txn_id = '',
+        txn_subtotal = '',
+        txn_tax = '', 
+        txn_total = ''; 
+
+    // check zip validation
+    async function checkZip(zip, state) {
+        var myHeaders = new Headers();
+        var urlZip = urlCheckZip + new URLSearchParams({
+            zip: zip,
+            state: state
+        });
+
+        var requestOptions = {
+            method: 'GET',
+            mode: 'no-cors', // Note: Check if 'no-cors' is the correct mode for your use case
+            headers: myHeaders,
+        };
+
+        try {
+            const response = await fetch(urlZip, requestOptions);
+            if (response.status !== 200) {
+                return false;
+            } else {
+                return true;
+            }
+        } catch (error) {
+            console.error('Error while checking zip:', error);
+            return false;
+        }
+    }
+
+    // check validation of user data form 
+    // return true if form is valid else false
+    async function validateUserForm() {
+        const form = $("#petPurchaseUserData");
+        form.removeClass('was-validated');
+    
+        const requiredFields = [
+            { field: $("#first_name_ud"), errorId: "#first_name_ud_err" },
+            { field: $("#last_name_ud"), errorId: "#last_name_ud_err" },
+            { field: $("#email_ud"), errorId: "#email_ud_err" },
+            { field: $("#phone_ud"), errorId: "#phone_ud_err" },
+            { field: $("#address_ud"), errorId: "#address_ud_err" },
+            { field: $("#city_ud"), errorId: "#city_ud_err" },
+            { field: $("#state_ud"), errorId: "#state_ud_err" },
+            { field: $("#zip_ud"), errorId: "#zip_ud_err" }
+        ];
+    
+        for (const { field, errorId } of requiredFields) {
+            if (!field.val().trim()) {
+                $(errorId).text(`Please fill out this field.`)
+                field.focus();
+                form.addClass('was-validated');
+                return false;
+            }
+        }
+    
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,4}$/;
+        const email = $("#email_ud");
+        if (!emailPattern.test(email.val().trim())) {
+            $("#email_ud_err").text("Please enter a valid email address.")
+            email.addClass('is-invalid');
+            email.focus();
+            form.addClass('was-validated');
+            return false;
+        } else {
+            email.removeClass('is-invalid');
+        }
+    
+        const phone = $("#phone_ud");
+        if (phone.val().trim().length < 10) {
+            $("#phone_ud_err").text("Phone number must have at least 10 digits.");
+            phone.addClass('is-invalid');
+            phone.focus();
+            form.addClass('was-validated');
+            return false;
+        } else {
+            phone.removeClass('is-invalid');
+        }
+    
+        const state = $("#state_ud");
+        const zip = $("#zip_ud");
+        const isZipValid = await checkZip(zip.val(), state.val());
+        if (!isZipValid) {
+            $("#zip_ud_err").text("Incorrect zip code for selected state.");
+            zip.addClass('is-invalid');
+            zip.focus();
+            zip.reportValidity();
+            form.addClass('was-validated');
+            return false;
+        } else {
+            zip.removeClass('is-invalid');
+        }
+    
+        return true;
+    }
+
+    // validate the user form and show the payment form
+    async function showAddonStep(){
+        var isUserFormValid = await validateUserForm();
+
+        if ( isUserFormValid ){
+            showAddonSelectionSection();
+
+            $("#userInfo").hide();
+            hidePaymentInfoSection();
+
+            changeProgreesStep(2);
+
+            $("#addonModal").modal("show")
+        }
+
+    }
+
+    // back to user form
+    function backToUserForm(){
+        hideAlert();
+
+        $("#userInfo").show();
+
+        hideAddonSelectionSection();
+        hidePaymentInfoSection();
+
+        changeProgreesStep(1);
+    }
+
+</script>
+{% endaddtoblock %}
+
+{% comment %} Step2: Addon Selection {% endcomment %}
+{% addtoblock 'js'%}
+<script>
+
+    const pet_id = {{pet_id}},
+        pet_loc_entity_id = {{pet_loc_entity_id}};
+
+    let priceList = {},
+        petPrice = {{pet_price}},
+        optionPrice = 0.0,
+        totalPrice = 0.0,
+        selected_addon_list = [];
+
+    $( document ).ready(function() {
+        // Create a PriceList of addon
+        {% for addon in addons %}
+            {% if addon.product.kind == "Regular" %}
+                priceList['{{addon.product_id}}'] = {{ addon.addon_product_price|default:0.0 }};
+            {% elif not addon.variation and addon.product.child_trees %}
+                priceList['{{addon.product_id}}'] = {{ addon.addon_product_price|default:0.0 }};
+            {% endif %}
+        {% endfor %}
+
+        setCalculatedPrices();
+
+        // set deposit amount for static places
+        $('.depositAmount').html(depositAmount.toFixed(2));
+    });
+
+    // Calculate options price
+    function calcOptionPrice() {
+        optionPrice = 0.0;
+        if (Object.keys(priceList).length) {
+            // Add regular addon value in opiton price
+            $('.regular-addon:checkbox:checked').each(function () {
+                optionPrice += priceList[this.value];
+            });
+
+            // Add variant and bundle addon value in option price
+            $(".variation_price").each(function () {
+                optionPrice += parseInt($(this).data("price"));
+            });
+
+        }
+
+        totalPrice = petPrice + optionPrice;
+    }
+
+    // set calculated prices
+    function setCalculatedPrices(){
+        calcOptionPrice();
+
+        $('#option_price').html(optionPrice.toFixed(2).toLocaleString("en-GB"));
+        $('#total_price').html(totalPrice.toFixed(2).toLocaleString("en-GB"));
+
+    }
+
+    // update price on addon selection/remove
+    $('input.regular-addon:checkbox').on('change', function () {
+        setCalculatedPrices()
+    });
+    $('.variation_products').on('change', function() {
+        var variation_id = $(this).data("variation-id"),
+            price = $(this).find(':selected').data('price');
+        
+        $(`.variation_price_${variation_id}`).html(price);
+        $(`.variation_price_${variation_id}`).data("price", price);
+
+        setCalculatedPrices();
+    });
+
+    // Create array of selected addon and compare with required addon list
+    // For variant addon adding variation id insted of product id
+    // return True id if all required addon added otherwise False
+    function checkRequiredAddon(){
+        hideAlert();
+
+        required_addon_list = [];
+        $('.regular-addon:checkbox:checked').each(function() { 
+            required_addon_list.push(
+                typeof this.value === "string" ? parseInt(this.value) : parseInt(this.value)
+            ); 
+        });
+        $('.variation-block select :selected').each(function() {
+            required_addon_list.push(
+                typeof $(this).data('variation') === "string" ? parseInt($(this).data('variation')) : parseInt($(this).data('variation'))
+            );
+        });
+
+        const containsAllRequiredAddon = requiredAddon.every(element => {
+            return required_addon_list.indexOf(element) !== -1;
+        });
+        
+        if(!containsAllRequiredAddon){
+            showAlert("Please select all required addon.");
+        }else{
+            hideAlert();
+        }
+
+        return containsAllRequiredAddon
+    }
+
+    // Get selected addons
+    function getSelectedAddons(){
+        selected_addon_list = [];
+        $('.regular-addon:checkbox:checked').each(function() { 
+            selected_addon_list.push({
+                'product_id': parseInt(this.value),
+                'vertical_product_id': $(this).data("vertical-product-id")
+            }); 
+        });
+        $('.variation-block select :selected').each(function() {
+            $(this).data('product-id') ? selected_addon_list.push({
+                'product_id': parseInt($(this).data('product-id')),
+                'vertical_product_id': $(this).parent().data("vertical-product-id")
+            }) : ''
+        });
+
+        return selected_addon_list
+    }
+
+    // Show Payment step if user and addon data submitted successfully
+    function showPaymentForm() {
+        showPaymentInfoSection();
+        
+        $("#userInfo").hide();
+        hideAddonSelectionSection();
+
+        changeProgreesStep(3);
+    }
+
+    // submit the user and addons data and show payment
+    async function submitUserAddonData() {
+        startBtnLoading("paymentBtnContinue");
+
+        var isUserFormValid = await validateUserForm();
+        if ( !isUserFormValid ){
+            stopBtnLoading("paymentBtnContinue", "Continue");
+            backToUserForm()
+            return false;
+        }
+
+        var requiredAddonSelected = checkRequiredAddon();
+        if ( !requiredAddonSelected ){
+            stopBtnLoading("paymentBtnContinue", "Continue");
+            return false;
+        }
+
+        var data = {
+            "user_data": {
+                "first_name": document.getElementById('first_name_ud').value,
+                "last_name": document.getElementById('last_name_ud').value,
+                "email": document.getElementById('email_ud').value,
+                "phone": document.getElementById('phone_ud').value,
+                "address": document.getElementById('address_ud').value,
+                "address_2": document.getElementById('address_2_ud').value,
+                "city": document.getElementById('city_ud').value,
+                "zip": document.getElementById('zip_ud').value,
+                "state": document.getElementById('state_ud').value,
+            },
+            "addon_data": getSelectedAddons(),
+            "pet_id": pet_id,
+            "pet_loc_entity_id": pet_loc_entity_id,
+        };
+        
+        fetch(creatTxn, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(async response => {
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                const errorMessage = errorData.error || 'Something went wrong, please contact admin.';
+                throw new Error(errorMessage);
+            }
+
+            return response.json();
+        })
+        .then(data => {
+
+            stopBtnLoading("paymentBtnContinue", "Continue");
+
+            txn_id = data.txn_id;
+            txn_subtotal = data.txn_subtotal;
+            txn_tax = data.txn_tax;
+            txn_total = data.txn_total;
+            today_deposit = depositAmount;
+            balance_due = txn_total - depositAmount;
+
+            $('#p_subtotal_price').html(txn_subtotal);
+            $('#p_tax_price').html(txn_tax);
+            $('#p_total_price').html(txn_total);
+            $('#p_today_deposit').html(today_deposit.toFixed(2));
+            $('#p_balance_due').html(`${balance_due.toFixed(2)}`);
+
+            showPaymentForm();
+        })
+        .catch(error => {
+            stopBtnLoading("paymentBtnContinue", "Continue");
+            showAlert(error.message);
+        });
+
+    }
+
+    // change the deposit or full payment buttons
+    {% if both_payment_methods %}
+        $('input[name=is_deposit]').change(function () {
+
+            $('.deposit-block').removeClass('active');
+            $(this).closest('.deposit-block').addClass('active');
+
+            if ($('input[name=is_deposit]:checked').val() === "true") {
+                $("#depositSection").removeClass("d-none")
+                $("#depositMsgBlock").removeClass("d-none")
+                isDeposit = true;
+            } else {
+                $("#depositSection").addClass("d-none")
+                $("#depositMsgBlock").addClass("d-none")
+                isDeposit = false;
+            }
+        });
+    {% endif %}
+
+    // back to addon selection form
+    function backToAddonSelection(){
+        hideAlert();
+
+        showAddonSelectionSection();
+
+        $("#userInfo").hide();
+        hidePaymentInfoSection();
+
+        changeProgreesStep(2);
+    }
+
+</script>
+{% endaddtoblock %}
+
+{% comment %} Step 3: Payment Info Form {% endcomment %}
+{% addtoblock 'js'%}
+<script>
+
+    const executePaymentUrl = `{% url "pinogy_pet_purchase:execute-pet-payment" %}`;
+        card_methods = ["-6", "-7", "-8", "-9", "-10"], 
+        ccAction = "{{ cc_origin }}",
+        eventTimeout = 200,
+        errorBlock = document.getElementById('error-block'),
+        ccErrors = new Set();
+    var cc_token = '',
+        cc_expiry = '';
+    
+    let lastEventTime = new Date().getTime();
+
+    // display card connect errors 
+    function displayErrors() {
+        let commonRendered = '';
+        ccErrors.forEach((item) => {
+            commonRendered += '<div class="mb-2">'.concat(item).concat('</div>');
+        });
+        errorBlock.innerHTML = commonRendered;
+    }
+
+    // handle card connect errors
+    function handleEventError(error, timeStamp) {
+        const delta = (ccErrors.length === 0) ? 1 : timeStamp - lastEventTime;
+        lastEventTime = timeStamp;
+        if(delta >= eventTimeout ) {
+            ccErrors.clear();
+        }
+        ccErrors.add(error);
+        displayErrors();
+    }
+
+    // handle main card connect event
+    function handleTokenEvent() {
+        window.addEventListener("message", (event) => {
+            if(event.origin === ccAction) {
+                const eventData = JSON.parse(event.data);
+                
+                if (eventData.hasOwnProperty('validationError')) {
+                    handleEventError(eventData.validationError, event.timeStamp);
+                } else if (eventData.hasOwnProperty('pinogytoken') && eventData.hasOwnProperty('expiry')) {
+                    ccErrors.clear();
+                    displayErrors();
+                    cc_token = eventData.pinogytoken;
+                    cc_expiry = eventData.expiry;
+                }
+            }
+        }, false);
+    }
+
+    function validatePaymentData() {
+
+        hideAlert();
+
+        const cardMethodField = $("#method_id"),
+            toggleTerms = $("#toggleTerms");
+
+        if (card_methods.indexOf(cardMethodField.val()) == -1){
+            showAlert('Selected payment is not valid.');
+            cardMethodField.focus();
+            return false;
+        }
+
+        if (ccErrors.size !== 0 || cc_token == '' || cc_expiry == ''){
+            showAlert('Enter the correct card details, please.');
+            return false;
+        }
+
+        if (!toggleTerms.is(':checked')){
+            showAlert('Please accept the Terms of Sale.');
+            toggleTerms.focus();
+            return false;
+        }
+
+        return true;
+
+    }
+
+    function showThankYouBlock(invoiceId){
+        $("#petPurchaseBlock").hide();
+        $(".progress-container").hide();
+
+        $('#invoiceId').html(invoiceId);
+
+        $('#thankYouBlock').show();
+
+        setTimeout(function () {
+            window.location.reload();
+        }, 3000);
+    }
+
+    function sendPaymentData(){
+
+        var data = {
+            "txn_id": txn_id,
+            "card_method": $("#method_id").val(),
+            "card_token": cc_token,
+            "card_expiry": cc_expiry,
+            "card_holder": document.getElementById('first_name_ud').value,
+            "email": document.getElementById('email_ud').value,
+            "is_deposit": isDeposit,
+            "deposit_amount": depositAmount,
+        };
+
+        fetch(executePaymentUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(async response => {
+            if (!response.ok) {
+                const paymentErrors = await response.json();
+                const pErrorMessage = paymentErrors.error || 'Something went wrong, please contact admin.';
+                throw new Error(pErrorMessage);
+            }
+
+            return response.json();
+        })
+        .then(data => {
+            stopBtnLoading("completeBtn", "Complete");
+            showThankYouBlock(data.invoice_id);
+        })
+        .catch(error => {
+            stopBtnLoading("completeBtn", "Complete");
+            showAlert(error.message);
+        });
+    }
+
+    async function completePurchase(){
+
+        startBtnLoading("completeBtn");
+        
+        var isUserFormValid = await validateUserForm();
+        if (!isUserFormValid) {
+            stopBtnLoading("completeBtn", "Complete");
+            backToUserForm();
+            return false;
+        }
+
+        var requiredAddonSelected = checkRequiredAddon();
+        if (!requiredAddonSelected) {
+            stopBtnLoading("completeBtn", "Complete");
+            backToAddonSelection();
+            return false;
+        }
+
+        var isPaymentDataValid = validatePaymentData();
+        if (!isPaymentDataValid) {
+            stopBtnLoading("completeBtn", "Complete");
+            return false;
+        }
+
+        sendPaymentData();
+
+    }
+
+</script>
+{% endaddtoblock %}
+
+{% endif %}

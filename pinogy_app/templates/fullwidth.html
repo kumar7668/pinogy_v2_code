@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load static cms_tags sekizai_tags menu_tags %}
+
+{% block title %}{% page_attribute "page_title" %}{% endblock title %}
+
+
+{% block content %}
+    
+    {% addtoblock "css" %}
+        <style type="text/css">
+            {% if app_name != "pinogy_shop" %}
+                body{
+                    overflow-x: hidden;
+                    font-family: 'Open Sans'!important;
+                }
+                .nav {
+                    padding-left: 0;
+                }
+                .nav li {
+                    display: inline;
+                    list-style-type: none;
+                    padding-right: 20px;
+                }
+                .content {
+                    float: left;
+                    width: 80%;
+                }
+                .sidebar {
+                    float: left;
+                    width: 20%;
+                }
+                .content-section{
+                    min-height: 50vh;
+                }
+                .slick-dots{
+                    bottom: 0px !important;
+                }
+                {% if global_theme_config.selected_background %}
+                    #main{
+                        background-image: url({{global_theme_config.selected_background.image.url}});
+                    }
+                {% endif %}
+            {% endif %}
+            span.cart-count {
+                position: absolute;
+                top: -10px;
+                right: -10px;
+                width: 25px;
+                height: 20px;
+                display: flex;
+                font-size: 18px;
+                background: yellow;
+                border-radius: 10px;
+                justify-content: center;
+                align-items: center;
+                padding: 10px !important;
+            }
+            .slick-dots{
+                bottom: 0px !important;
+            }
+        </style>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/website-main-flow-v1.css' %}">
+    {% endaddtoblock %}
+
+    {% static_placeholder 'Standard Header' %}
+    <div class='content-section'>
+        
+        <div id="main">
+             {% comment %} 
+                The following placeholder ("pageheader") is intended for displaying content 
+                above the breadcrumbs.
+            {% endcomment %}
+            {% placeholder "pageheader" %}
+            {% block breadcrumb %}
+                {% if request.path != '/' %}
+                    <div class="container pt-5 d-none d-md-block">
+                        {% show_breadcrumb 0 "pinogy_app/includes/breadcrumb.html" 0 %}
+                    </div>
+                {% endif %}
+            {% endblock %}
+
+            {% placeholder "content" %}
+
+            {% block main %} {% endblock main %}
+        </div>
+    </div>
+    <div class='footer-outer'>
+        {% static_placeholder 'Standard Footer' %}
+    </div>
+
+    {% if request.toolbar and request.toolbar.edit_mode %}
+        <div style="display: none;">
+            {% placeholder 'Disabled' %}
+        </div>
+    {% endif %}
+{% endblock content %}

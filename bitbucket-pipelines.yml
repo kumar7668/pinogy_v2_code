@@ -1,0 +1,326 @@
+options:
+  docker: true
+
+definitions:
+  steps:
+    - step: &create-new-website-tpl0147
+        name: Create new website instance
+        image: google/cloud-sdk:latest
+        script:
+          - export IMAGE_TAG=$BITBUCKET_COMMIT
+          - echo "IMAGE_TAG $IMAGE_TAG"
+          - echo $GCLOUD_API_KEYFILE | base64 -d > ./gcloud-api-key.json
+          - gcloud auth activate-service-account --key-file gcloud-api-key.json
+          - gcloud config set project $GOOGLE_CLOUD_PROJECT
+          - cat ./gcloud-api-key.json | docker login -u _json_key --password-stdin https://us.gcr.io
+          - echo 'Generating Yaml'
+          - export NAMESPACE=websites-v2
+          - export K8S_CLUSTER_NAME=websites-v1--1
+          - export K8S_REGION=us-central1-c
+          - export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+          - export SITENUM=${BITBUCKET_TAG:8}
+          - echo $SITENUM
+          - devops/gcp/scripts/new_site.sh $SITENUM
+          - devops/gcp/scripts/image_swap.sh stable
+          - echo 'Kicking off JOBS'
+          - gcloud container clusters get-credentials $K8S_CLUSTER_NAME --region=$K8S_REGION
+          - kubectl apply -f devops/gcp/secrets
+          - kubectl delete --ignore-not-found -f devops/gcp/jobs
+          - kubectl apply -f devops/gcp/jobs
+          - kubectl apply -f devops/gcp/deployments
+          - kubectl apply -f devops/gcp/configs
+          - kubectl apply -f devops/gcp/services
+          
+    - step: &create-new-website
+        name: Create new website instance
+        image: google/cloud-sdk:latest
+        script:
+          - export IMAGE_TAG=$BITBUCKET_COMMIT
+          - echo "IMAGE_TAG $IMAGE_TAG"
+          - echo $GCLOUD_API_KEYFILE | base64 -d > ./gcloud-api-key.json
+          - gcloud auth activate-service-account --key-file gcloud-api-key.json
+          - gcloud config set project $GOOGLE_CLOUD_PROJECT
+          - cat ./gcloud-api-key.json | docker login -u _json_key --password-stdin https://us.gcr.io
+          - echo 'Generating Yaml'
+          - export NAMESPACE=websites-v2
+          - export K8S_CLUSTER_NAME=websites-v1--1
+          - export K8S_REGION=us-central1-c
+          - export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+          - export SITENUM=${BITBUCKET_TAG:8}
+          - echo $SITENUM
+          - devops/gcp/scripts/new_site.sh $SITENUM
+          - devops/gcp/scripts/image_swap.sh stable
+          - echo 'Kicking off JOBS'
+          - gcloud container clusters get-credentials $K8S_CLUSTER_NAME --region=$K8S_REGION
+          - kubectl apply -f devops/gcp/secrets
+          - kubectl delete --ignore-not-found -f devops/gcp/jobs
+          - kubectl apply -f devops/gcp/jobs
+          - kubectl apply -f devops/gcp/deployments
+          - kubectl apply -f devops/gcp/configs
+          - kubectl apply -f devops/gcp/services
+
+    - step: &build-image
+        name: Build Docker image
+        image: google/cloud-sdk:latest
+        script:
+          - export PATH=/usr/bin:$PATH
+          - echo "PATH $PATH"
+          - export IMAGE_NAME=us.gcr.io/pinogy-websites/pinogy-new-base:$BITBUCKET_COMMIT
+          - echo "IMAGE_NAME $IMAGE_NAME"
+          - export IMAGE_BUILD=pinogy-new-base:$BITBUCKET_COMMIT
+          - echo "IMAGE_BUILD $IMAGE_BUILD"
+          - export SSH_PRIVATE_KEY=$(echo $SSH_PRIVATE_KEY | base64 -d)
+          - echo $GCLOUD_API_KEYFILE | base64 -d > ./gcloud-api-key.json
+          - gcloud auth activate-service-account --key-file gcloud-api-key.json
+          - gcloud config unset project
+          - gcloud config set project $GOOGLE_CLOUD_PROJECT
+          - cat ./gcloud-api-key.json | docker login -u _json_key --password-stdin https://us.gcr.io
+          - docker build --build-arg SSH_PRIVATE_KEY --build-arg IMAGE_NAME --build-arg IMAGE_BUILD -t $IMAGE_NAME .
+          - docker push $IMAGE_NAME
+
+    - step: &build-dev-image
+        name: Build Docker image
+        image: google/cloud-sdk:latest
+        script:
+          - export PATH=/usr/bin:$PATH
+          - echo "PATH $PATH"
+          - export IMAGE_NAME=us.gcr.io/pinogy-websites/pinogy-new-base:$BITBUCKET_COMMIT
+          - echo "IMAGE_NAME $IMAGE_NAME"
+          - export IMAGE_BUILD=pinogy-new-base:$BITBUCKET_COMMIT
+          - echo "IMAGE_BUILD $IMAGE_BUILD"
+          - export SSH_PRIVATE_KEY=$(echo $SSH_PRIVATE_KEY | base64 -d)
+          - echo $GCLOUD_API_KEYFILE | base64 -d > ./gcloud-api-key.json
+          - gcloud auth activate-service-account --key-file gcloud-api-key.json
+          - gcloud config unset project
+          - gcloud config set project $GOOGLE_CLOUD_PROJECT
+          - cat ./gcloud-api-key.json | docker login -u _json_key --password-stdin https://us.gcr.io
+          - docker build -f Dockerfile_dev --build-arg SSH_PRIVATE_KEY --build-arg IMAGE_NAME --build-arg IMAGE_BUILD -t $IMAGE_NAME .
+          - docker push $IMAGE_NAME
+
+    - step: &deploy-dev
+        name: Deploy to dev environment
+        image: google/cloud-sdk:latest
+        caches:
+          - docker
+        script:
+          - export IMAGE_TAG=$BITBUCKET_COMMIT
+          - echo "IMAGE_TAG $IMAGE_TAG"
+          - echo $GCLOUD_API_KEYFILE | base64 -d > ./gcloud-api-key.json
+          - gcloud auth activate-service-account --key-file gcloud-api-key.json
+          - gcloud config set project $GOOGLE_CLOUD_PROJECT
+          - cat ./gcloud-api-key.json | docker login -u _json_key --password-stdin https://us.gcr.io
+          - echo 'Generating Yaml'
+          - export NAMESPACE=websites-v2
+          - export K8S_CLUSTER_NAME=websites-v1--1
+          - export K8S_REGION=us-central1-c
+          - export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+          - devops/gcp/scripts/gen_sites.sh
+          - devops/gcp/scripts/image_swap_dev.sh $IMAGE_TAG
+          - echo 'Kicking off JOBS'
+          - gcloud container clusters get-credentials $K8S_CLUSTER_NAME --region=$K8S_REGION
+          - kubectl apply -f devops/gcp/secrets
+          - kubectl delete --ignore-not-found -f devops/gcp/jobs_dev
+          - kubectl apply -f devops/gcp/jobs_dev
+          - kubectl apply -f devops/gcp/deployments_dev
+          - kubectl apply -f devops/gcp/configs_dev
+          - kubectl apply -f devops/gcp/services_dev
+
+    - step: &deploy-stage
+        name: Deploy to staging environment
+        image: google/cloud-sdk:latest
+        caches:
+          - docker
+        script:
+          - export IMAGE_TAG=$BITBUCKET_COMMIT
+          - echo "IMAGE_TAG $IMAGE_TAG"
+          - echo $GCLOUD_API_KEYFILE | base64 -d > ./gcloud-api-key.json
+          - gcloud auth activate-service-account --key-file gcloud-api-key.json
+          - gcloud config set project $GOOGLE_CLOUD_PROJECT
+          - cat ./gcloud-api-key.json | docker login -u _json_key --password-stdin https://us.gcr.io
+          - echo 'Generating Yaml'
+          - export NAMESPACE=websites-v2
+          - export K8S_CLUSTER_NAME=websites-v1--1
+          - export K8S_REGION=us-central1-c
+          - export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+          - devops/gcp/scripts/gen_sites.sh
+          - devops/gcp/scripts/image_swap_beta.sh $IMAGE_TAG
+          - echo 'Kicking off JOBS'
+          - gcloud container clusters get-credentials $K8S_CLUSTER_NAME --region=$K8S_REGION
+          - kubectl apply -f devops/gcp/secrets
+          - kubectl delete --ignore-not-found -f devops/gcp/jobs_beta
+          - kubectl apply -f devops/gcp/jobs_beta
+          - kubectl apply -f devops/gcp/deployments_beta
+          - kubectl apply -f devops/gcp/configs_beta
+          - kubectl apply -f devops/gcp/services_beta
+
+    - step: &release-stable
+        name: Push stable tag to GCP registry
+        image: google/cloud-sdk:latest
+        caches:
+          - docker
+        script:
+          - export IMAGE_REPO=us.gcr.io/pinogy-websites/pinogy-new-base
+          - echo "IMAGE_REPO $IMAGE_REPO"
+          - export TO_TAG_IMAGE=$IMAGE_REPO:$BITBUCKET_COMMIT
+          - echo "TO_TAG_IMAGE $TO_TAG_IMAGE"
+          - export IMAGE_NAME=$IMAGE_REPO:$BITBUCKET_TAG
+          - echo "IMAGE_NAME $IMAGE_NAME"
+          - echo "$IMAGE_NAME" > ./IMAGE_BUILD.txt
+          - export IMAGE_NAME_CHANNEL=$IMAGE_REPO:stable
+          - echo "IMAGE_NAME_CHANNEL $IMAGE_NAME_CHANNEL"
+          - echo $GCLOUD_API_KEYFILE | base64 -d > ./gcloud-api-key.json
+          - gcloud auth activate-service-account --key-file gcloud-api-key.json
+          - gcloud config set project $GOOGLE_CLOUD_PROJECT
+          - cat ./gcloud-api-key.json | docker login -u _json_key --password-stdin https://us.gcr.io
+          - docker pull $TO_TAG_IMAGE
+          - docker tag $TO_TAG_IMAGE $IMAGE_NAME
+          - docker tag $TO_TAG_IMAGE $IMAGE_NAME_CHANNEL
+          - docker image push --all-tags $IMAGE_REPO
+
+    - step: &release-hotfix
+        name: Push hotfix tag to GCP registry
+        image: google/cloud-sdk:latest
+        caches:
+          - docker
+        script:
+          - export IMAGE_REPO=us.gcr.io/pinogy-websites/pinogy-new-base
+          - echo "IMAGE_REPO $IMAGE_REPO"
+          - export TO_TAG_IMAGE=$IMAGE_REPO:$BITBUCKET_COMMIT
+          - echo "TO_TAG_IMAGE $TO_TAG_IMAGE"
+          - export IMAGE_NAME=$IMAGE_REPO:$BITBUCKET_TAG
+          - echo "IMAGE_NAME $IMAGE_NAME"
+          - echo "$IMAGE_NAME" > ./IMAGE_BUILD.txt
+          - export IMAGE_NAME_CHANNEL=$IMAGE_REPO:hotfix
+          - echo "IMAGE_NAME_CHANNEL $IMAGE_NAME_CHANNEL"
+          - echo $GCLOUD_API_KEYFILE | base64 -d > ./gcloud-api-key.json
+          - gcloud auth activate-service-account --key-file gcloud-api-key.json
+          - gcloud config set project $GOOGLE_CLOUD_PROJECT
+          - cat ./gcloud-api-key.json | docker login -u _json_key --password-stdin https://us.gcr.io
+          - docker pull $TO_TAG_IMAGE
+          - docker tag $TO_TAG_IMAGE $IMAGE_NAME
+          - docker tag $TO_TAG_IMAGE $IMAGE_NAME_CHANNEL
+          - docker image push --all-tags $IMAGE_REPO
+  
+    - step: &deploy-production
+        name: Deploy new image and migration to stable channel
+        image: google/cloud-sdk:latest
+        caches:
+          - docker
+        script:
+          - export IMAGE_TAG=$BITBUCKET_TAG
+          - echo "IMAGE_TAG $IMAGE_TAG"
+          - echo $GCLOUD_API_KEYFILE | base64 -d > ./gcloud-api-key.json
+          - gcloud auth activate-service-account --key-file gcloud-api-key.json
+          - gcloud config set project $GOOGLE_CLOUD_PROJECT
+          - cat ./gcloud-api-key.json | docker login -u _json_key --password-stdin https://us.gcr.io
+          - export NAMESPACE=websites-v2
+          - export K8S_CLUSTER_NAME=websites-v1--1
+          - export K8S_REGION=us-central1-c
+          - export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+          - echo 'Generating Yaml'
+          - devops/gcp/scripts/del_sites.sh
+          - devops/gcp/scripts/gen_sites.sh
+          - devops/gcp/scripts/image_swap.sh $IMAGE_TAG
+          - echo "Deploying $IMAGE_TAG to $K8S_CLUSTER_NAME $K8S_REGION"
+          - gcloud container clusters get-credentials $K8S_CLUSTER_NAME --region=$K8S_REGION
+          - echo 'Kicking off JOBS'
+          - kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
+          - kubectl delete --ignore-not-found -f devops/gcp/jobs
+          - kubectl apply -f devops/gcp/secrets
+          - kubectl apply -f devops/gcp/jobs
+          - echo "Deploying $IMAGE_TAG to Cluster - $K8S_REGION"
+          - kubectl apply -f devops/gcp/deployments
+          - echo "us.gcr.io/pinogy-websites/pinogy-new-base:$IMAGE_TAG"
+          # - devops/gcp/scripts/deploy_sites.sh "us.gcr.io/pinogy-websites/pinogy-new-base:$IMAGE_TAG"
+          - echo "us.gcr.io/pinogy-websites/pinogy-new-base:$IMAGE_TAG"
+          - kubectl apply -f devops/gcp/configs
+          - kubectl apply -f devops/gcp/services
+          - kubectl apply -f devops/gcp/hpas
+          - kubectl apply -f devops/gcp/certs
+    
+    - step: &deploy-hotfix
+        name: Update Beta Site deployments
+        image: google/cloud-sdk:latest
+        caches:
+          - docker
+        script:
+          - export IMAGE_TAG=$BITBUCKET_TAG
+          - echo "IMAGE_TAG $IMAGE_TAG"
+          - echo $GCLOUD_API_KEYFILE | base64 -d > ./gcloud-api-key.json
+          - gcloud auth activate-service-account --key-file gcloud-api-key.json
+          - gcloud config set project $GOOGLE_CLOUD_PROJECT
+          - cat ./gcloud-api-key.json | docker login -u _json_key --password-stdin https://us.gcr.io
+          - export NAMESPACE=websites-v2
+          - export K8S_CLUSTER_NAME=websites-v1--1
+          - export K8S_REGION=us-central1-c
+          - export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+          - echo 'Generating Yaml'
+          - devops/gcp/scripts/del_sites.sh
+          - devops/gcp/scripts/gen_sites.sh
+          - devops/gcp/scripts/image_swap_hotfix.sh $IMAGE_TAG
+          - echo 'Kicking off JOBS'
+          - gcloud container clusters get-credentials $K8S_CLUSTER_NAME --region=$K8S_REGION
+          - kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
+          - kubectl delete --ignore-not-found -f devops/gcp/jobs_hotfix
+          - kubectl apply -f devops/gcp/secrets
+          - kubectl apply -f devops/gcp/jobs_hotfix
+          - echo "Deploying to Cluster - $K8S_REGION"
+          - kubectl apply -f devops/gcp/deployments_hotfix
+          - kubectl apply -f devops/gcp/services
+          - kubectl apply -f devops/gcp/hpas
+
+    - step: &configure-gcp
+        name: Configure GKE Cluster websites-v1--1
+        image: google/cloud-sdk:latest
+        caches:
+          - docker
+        script:
+          - export IMAGE_TAG=stable
+          - export IMAGE_TAG_BETA=beta
+          - export IMAGE_TAG_HOTFIX=906
+          - echo $GCLOUD_API_KEYFILE | base64 -d > ./gcloud-api-key.json
+          - gcloud auth activate-service-account --key-file gcloud-api-key.json
+          - gcloud config set project $GOOGLE_CLOUD_PROJECT
+          - cat ./gcloud-api-key.json | docker login -u _json_key --password-stdin https://us.gcr.io
+          - export NAMESPACE=websites-v2
+          - export K8S_CLUSTER_NAME=websites-v1--1
+          - export K8S_REGION=us-central1-c
+          - export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+          - gcloud container clusters get-credentials $K8S_CLUSTER_NAME --region=$K8S_REGION
+          - kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
+          - devops/gcp/scripts/del_sites.sh
+          - devops/gcp/scripts/gen_sites.sh
+          - devops/gcp/scripts/image_swap.sh $IMAGE_TAG
+          - devops/gcp/scripts/image_swap_beta.sh $IMAGE_TAG_BETA
+          - devops/gcp/scripts/image_swap_hotfix.sh $IMAGE_TAG_HOTFIX
+          - kubectl apply -f devops/gcp/secrets
+          - kubectl apply -f devops/gcp/deployments
+          - kubectl apply -f devops/gcp/deployments_beta
+          - kubectl apply -f devops/gcp/deployments_hotfix
+          - kubectl apply -f devops/gcp/configs
+          - kubectl apply -f devops/gcp/services
+          - kubectl apply -f devops/gcp/hpas
+          - kubectl apply -f devops/gcp/pdbs
+
+pipelines:
+  tags:
+    hotfix*:
+      - step: *build-image
+      - step: *release-hotfix
+      - step: *deploy-hotfix
+    v*:
+      - step: *build-image
+      - step: *release-stable
+      - step: *deploy-production
+    gcp*:
+      - step: *configure-gcp
+    newsite-*:
+      - step: *create-new-website
+
+  branches:
+    master:
+      - step: *build-image
+      - step: *deploy-stage
+    feature1:
+      - step: *build-dev-image
+      - step: *deploy-dev

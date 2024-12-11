@@ -1,0 +1,84 @@
+{% comment %} #TODO: Create external css files for breed pages {% endcomment %}
+<style>
+    .breed-title{
+        color: {{ instance.glossary.title_color }};
+    }
+
+    .breed-sub-title{
+        color: {{ instance.glossary.sub_title_color }};
+    }
+
+    .breed-img{
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+    }
+
+    .pet-type-list-nav .nav-item{
+        background: #fff;
+        border: 2px solid var(--global-secondary-color);
+        backdrop-filter: blur(2px);
+        border-radius: 50px;
+        padding: 0;
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+
+    .pet-type-list-nav .nav-link{
+        font-style: normal;
+        font-weight: 400;
+        font-size: 20px;
+        line-height: 140%;
+        text-align: center;
+        color: var(--global-secondary-color);
+    }
+
+    .pet-type-list-nav .nav-item.active,
+    .pet-type-list-nav .nav-item:hover
+    {
+        background: var(--global-secondary-color);
+    }
+
+    .pet-type-list-nav .nav-item.active .nav-link,
+    .pet-type-list-nav .nav-item:hover .nav-link{
+        color: #fff;
+    }
+
+</style>
+
+<div class="container py-5">
+    <h1 class="h1-theme-bold breed-title">{{ instance.glossary.title | safe }} <span class="d-none">  {{ selected_pet_type_slug }} </span></h1>
+    <p class="semi-bold breed-sub-title">{{ instance.glossary.sub_title }}</p>
+    
+    {% if instance.glossary.show_tabs_pet_type == 'True' and pet_types_list|length > 1 %}
+    <div class="pet-type-list-outer pt-4 pb-3">
+        <ul class="nav pet-type-list-nav">
+            <li class="nav-item {% if selected_pet_type_slug == None %} active disabled-block{% endif %}" >
+                <a class="nav-link" aria-current="page" href="{% url 'pinogy_breeds:breed_home' %}">All Types</a>
+            </li>
+            {% for pet_type in pet_types_list %}
+            <li class="nav-item {% if selected_pet_type_slug == pet_type.slug %} active {% endif %}">
+              <a class="nav-link" aria-current="page" href="{% url 'pinogy_breeds:breed_pet_type' pet_type.slug %}">{{ pet_type.selected_plural }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
+    <div class="row pt-3">
+        {% for breed in breed_list%}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 pb-3">
+                <a class="no-underline" href="{% url 'pinogy_breeds:breed_detail' breed.pet_type.slug breed.slug %}">
+                    <img src={{ breed.images.0.image_url }} class="w-100 img-fluid breed-img image-shape" alt="{{ breed.images.0.description|default:breed.name }} image" loading="lazy">
+                    <h3 class="h3-theme-bold breed-list-name pt-2">{{ breed.name}} </h3>
+                </a>
+            </div>
+        {% empty %}
+            <h3 class="h3-theme-bold breed-list-name pt-2">There are no breeds available for this pet type. Try choosing a different type of pet.</h3>
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    {% include 'plugins/includes/general_collection_form.html' with unique_id="breed_type_list_collection" form=collection_form form_type='pet_type_breed_collection_form' location_id=location_id breed_pet_type_slug=selected_pet_type_slug %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

@@ -1,0 +1,318 @@
+{% load cms_tags l10n sekizai_tags static thumbnail %}
+
+{% addtoblock "css" %}
+    <style>
+
+    .testimonials-container {
+        padding: 0 40px;
+        position: relative;
+    }
+
+    .testimonials-list-wrapper {
+        overflow: hidden;
+    }
+
+    .testimonial .photo {
+        padding: 0 25px;
+        text-align: center;
+    }
+
+    .testimonial .photo img {
+        border: 12px solid #fff;
+        box-shadow: 1px 4px 8px rgba(0, 0, 0, 0.25);
+        -webkit-transform: rotate(-2deg);
+            -ms-transform: rotate(-2deg);
+                transform: rotate(-2deg);
+        -webkit-backface-visibility: hidden;
+    }
+
+    .testimonial .photo.alternate img {
+        -webkit-transform: rotate(2deg);
+            -ms-transform: rotate(2deg);
+                transform: rotate(2deg);
+    }
+
+    .testimonial .name {
+        font-weight: bold;
+    }
+
+    {% if plugin.set_border %}
+    .testimonial__item-carusel {
+                max-width: 500px;
+                background-color: #fff;
+                color: #513226;
+                padding: 30px 40px;
+                padding-bottom: 20px;
+                text-align: left;
+                border-radius: 9px;
+                margin-left: auto;
+                margin-right: auto;
+    }
+    {% else %}
+    .testimonial__item-carusel {
+                max-width: 500px;
+                background-color: #fff;
+                color: #513226;
+                text-align: left;
+                border-radius: 9px;
+                margin-left: auto;
+                margin-right: auto;
+    }
+    {% endif %}
+
+    {% if not plugin.set_star %}
+    .testimonials-container .stars {
+        display: none;
+    }
+    {% endif %}
+
+    .testimonial__item-name {
+        color: #40609a;
+        font-family: 'Kalam', cursive;
+        font-weight: 600;
+        font-size: 22px;
+    }
+
+    .testimonial__item-text {
+        font-size: 18px;
+        line-height: 24px;
+    }
+
+    .testimonial__item-title {
+        font-weight: 500 !important;
+    }
+
+    .previous-testi,
+    .next-testi {
+        z-index: 2;
+        position: absolute;
+        top: 25%;
+        transition: opacity .2s linear;
+        opacity: 1;
+    }
+
+    .previous-testi.hidden,
+    .next-testi.hidden {
+        opacity: 0;
+    }
+
+    .previous-testi{
+        left:0;
+    }
+
+    .next-testi {
+        right:0;
+    }
+
+    .testimonials-list {
+        position:relative;
+    }
+
+    .testimonials-list .nav-gadget {
+        display:none;
+    }
+
+    .testimonials-list:hover .nav-gadget {
+        display:block;
+    }
+
+    .testimonials-container .stars {
+        color: #ffd85f;
+        font-size: 21px;
+        letter-spacing: 0;
+        margin-bottom: 0;
+    }
+
+    .owl-item {height: 0 !important;}    
+    
+    .owl-item.active {height: auto !important;}
+
+    .testimonials-container .owl-dots {
+        display: none;
+    }
+
+    .quote-right{
+        position:absolute;
+        right: 50px;
+    }
+
+    .testimonial-left-arrow i, .testimonial-right-arrow i{
+        font-size:2rem
+    }
+
+    .testimonial-body{
+        display: block !important;
+    }
+
+    </style>
+{% endaddtoblock %}
+
+<div class="row testimonials-container">
+    <a class="previous-testi nav-gadget nav-previous hidden testimonial-left-arrow" href="#" title="prev">
+        <i class="fa fa-angle-left display-4 text-white"></i>
+    </a>
+    <a class="next-testi nav-gadget nav-next testimonial-right-arrow" href="#" title="next">
+        <i class="fa fa-angle-right display-4 text-white"></i>
+    </a>
+    <div class="testimonials-list-wrapper">
+        <div class="testimonials-list col-xs-12">
+            <div id="testimonial-carousel-{{ instance.pk|unlocalize }}"  class="owl-carousel owl-theme pinogy-testimonials testimonials-carousel manual">
+                {% for testimonial in testimonial_list %}
+                    <div class="single-testimonial">
+                        <div class="row align-items-center">
+                            {% if testimonial.photo %}
+                                <div class="col-md-4">
+                                    <div class="testimonial-img">
+                                    {% if testimonial.photo.width > testimonial.photo.height %}
+                                        {% thumbnail testimonial.photo 360x360 upscale as img %}
+                                    {% else %}
+                                        {% thumbnail testimonial.photo 180x180 upscale as img %}
+                                    {% endif %}
+                                    <img src="{{ img.url }}" class="testimonial-img" alt="testimonial-img">
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="col-md-8">
+                                <div class="testi-content">
+                                        <i class="fas fa-quote-left quote1"></i>
+                                        <p class='testimonial-title'>{{testimonial.subject}}</p>
+                                        <p class='testimonial-body tbody'> {{testimonial.body}} </p>
+                                        <i class="fas fa-quote-right quote-right quote2"></i>
+                                        <p class="testimonial-display-name"> {{ testimonial.display_name }} </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div>
+                        <p class="info">There are no approved testimonials yet. Why not be the first?</p>
+                        <a href="{{ share_url }}" class="btn btn-success btn-md">
+                            {{instance.share_button_text}}
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if testimonial_all_view_url or share_url %}
+    <div class="text-center testimonial-button">
+         {% if share_url and not request.path == share_url %}
+         <a class="btn btn-primary btn-md" href="{{ share_url }}"></span>{{instance.share_button_text}}</a>
+         {% endif %}
+         {% if testimonial_all_view_url and not request.path == testimonial_all_view_url %}
+         <a class="btn btn-primary btn-md" href="{{ testimonial_all_view_url }}?page=1"></span>See All Testimonials</a>
+         {% endif %}
+    </div>
+{% endif %}
+
+{% comment %} Modal For More {% endcomment %}
+<div class="modal fade" id="testimonialRightTextModel" tabindex="-1" aria-labelledby="testimonialRightTextModelLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-0">
+            <div class="modal-body">
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="testimonial-modal-{{ instance.pk|unlocalize }}">
+                    {% comment %} Value will be added dynamically. {% endcomment %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% if testimonial_list.count %}
+    {% addtoblock "js" %}
+        <script>
+            $(document).ready(function() {
+                var testi_owl = $("#testimonial-carousel-{{ instance.pk|unlocalize }}");
+
+                testi_owl.owlCarousel({
+                    items: 3,
+                    margin: 10,
+                    responsive:{
+                        0: {
+                            items: 1
+                        },
+                        979: {
+                            items: {{ plugin.displayed_count }}
+                        }
+                    }
+                });
+
+                testi_owl.on('changed.owl.carousel', function(e){
+                    if (e.item.index) {
+                        $(".previous-testi").removeClass('hidden');
+                    } else {
+                        $(".previous-testi").addClass('hidden');
+                    }
+
+                    if (e.item.index !== e.item.count - e.page.size) {
+                        $(".next-testi").removeClass('hidden');
+                    } else {
+                        $(".next-testi").addClass('hidden');
+                    }
+                });
+
+                $(".next-testi").click(function(e){
+                    e.preventDefault();
+                    testi_owl.trigger('next.owl.carousel');
+                });
+
+                $(".previous-testi").click(function(e){
+                    e.preventDefault();
+                    testi_owl.trigger('prev.owl.carousel');
+                });
+
+                var minimized_elements = $("#testimonial-carousel-{{ instance.pk|unlocalize }}").find('.tbody').not(".name");
+                var minimize_character_count = 100;
+
+                minimized_elements.each(function(){
+                  var t = $(this).text();
+                  if(t.length < minimize_character_count ) return;
+
+                  $(this).html(
+                      t.slice(0,minimize_character_count )+'<span>... </span><a href="javascript:;" class="more" data-bs-toggle="modal" data-bs-target="#testimonialRightTextModel">More</a>'+
+                      '<span style="display:none;">'+ t+' </span>'
+                  );
+
+                });
+
+                $('a.more', minimized_elements).click(function(event){
+                  var popupContainer = $("#testimonial-modal-{{ instance.pk|unlocalize }}");
+                  popupContainer.html("<p>"+$(this).next().text()+"</p>");
+                });
+                
+            });
+
+            setTimeout( function(){ 
+                var fixOwl = function(){
+                    var $stage = $('.owl-stage'),
+                        stageW = $stage.width(),
+                        $el = $('.owl-item'),
+                        elW = 0;
+                    $el.each(function() {
+                        elW += $(this).width()+ +($(this).css("margin-right").slice(0, -2))
+                    });
+                    if ( elW > stageW ) {
+                        $stage.width( elW );
+                    };
+                }
+
+                $('#testimonial-carousel-{{ instance.pk|unlocalize }} .owl-stage').owlCarousel({
+                        margin:10,
+                        autoWidth:true,
+                        items:4,
+                        nav: true,
+                        navText: ['<span class="fa fa-angle-left"></span>', '<span class="fa fa-angle-right"></span>'],
+                        onInitialized: fixOwl,
+                        onRefreshed: fixOwl
+                    })
+                    
+            }, 100);
+        </script>
+    {% endaddtoblock %}
+{% endif %}

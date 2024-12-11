@@ -1,0 +1,113 @@
+{% load static sekizai_tags global_theme_config_tags thumbnail %}
+
+{% global_theme_object as global_theme_config %}
+
+{% addtoblock "css"  %}
+    <style>
+        /* TODO: need to decide and move unrequired into css file insted of here */
+        .sinfo-outer-{{instance.pk}}{
+            background-color: {{instance.glossary.bg_color}};
+        }
+
+        .sinfo-title-block{
+            text-align: center;
+            font-style: normal;
+            font-weight: 700;
+            font-size: 40px;
+            line-height: 125%;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .sinfo-items-outer{
+            padding: 0 20px 0 20px;
+        }
+
+        .sinfo-item-image-outer{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .sinfo-item-image-{{instance.pk}}{
+            border-radius: 50%;
+            max-height: 400px;
+            border: 10px solid {{instance.glossary.item_outer_color}}; 
+            width:400px
+        }
+
+        .sinfo-image-arrow-down-{{instance.pk}}{
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid {{instance.glossary.item_outer_color}};
+        }
+
+        .sinfo-item-title-outer{
+            text-align: center;
+            padding: 5px;
+            font-family: 'Open Sans';
+            font-style: normal;
+            font-weight: 700;
+            font-size: 24px;
+            line-height: 115%;
+            text-align: center;
+            opacity: 0.9;
+        }
+
+        .sinfo-title-{{instance.pk}}{
+            color: {{instance.glossary.info_title_color}} !important; 
+        }
+
+        .sinfo-item-title-{{instance.pk}}{
+            color: {{instance.glossary.item_title_color}} !important;
+        }
+
+        .clsblock{
+        cursor: pointer;
+        }
+    </style>
+{% endaddtoblock  %}
+{% addtoblock 'js' %}
+<script>
+    function onHandleNavigation(url){
+        if(url && !url==""){
+            window.location.href=url.startsWith('/')?url:'/'+url
+        }
+    }
+</script>
+{% endaddtoblock  %}
+
+<div class="sinfo-outer-{{instance.pk}} sinfo-{{instance.id}} py-5">
+    {% if instance.glossary.info_title %}
+    <div class="pb-4 sinfo-title-block">
+        <div class="h2-theme-bold sinfo-title-{{instance.pk}}">{{instance.glossary.info_title | safe}}</div>
+    </div>
+    {% endif %}
+
+    <div class="sinfo-items-outer">
+        <div class="row row-cols-1 row-cols-sm-3 row-cols-md-3 row-cols-lg-{{instance.glossary.columns_to_display}} row-cols-xl-{{instance.glossary.columns_to_display}}" style="justify-content: center;" role = "button">
+            {% for item in items %}
+                <div class="col-lg-4 col-md-6 col-sm-12 col-sx-12 clsblock">
+                    <div class="sinfo-item-image-outer">
+                        <img src="{{item.glossary.image_file.image.url}}" alt="sinfo-item-image" class="img-fluid sinfo-item-image-{{instance.pk}}" loading="lazy" onclick="onHandleNavigation('{{item.glossary.btn_link}}')">
+                        <div class="sinfo-image-arrow-down-{{instance.pk}}"></div>
+                    </div>
+                    <div class="sinfo-item-title-outer" onclick="onHandleNavigation('{{item.glossary.btn_link}}')">
+                        <h3 class="h3-theme-bold sinfo-item-title-{{instance.pk}}">{{item.glossary.item_title}}</h3>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% ifequal 'True'  instance.glossary.isbutton %}
+    <div class="d-flex justify-content-center p-3">
+        <a class="{% if instance.glossary.button_style == 'outline' %} theme-secondary-btn {% else %} theme-primary-btn {% endif %}" href="{{main_btn_link}}" area-label = "{{instance.glossary.button_text}}">
+            {{instance.glossary.button_text}}
+        </a>
+    </div>
+    {% endifequal %}
+
+</div>

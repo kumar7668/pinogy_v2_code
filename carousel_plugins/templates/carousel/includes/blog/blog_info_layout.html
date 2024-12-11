@@ -1,0 +1,98 @@
+{% extends 'carousel/carousel_plugin.html' %}
+{% load static %}
+{% block carousel_items %}
+{% for item in items %}
+    <div>
+        <div class="carousel-item-box carousel-item-box-style-4" style="margin-top:-30px;">
+            <div class="card cardbg-{{instance.id}} m-md-5 m-1"> 
+                <div class="row g-0">
+                  <div class="col-md-6">
+                    {% if item.main_image %}
+                    <img 
+                        src={{item.main_image.url}}
+                        class="car_place_img blogimage image-shape" 
+                        alt="car_place_img"
+                    >
+                {% else %}
+                    <img 
+                        src="{% static '/images/default-placeholder-image.webp' %}" 
+                        class="car_place_img image-shape" 
+                        alt="car_place_img"
+                    />
+                {%endif%}
+                  </div>
+                  <div class="col-md-6 align-self-center">
+                    <div class="card-body p-3">
+                        <div class="h3-theme-bold blog-art-title mb-3"> {{item.title |truncatechars:50}}</div>
+                        <div style="max-width: 450px; text-align:justify;">{{item.abstract |truncatechars:150}}
+                            <a href="#" class="more_view" data-text="{{item.abstract}}">more </a>
+                        </div>
+                        <div><p><b> - {{item.author}} </b></p> </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+
+        </div>
+  
+    </div>
+{% endfor %}
+{% endblock carousel_items %}
+<style>
+    .carousel-item-box-desc{
+        margin:0px !important;
+        padding:10px !important;
+    }
+</style>
+
+
+
+{% block initilize_carousel %}
+    $( document ).ready(function() {
+        $('.more_view').on('click', function () {
+            var more_text = $(this).data("text");
+            $('.more-body-text').html(more_text);
+            $('#moreModal').modal('show');
+            return false;
+        });
+
+        $(".modal-close").on('click', function () {
+            $('#moreModal').modal('toggle');
+            return false;
+        });
+
+        $('.carousel-layout-slider-{{instance.id}}').slick({
+            dots: false,
+            arrows: true,
+            infinite: true,
+            speed: 300,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            //appendDots: ".carousel-layout-slider-{{instance.id}}-dots",
+            //appendArrows: ".carousel-layout-slider-{{instance.id}}-arrows",
+            //prevArrow: "<button type='button' class='slick-prev'><img src='{% static 'images/ic-left.svg' %}' alt='arrow-left'></button>",
+            //nextArrow: "<button type='button' class='slick-next'><img src='{% static 'images/ic-right.svg' %}' alt='arrow-right'></button>",
+            responsive: [
+                {
+                    breakpoint: 1000,
+                    settings: {
+                        slidesToShow: 1,
+                        slidesToScroll: 1
+                    }
+                },
+                {
+                    breakpoint: 700,
+                    settings: {
+                        slidesToShow: 1,
+                        slidesToScroll: 1
+                    }
+                }
+                // You can unslick at a given breakpoint now by adding:
+                // settings: "unslick"
+                // instead of a settings object
+            ]
+        });
+    });
+{% endblock %}

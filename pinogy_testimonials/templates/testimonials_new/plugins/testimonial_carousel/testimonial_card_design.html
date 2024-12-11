@@ -1,0 +1,242 @@
+{% load cms_tags l10n sekizai_tags static %}
+
+{% addtoblock "css" %}
+    <style>
+        .owl-nav{
+            display:none;
+        }
+        .owl-theme .owl-dots .owl-dot span{
+            background-color:#FFFFFF;
+            border: solid #e3e3e3 0.5px;
+        }
+        .owl-theme .owl-dots .owl-dot.active span{
+            background:#08CCA8;
+           
+        }
+    
+        #testimonial-carousel-{{ instance.pk|unlocalize }} .owl-dots{
+            display: block;
+        }
+
+        .owl-stage-outer .owl-dots{
+            display: none !important;
+        }
+        .body-font{
+            font-family: 'Poppins';
+            font-style: normal;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 150%;
+            /* or 24px */
+            color: #313131;
+          }  
+        
+          .display-font{
+            font-family: 'Poppins';
+            font-style: normal;
+            font-weight: 500;
+            font-size: 20px;
+            /* identical to box height, or 24px */
+            align-items: center;
+            color: #313131;
+            white-space:nowrap;
+          }
+          .image-style{
+            border-radius: 50%;
+            border: solid 2px;
+            border-color: #08CCA8;
+            height: 65px;
+            width: 65px!important;"
+        }    
+        
+        
+        .static-customer{
+            font-size:12px;color:#08CCA8;
+            margin:0 0 0px!important;
+        }
+        .grid {
+            display: grid;
+            grid-column-gap: 0px;
+            grid-template-columns: repeat(2, 0fr);
+          }
+        .col-style{
+            padding:15px;
+            border-color:#b89d93; 
+           
+             padding:50px; 
+             box-shadow: 0px 10px 10px #EEEEEE;
+             border-radius:2%;
+             margin:15px
+        }
+        .col-height{
+            min-height:280px;
+            max-height:280px;
+        }
+        .testi-quote-image{
+            position: absolute;
+            width: 110px !important;
+            right: 0;
+            top: -10px;
+        }
+
+    </style>
+{% endaddtoblock %}
+
+
+    <a class="previous-testi nav-gadget nav-previous hidden" href="#" title="prev">
+        <i class="fas fa-angle-left display-4 text-white"></i>
+    </a>
+    <a class="next-testi nav-gadget nav-next" href="#" title="next">
+        <i class="fas fa-angle-right display-4 text-white"></i>
+    </a>
+    <div class="testimonials-list-wrapper">
+
+            <div id="testimonial-carousel-{{ instance.pk|unlocalize }}"  class="owl-carousel owl-theme pinogy-testimonials testimonials-carousel manual">
+                {% for testimonial in testimonial_list %}
+                
+        <div class="container" style="display: flex; flex-direction: column;">
+            <div class="row" style="margin-left:-27px !important; margin-right:2px !important;">
+                <div class="col col-12 col-style col-height">
+                <div class="container" style="padding-right:0px !important;">
+                    <div class="row grid" style="position:relative;" >
+                       <div class="col" style="padding-right:0px;">
+                        <img class="image-style" src="{{testimonial.photo.url}}" alt="testimonial-img">
+                       </div>
+                       <div class="col" style="padding:10px;">
+                        <div class="row">
+                            <div class="col col-12"> <p class="display-font name  d-inline">{{testimonial.display_name }}</p></div>
+                            <div class="col col-12" style="position:relative; top:-7px;"> <p class="static-customer">Customer</p> </div>
+                        </div>
+                       </div>
+                       <img class="testi-quote-image" src="{% static 'testimonials/images/quote.png' %}">
+                    </div>
+                    <div class="row">
+                        <div class="col text-left" style="padding-top:18px;">
+                            <p class="body-font tbody testimonial__item-text"> {% render_model testimonial "body" %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                   
+            </div>
+        </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+
+    {% comment %} Modal For More {% endcomment %}
+    <div class="modal fade" id="testimonialCardModel" tabindex="-1" aria-labelledby="testimonialCardModelLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content rounded-0">
+                <div class="modal-body">
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div id="testimonial-modal-{{ instance.pk|unlocalize }}">
+                        {% comment %} Value will be added dynamically. {% endcomment %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {% if testimonial_list.count %}
+        {% addtoblock "js" %}
+            <script>
+                $(document).ready(function() {
+                    
+                    var testi_owl = $("#testimonial-carousel-{{ instance.pk|unlocalize }}");
+                    var displayed_count = 
+                    testi_owl.owlCarousel({
+                        items: 3,
+                        loop: true,
+                        margin: 10,
+                        autoplay: true,
+                        autoplayTimeout: 600000,
+                        autoplayHoverPause: true,
+                        responsive:{
+                            0: {
+                                items: 1
+                            },
+                            979: {
+                                items: {{ instance.displayed_count }}
+                            }
+                        }
+                    });
+    
+                    testi_owl.on('changed.owl.carousel', function(e){
+                        if (e.item.index) {
+                            $(".previous-testi").removeClass('hidden');
+                        } else {
+                            $(".previous-testi").addClass('hidden');
+                        }
+    
+                        if (e.item.index !== e.item.count - e.page.size) {
+                            $(".next-testi").removeClass('hidden');
+                        } else {
+                            $(".next-testi").addClass('hidden');
+                        }
+                    });
+    
+                    $(".next-testi").click(function(e){
+                        e.preventDefault();
+                        testi_owl.trigger('next.owl.carousel');
+                    });
+    
+                    $(".previous-testi").click(function(e){
+                        e.preventDefault();
+                        testi_owl.trigger('prev.owl.carousel');
+                    });
+    
+                    var minimized_elements = $("#testimonial-carousel-{{ instance.pk|unlocalize }}").find('.tbody').not(".name");
+                    var minimize_character_count = 100;
+    
+                    minimized_elements.each(function(){
+                      var t = $(this).text();
+                      if(t.length < minimize_character_count ) return;
+    
+                      $(this).html(
+                          t.slice(0,minimize_character_count )+'<span>... </span><a href="javascript:;" class="more" data-bs-toggle="modal" data-bs-target="#testimonialCardModel">More</a>'+
+                          '<span style="display:none;">'+ t+' </span>'
+                      );
+    
+                    });
+                    $('a.more', minimized_elements).click(function(event){
+                      var popupContainer = $("#testimonial-modal-{{ instance.pk|unlocalize }}");
+                      popupContainer.html("<p>"+$(this).next().text()+"</p>");
+                    });
+                    
+                });
+    
+                setTimeout( function(){ 
+                    var fixOwl = function(){
+                        var $stage = $('.owl-stage'),
+                            stageW = $stage.width(),
+                            $el = $('.owl-item'),
+                            elW = 0;
+                        $el.each(function() {
+                            elW += $(this).width()+ +($(this).css("margin-right").slice(0, -2))
+                        });
+                        if ( elW > stageW ) {
+                            $stage.width( elW );
+                        };
+                    }
+    
+                    $('#testimonial-carousel-{{ instance.pk|unlocalize }} .owl-stage').owlCarousel({
+                            margin:10,
+                            autoWidth:true,
+                            items:4,
+                            nav: true,
+                            navText: ['<span class="fa fa-angle-left"></span>', '<span class="fa fa-angle-right"></span>'],
+                            onInitialized: fixOwl,
+                            onRefreshed: fixOwl
+                        })
+                        
+                }, 100);
+            </script>
+        {% endaddtoblock %}
+    {% endif %}
+    

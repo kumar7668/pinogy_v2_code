@@ -1,0 +1,37 @@
+<div class="cart-product-notes-outer py-3">
+    {% if not product.is_astro_offered %}
+    {% comment %} Add notes checkbox {% endcomment %}
+    <div class="note-checkbox-outer">
+        <input class="form-check-input note-checkbox" type="checkbox" id="note-checkbox-{{ product.product_id }}" data-target="#note-form-{{ product.product_id }}" {% if product.txnline_note %} checked {% endif %}>
+        <label class="note-checkbox-label" for="note-checkbox-{{ product.product_id }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M18.3337 9.48601C18.2332 7.86265 17.6595 6.30413 16.6832 5.0026C15.7069 3.70106 14.3707 2.71341 12.8393 2.16139C11.3079 1.60937 9.6483 1.51713 8.06509 1.89603C6.48187 2.27493 5.04424 3.10841 3.92944 4.29372C2.81464 5.47902 2.0714 6.96434 1.79134 8.56656C1.51129 10.1688 1.70666 11.8178 2.35338 13.3105C3.0001 14.8031 4.06989 16.074 5.43087 16.9666C6.79185 17.8591 8.38451 18.3342 10.0125 18.3334H14.8616C15.7822 18.3325 16.6648 17.9667 17.3157 17.3164C17.9666 16.6661 18.3327 15.7843 18.3337 14.8647V9.48601ZM16.9448 14.8647C16.9448 15.4166 16.7254 15.946 16.3347 16.3363C15.944 16.7266 15.4141 16.9459 14.8616 16.9459H10.0125C9.03266 16.9455 8.06389 16.7387 7.16939 16.3391C6.27489 15.9395 5.47473 15.356 4.8211 14.6267C4.16431 13.8978 3.67111 13.037 3.37457 12.102C3.07803 11.167 2.985 10.1795 3.10174 9.20574C3.28606 7.66973 3.97683 6.2387 5.06514 5.13822C6.15346 4.03775 7.57743 3.33044 9.11256 3.12779C9.41202 3.09029 9.7135 3.07129 10.0153 3.0709C11.6336 3.06649 13.2018 3.63138 14.445 4.66653C15.171 5.26936 15.7669 6.0132 16.1966 6.85297C16.6263 7.69274 16.8809 8.61094 16.9448 9.55192V14.8647Z" class="fill-color" fill="#003F5A"/>
+                <path d="M7.22307 7.92691H10.0007C10.1849 7.92691 10.3615 7.85382 10.4917 7.72372C10.622 7.59362 10.6951 7.41716 10.6951 7.23316C10.6951 7.04917 10.622 6.87271 10.4917 6.74261C10.3615 6.61251 10.1849 6.53941 10.0007 6.53941H7.22307C7.0389 6.53941 6.86228 6.61251 6.73205 6.74261C6.60182 6.87271 6.52866 7.04917 6.52866 7.23316C6.52866 7.41716 6.60182 7.59362 6.73205 7.72372C6.86228 7.85382 7.0389 7.92691 7.22307 7.92691Z" class="fill-color" fill="#003F5A"/>
+                <path d="M12.7784 9.31464H7.22307C7.0389 9.31464 6.86228 9.38773 6.73205 9.51784C6.60182 9.64794 6.52866 9.8244 6.52866 10.0084C6.52866 10.1924 6.60182 10.3688 6.73205 10.499C6.86228 10.6291 7.0389 10.7021 7.22307 10.7021H12.7784C12.9625 10.7021 13.1392 10.6291 13.2694 10.499C13.3996 10.3688 13.4728 10.1924 13.4728 10.0084C13.4728 9.8244 13.3996 9.64794 13.2694 9.51784C13.1392 9.38773 12.9625 9.31464 12.7784 9.31464Z" class="fill-color" fill="#003F5A"/>
+                <path d="M12.7784 12.0895H7.22307C7.0389 12.0895 6.86228 12.1626 6.73205 12.2927C6.60182 12.4228 6.52866 12.5993 6.52866 12.7833C6.52866 12.9673 6.60182 13.1437 6.73205 13.2738C6.86228 13.4039 7.0389 13.477 7.22307 13.477H12.7784C12.9625 13.477 13.1392 13.4039 13.2694 13.2738C13.3996 13.1437 13.4728 12.9673 13.4728 12.7833C13.4728 12.5993 13.3996 12.4228 13.2694 12.2927C13.1392 12.1626 12.9625 12.0895 12.7784 12.0895Z" class="fill-color" fill="#003F5A"/>
+            </svg> 
+            Add Notes
+        </label>
+    </div>
+    {% endif %}
+    {% comment %} Add notes input box {% endcomment %}
+    <form class="note-form" method="POST" action="{% url 'pinogy_shop_proxy:cart-note' %}" id="note-form-{{ product.product_id }}" {% if not product.txnline_note %} style="display: none" {% endif %}>
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-9 col-md-10 note-textbox-outer">
+                <input type="hidden" name="txnline_id" value="{{ product.transaction_line_id }}" required/>
+                <textarea class="form-control note-textbox" name="note" placeholder="Add notes to this product" rows="1">{{ product.txnline_note }}</textarea>
+            </div>
+            <div class="col-3 col-md-2 ps-0 note-btn-outer">
+                <button type="submit" class="note-btn" disabled>
+                    Save
+                </button>
+            </div>
+            <div class="col-12">
+                <p class="m-0 mt-1 text-danger note-error-msg" style="display: none;">
+                    An error occurred while adding the note. Please try refreshing the page.
+                </p>
+            </div>
+        </div>
+    </form>
+</div>

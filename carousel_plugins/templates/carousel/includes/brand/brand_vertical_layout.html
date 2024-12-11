@@ -1,0 +1,21 @@
+{% extends 'carousel/carousel_plugin.html' %}
+{% load thumbnail %}
+
+{% block carousel_items %}
+
+{% for item in items %}       
+     <div class="brand-vertical-carousel-outer">
+        <div class="carousel-item-box carousel-item-box-style-1">
+            <div class="carousel-item-box-img image-shape">
+                <div class="title">{% if item.name %}{{item.name}}{% endif %}</div>
+                <a href="{{ item.product_page_url }}" class="img-outer">
+                    {% thumbnail item.images.file_content 130x130 as thumb %}
+                    <img src="{{ thumb.url }}" class="brand-image image-shape" alt="car_main_img_{{ thumb.url }}" loading="lazy">
+                </a>
+            </div>        
+        </div>
+    </div>
+
+{% endfor %}
+
+{% endblock carousel_items %}

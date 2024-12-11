@@ -1,0 +1,132 @@
+{% load cms_tags l10n sekizai_tags static thumbnail %}
+
+{% addtoblock "css" %}
+    <style>
+        .testimonial-list-2-card{
+            padding:0;
+        }
+
+        .testimonial-list-2-card-container{
+            margin:12px;
+        }
+        
+        .testimonial-list-2-img-container, .testimonial-list-2-img{
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+
+        .testimonial-list-2-text-container{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding:15px;
+        }
+
+        .testimonial-list-2-body{
+            display: block !important;
+        }
+
+        .testimonial-list-img-style1{
+            border-radius: 0 60px;
+        }
+
+        .testimonial-list-img-style2{
+            border-radius: 60px 0;
+        }
+    </style>
+{% endaddtoblock %}
+
+<div class='row testimonial-list-2' id='testimonial-list-2-{{ instance.pk|unlocalize }}'>
+    {% for testimonial in testimonial_list %}
+        {% if not forloop.counter|divisibleby:2 %}
+        <div class='testimonial-list-2-card col-12 col-md-6'>
+            <div class='row testimonial-list-2-card-container'>
+                <div class='col-6  testimonial-list-2-text-container'>
+                    {% if testimonial.subject %} <p class='testimonial-list-2-subject'>{% render_model testimonial "subject" %}</p> {% endif %}
+                    {% if testimonial.body %} <p class='testimonial-list-2-body tbody'>{% render_model testimonial "body" %}</p> {% endif %}
+                    {% if testimonial.display_name %} <p class='testimonial-list-2-display_name'> — {{testimonial.display_name}}</p> {% endif %}
+                </div>
+                {% if testimonial.photo %}
+                    <div class='col-6 p-0'>
+                        <div class='testimonial-list-2-img-container'>
+                            {% if testimonial.photo.width > testimonial.photo.height %}
+                                {% thumbnail testimonial.photo 360x360 upscale as img %}
+                            {% else %}
+                                {% thumbnail testimonial.photo 180x180 upscale as img %}
+                            {% endif %}
+                            <img src="{{ img.url }}" class="testimonial-list-2-img {% if forloop.counter|divisibleby:4 or forloop.counter|add:'-1'|divisibleby:4 or forloop.counter is 1  %} testimonial-list-img-style1 {% else %} testimonial-list-img-style2 {% endif %}">
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class='testimonial-list-2-card col-12 col-md-6'>
+            <div class='row testimonial-list-2-card-container'>
+                {% if testimonial.photo %}
+                    <div class='col-6 p-0'>
+                        <div class='testimonial-list-2-img-container'>
+                            {% if testimonial.photo.width > testimonial.photo.height %}
+                                {% thumbnail testimonial.photo 360x360 upscale as img %}
+                            {% else %}
+                                {% thumbnail testimonial.photo 180x180 upscale as img %}
+                            {% endif %}
+                            <img src="{{ img.url }}" class="testimonial-list-2-img {% if forloop.counter|divisibleby:4 or forloop.counter|add:'-1'|divisibleby:4 or forloop.counter is 1 %} testimonial-list-img-style1 {% else %} testimonial-list-img-style2 {% endif %}">
+                        </div>
+                    </div>
+                {% endif %}
+                <div class='col-6  testimonial-list-2-text-container'>
+                    {% if testimonial.subject %} <p class='testimonial-list-2-subject'>{% render_model testimonial "subject" %}</p> {% endif %}
+                    {% if testimonial.body %} <p class='testimonial-list-2-body tbody'>{% render_model testimonial "body" %}</p> {% endif %}
+                    {% if testimonial.display_name %} <p class='testimonial-list-2-display_name'> — {{testimonial.display_name}}</p> {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+{% comment %} Modal For More {% endcomment %}
+<div class="modal fade" id="testimonialSideTextModel" tabindex="-1" aria-labelledby="testimonialSideTextModelLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-0">
+            <div class="modal-body">
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="testimonial-modal-{{ instance.pk|unlocalize }}">
+                    {% comment %} Value will be added dynamically. {% endcomment %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if testimonial_list.count %}
+    {% addtoblock "js" %}
+        <script>
+            $(document).ready(function() {
+                var minimized_elements = $("#testimonial-list-2-{{ instance.pk|unlocalize }}").find('.tbody');
+                var minimize_character_count = 100;
+
+                minimized_elements.each(function(){
+                  var t = $(this).text();
+                  if(t.length < minimize_character_count ) return;
+
+                  $(this).html(
+                      t.slice(0,minimize_character_count )+'<span>... </span><a href="javascript:;" class="more" data-bs-toggle="modal" data-bs-target="#testimonialSideTextModel">More</a>'+
+                      '<span style="display:none;">'+ t+' </span>'
+                  );
+
+                });
+                $('a.more', minimized_elements).click(function(event){
+                  var popupContainer = $("#testimonial-modal-{{ instance.pk|unlocalize }}");
+                  popupContainer.html("<p>"+$(this).next().text()+"</p>");
+                });
+                
+            });
+        </script>
+    {% endaddtoblock %}
+{% endif %}

@@ -1,0 +1,52 @@
+{% load cms_tags sekizai_tags %}
+
+<style>
+    .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+        color: var(--global-secondary-color);
+        background-color: var(--global-primary-color);
+    }
+
+    .nav-tabs .nav-link:hover:not(.active) {
+        background: #E4E6EB;
+    }     
+
+    .nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+        color: var(--global-secondary-color);
+        background-color: var(--global-primary-color);
+    }
+
+    .nav-link {
+        color: var(--global-primary-color);
+    }
+
+    .nav-link:hover {
+        color: var(--global-primary-color);
+    }
+
+    .tab-text {
+        font-family: var(--heading-font) !important;
+    }
+</style>
+
+<div class="my-4">
+    <ul class="nav nav-{{ instance.style }} {{ instance.alignment }}" id="myTab" role="tablist">
+        {% for tab in tabs.child_plugin_instances %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link tab-text {% if forloop.first %}active{% endif %}" id="{{ tab.id }}" data-bs-toggle="tab" data-bs-target="#tab-{{ tab.id }}" type="button" role="tab" aria-controls="{{ tab.id }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                    {{ tab.title }}
+                </button>
+            </li>
+        {% endfor %}
+    </ul>
+    
+    <div class="tab-content mt-2" id="myTabContent">
+        {% for tab in tabs.child_plugin_instances %}
+            <div class="tab-pane {% if forloop.first %}active show{% endif %} {{ instance.animation }}" id="tab-{{ tab.id }}" role="tabpanel" aria-label="tabpanel">
+                {% render_plugin tab %}
+            </div>
+        {% endfor %}
+    </div>    
+</div>
+
+
+
